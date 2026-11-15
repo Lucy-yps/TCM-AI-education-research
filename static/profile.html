@@ -5,50 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>证型档案 · 本草辨证</title>
 <style>
-:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--accent-strong:#1F4D3B;--accent-soft:rgba(47,107,82,.12);--orange:#C98A5E;--violet:#7E9BB8;--blue:#5B8DB8;--gold:#C9A35A;}
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--orange:#C98A5E;--violet:#7E9BB8;--gold:#C9A35A;}
 *{box-sizing:border-box;}
-html,body{height:100%;}
-body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;}
-a{color:var(--muted);text-decoration:none;}a:hover{color:var(--acid);}
-.wrap{max-width:1240px;margin:0 auto;padding:20px 22px 60px;}
-.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
-.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
-.nav{display:flex;gap:15px;font-size:13px;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.8;}
+a{color:var(--muted);text-decoration:none;}
+a:hover{color:var(--acid);}
+.wrap{max-width:1260px;margin:0 auto;padding:20px 22px 60px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}
+.brand b{color:var(--acid);}
+.nav{display:flex;gap:13px;font-size:12.5px;flex-wrap:wrap;}
 h1{font-size:24px;margin:0 0 3px;}
-.sub{color:var(--muted);font-size:12.5px;margin-bottom:18px;}
-.layout{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:start;}
-.side{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;position:sticky;top:14px;max-height:calc(100vh - 100px);overflow:auto;}
-.side input{width:100%;background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12.5px;font-family:inherit;margin-bottom:10px;}
-.side input:focus{outline:none;border-color:rgba(47,107,82,.4);}
-.grp{font-size:11px;color:var(--muted);letter-spacing:1px;margin:11px 4px 5px;}
-.ci{display:block;width:100%;text-align:left;background:transparent;border:0;border-left:2px solid transparent;color:var(--paper);padding:7px 10px;font-size:12.5px;cursor:pointer;border-radius:0 6px 6px 0;font-family:inherit;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:16px;}
+.layout{display:grid;grid-template-columns:250px 1fr;gap:15px;align-items:start;}
+.side{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:11px;position:sticky;top:12px;max-height:calc(100vh - 90px);overflow:auto;}
+.side input{width:100%;background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;font-family:inherit;margin-bottom:9px;}
+.side input:focus{outline:none;border-color:rgba(47,107,82,.45);}
+.grp{font-size:10.5px;color:var(--muted);letter-spacing:1px;margin:10px 4px 4px;}
+.ci{display:flex;justify-content:space-between;gap:6px;width:100%;text-align:left;background:transparent;border:0;border-left:2px solid transparent;color:var(--paper);padding:6px 9px;font-size:12px;cursor:pointer;border-radius:0 6px 6px 0;font-family:inherit;}
 .ci:hover{background:var(--panel-raised);}
 .ci.on{background:var(--panel-raised);border-left-color:var(--acid);color:var(--acid);}
-.main{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:24px 28px;min-height:500px;}
-.ptitle{font-size:26px;font-weight:600;margin:0 0 6px;}
-.pmeta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.ci .n{color:var(--muted);font-size:10.5px;flex:none;}
+.main{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:22px 26px;min-height:520px;}
+.ptitle{font-size:25px;font-weight:600;margin:0 0 6px;}
+.pmeta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
 .tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--line);color:var(--muted);}
 .tag.hi{border-color:rgba(47,107,82,.45);color:var(--acid);}
-h3{font-size:12px;color:var(--muted);letter-spacing:2px;font-weight:600;margin:22px 0 9px;padding-left:9px;border-left:2px solid var(--acid);}
-.chips{display:flex;gap:7px;flex-wrap:wrap;}
-.chip{font-size:12px;padding:4px 11px;border-radius:6px;background:var(--panel-raised);border:1px solid var(--line);}
-.chip.a{border-color:rgba(47,107,82,.3);color:var(--acid);}
-.kv{display:grid;grid-template-columns:80px 1fr;gap:6px 12px;font-size:13px;}
-.kv dt{color:var(--muted);font-size:12px;}
-.kv dd{margin:0;}
-.formula{font-size:15px;font-weight:600;color:var(--gold);}
-.fx{font-size:12.5px;color:#6E7A70;margin-top:4px;}
-.cmp{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:7px;font-size:12.5px;}
-.cmp:hover{border-color:rgba(47,107,82,.35);}
-.bar{width:90px;height:5px;border-radius:3px;background:var(--panel-raised);overflow:hidden;}
+.tag.w{border-color:rgba(201,138,94,.45);color:var(--orange);}
+h3{font-size:11.5px;color:var(--muted);letter-spacing:2px;font-weight:600;margin:20px 0 8px;padding-left:8px;border-left:2px solid var(--acid);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{font-size:11.5px;padding:4px 10px;border-radius:6px;background:var(--panel-raised);border:1px solid var(--line);}
+.chip.a{border-color:rgba(47,107,82,.32);color:var(--acid);}
+.chip b{color:var(--muted);font-weight:400;font-size:10.5px;margin-left:3px;}
+.def{font-size:13.5px;line-height:1.95;color:#3A4A40;text-align:justify;}
+.typ{font-size:13px;line-height:1.95;color:#4A5A50;}
+.fm{font-size:14.5px;font-weight:600;color:var(--gold);}
+.fx{font-size:12.5px;color:var(--muted);margin-top:3px;}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px;}
+table.t td,table.t th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;}
+table.t th{color:var(--muted);font-weight:500;font-size:11px;}
+table.t tr:last-child td{border-bottom:0;}
+.sim{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 11px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:12.5px;cursor:pointer;}
+.sim:hover{border-color:rgba(47,107,82,.4);}
+.bar{width:80px;height:4px;border-radius:2px;background:var(--panel-raised);overflow:hidden;flex:none;}
 .bar i{display:block;height:100%;background:var(--violet);}
-.cls{border-left:2px solid var(--line);padding-left:11px;margin-bottom:10px;font-size:13px;line-height:1.9;}
-.cls b{color:var(--acid);font-size:12px;}
-.acts{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px;padding-top:16px;border-top:1px solid var(--line);}
-.acts a{font-size:12.5px;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel-raised);color:var(--paper);}
-.acts a.p{background:var(--acid);color:#F7FAF6;border-color:var(--acid);font-weight:700;}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px;padding-top:15px;border-top:1px solid var(--line);}
+.acts a{font-size:12.5px;padding:8px 15px;border-radius:8px;border:1px solid var(--line);background:var(--panel-raised);color:var(--paper);}
+.acts a.p{background:var(--acid);color:#F9FBF7;border-color:var(--acid);font-weight:600;}
 .empty{color:var(--muted);font-size:13px;}
-@media(max-width:820px){.layout{grid-template-columns:1fr;}.side{position:static;max-height:240px;}}
+.warn{font-size:12.5px;color:#7A4526;background:rgba(201,138,94,.1);border:1px solid rgba(201,138,94,.35);border-radius:9px;padding:11px 14px;margin-top:12px;line-height:1.85;}
+@media(max-width:860px){.layout{grid-template-columns:1fr;}.side{position:static;max-height:260px;}}
 </style>
 </head>
 <body>
@@ -56,17 +62,17 @@ h3{font-size:12px;color:var(--muted);letter-spacing:2px;font-weight:600;margin:2
   <div class="topbar">
     <div class="brand">本草辨证 · <b>证型档案</b></div>
     <div class="nav">
-      <a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html">训练</a>
-      <a href="/progress.html">报告</a>
-      <a href="/static/assistant.html">助手</a>
+      <a href="/">检索</a><a href="/classics.html">经典</a><a href="/static/recite.html">背诵</a>
+      <a href="/static/cases.html">医案</a><a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a><a href="/static/assistant.html">助手</a>
       <a href="/static/profile.html" style="color:var(--acid);font-weight:600">档案</a>
     </div>
   </div>
   <h1>证型档案</h1>
-  <div class="sub">按证型查全部信息：典型症状、舌脉、代表方、易混证型、相关经典条文。共 <span id="cnt">—</span> 个证型。</div>
+  <div class="sub">TCM-SD 全量 <b id="cnt">—</b> 个证型 · <span id="cas">—</span> 条真实病历。左侧按病历数排序，点开看详情。</div>
   <div class="layout">
     <aside class="side">
-      <input id="q" placeholder="搜索证型名或症状…" autocomplete="off">
+      <input id="q" placeholder="搜索证型名…" autocomplete="off">
       <div id="list"><div class="empty">加载中…</div></div>
     </aside>
     <main class="main" id="main"><div class="empty">← 从左侧选择一个证型</div></main>
@@ -77,146 +83,151 @@ h3{font-size:12px;color:var(--muted);letter-spacing:2px;font-weight:600;margin:2
 var $ = function(id){ return document.getElementById(id); };
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 function pct(x){ return x==null ? "—" : Math.round(x*100)+"%"; }
+function num(n){ return n==null ? "—" : Number(n).toLocaleString("en-US"); }
 
-var KB = [], CMP = [], CLS = [], CUR = null;
+var IDX = [], SIG = {}, SIM = {}, DET = {}, FM = {}, CUR = null;
 
 function getJSON(u){ return fetch(u).then(function(r){ return r.json(); }).catch(function(){ return null; }); }
 
 Promise.all([
-  getJSON("/api/syndromes"),
+  getJSON("/static/syndrome_index.json"),
+  getJSON("/static/syndrome_signature.json"),
+  getJSON("/static/compare_index.json"),
   getJSON("/api/quiz/compare/syndromes"),
-  getJSON("/api/classics")
+  getJSON("/api/quiz/formula/meta")
 ]).then(function(res){
-  KB = (res[0] && res[0].data) || [];
-  CMP = (res[1] && res[1].data) || [];
-  CLS = (res[2] && res[2].entries) || [];
+  var idx = res[0] || {};
+  IDX = (idx.syndromes || []);
+  SIG = res[1] || {};
+  SIM = res[2] || {};
+  (res[3] && res[3].data || []).forEach(function(x){ if (x && x.syndrome) DET[x.syndrome] = x; });
+  (res[4] && res[4].concepts || []).forEach(function(x){ if (x && x.syndrome) FM[x.syndrome] = x; });
 
-  $("cnt").textContent = KB.length;
+  $("cnt").textContent = IDX.length;
+  $("cas").textContent = num(idx.total_cases);
   renderList("");
-  if (KB.length) select(KB[0].name);
+  var _want = null;
+  try { _want = new URLSearchParams(location.search).get("s"); } catch(e){}
+  var _hit = _want ? IDX.filter(function(x){ return x.name === _want; })[0] : null;
+  if (_hit) select(_hit.name);
+  else if (IDX.length) select(IDX[0].name);
 }).catch(function(e){
   $("list").innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>';
 });
 
-/* ---------- 左侧列表 ---------- */
 function renderList(q){
   q = (q||"").trim();
-  var rows = KB;
-  if (q) rows = KB.filter(function(x){
-    return x.name.indexOf(q) >= 0 || (x.symptoms||[]).some(function(s){ return s.indexOf(q) >= 0; });
-  });
+  var rows = IDX;
+  if (q) rows = IDX.filter(function(x){ return x.name.indexOf(q) >= 0; });
   if (!rows.length){ $("list").innerHTML = '<div class="empty">没有匹配的证型</div>'; return; }
-  var grp = {};
-  rows.forEach(function(x){ var c = x.category || "其他"; (grp[c] = grp[c] || []).push(x); });
-  var h = "";
-  Object.keys(grp).forEach(function(c){
-    h += '<div class="grp">' + esc(c) + '</div>';
-    grp[c].forEach(function(x){
-      h += '<button class="ci' + (CUR === x.name ? ' on' : '') + '" data-n="' + esc(x.name) + '">' + esc(x.name) + '</button>';
-    });
+
+  var g1 = [], g2 = [], g3 = [];
+  rows.forEach(function(x){
+    if (x.n_cases > 100) g1.push(x);
+    else if (x.n_cases > 20) g2.push(x);
+    else g3.push(x);
   });
+  var h = "";
+  function block(title, arr){
+    if (!arr.length) return "";
+    var s = '<div class="grp">' + title + '（' + arr.length + '）</div>';
+    arr.forEach(function(x){
+      s += '<button class="ci' + (CUR === x.name ? " on" : "") + '" data-n="' + esc(x.name) + '">'
+         + '<span>' + esc(x.name) + '</span><span class="n">' + x.n_cases + '</span></button>';
+    });
+    return s;
+  }
+  h += block("病历 > 100 条", g1);
+  h += block("21 ~ 100 条", g2);
+  h += block("6 ~ 20 条", g3);
   $("list").innerHTML = h;
 }
 
-/* ---------- 相似度（Jaccard） ---------- */
-function sim(a, b){
-  var A = a.symptoms || [], B = b.symptoms || [];
-  if (!A.length || !B.length) return 0;
-  var setB = {}; B.forEach(function(x){ setB[x] = 1; });
-  var inter = A.filter(function(x){ return setB[x]; }).length;
-  var uni = new Set(A.concat(B)).size;
-  return uni ? inter / uni : 0;
-}
-
-/* ---------- 匹配 compare 库的典型表现（去「证」字） ---------- */
-function cmpOf(name){
-  var n = name.replace(/证$/, "");
-  return CMP.filter(function(x){ return (x.syndrome||"").replace(/证$/, "") === n; })[0] || null;
-}
-
-/* ---------- 详情 ---------- */
 function select(name){
-  var x = KB.filter(function(y){ return y.name === name; })[0];
+  var x = IDX.filter(function(y){ return y.name === name; })[0];
   if (!x) return;
   CUR = name;
   renderList($("q").value);
-  var d = x.detail || {};
-  var f = d.formula || {};
-  var cmp = cmpOf(name);
 
-  var h = '<h2 class="ptitle">' + esc(x.name) + '</h2>';
-  h += '<div class="pmeta"><span class="tag hi">' + esc(x.category || "未分类") + '</span>'
-     + '<span class="tag">' + (x.symptoms||[]).length + ' 个典型症状</span>'
-     + (cmp ? '<span class="tag">鉴别库有收录</span>' : '') + '</div>';
+  var d = DET[name] || null;      // 定义/典型表现/高频（72 个有）
+  var f = FM[name] || null;       // 方剂/治法（68 个有）
+  var sg = (SIG[name] || {}).signature || [];   // 病历统计高频症状（148 个都有）
+  var sim = (SIM[name] || []).filter(function(s){ return s.sim > 0; }).slice(0, 4);
 
-  h += '<h3>典型症状</h3><div class="chips">'
-     + (x.symptoms||[]).map(function(s){ return '<span class="chip a">' + esc(s) + '</span>'; }).join("")
+  var h = '<h2 class="ptitle">' + esc(name) + '</h2>';
+  h += '<div class="pmeta">'
+     + '<span class="tag hi">' + num(x.n_cases) + ' 条病历</span>'
+     + (d ? '<span class="tag">完整档案</span>' : '<span class="tag w">仅统计档案</span>')
+     + (f ? '<span class="tag">有方剂治法</span>' : '')
+     + '<span class="tag">' + Math.round(x.n_cases / 54152 * 1000) / 10 + '% 占比</span>'
      + '</div>';
 
-  if (d.tongue || d.pulse){
-    h += '<h3>舌象与脉象</h3><dl class="kv">'
-       + (d.tongue ? '<dt>舌象</dt><dd>' + esc(d.tongue) + '</dd>' : '')
-       + (d.pulse ? '<dt>脉象</dt><dd>' + esc(d.pulse) + '</dd>' : '')
-       + '</dl>';
+  if (d && d.definition){
+    h += '<h3>证候定义</h3><div class="def">' + esc(d.definition) + '</div>';
+  }
+  if (d && d.typical){
+    h += '<h3>典型表现</h3><div class="typ">' + esc(d.typical) + '</div>';
   }
 
-  if (f.name){
-    h += '<h3>代表方</h3>'
-       + '<div class="formula">' + esc(f.name) + '</div>'
-       + (f.effect ? '<div class="fx">功效：' + esc(f.effect) + '</div>' : '')
-       + (f.composition ? '<div class="fx">组成：' + esc(f.composition) + '</div>' : '');
+  if (sg.length){
+    h += '<h3>病历中的高频表现</h3>';
+    h += '<div style="font-size:11.5px;color:var(--muted);margin-bottom:6px">'
+       + '基于该证型的真实病历统计（每证型最多 400 条），括号内为出现率。</div>';
+    h += '<div class="chips">' + sg.slice(0, 12).map(function(s){
+      return '<span class="chip a">' + esc(s.w) + '<b>' + Math.round((s.rate||0)*100) + '%</b></span>';
+    }).join("") + '</div>';
   }
 
-  if (cmp && (cmp.typical || (cmp.signature||[]).length)){
-    h += '<h3>真实病历中的高频表现</h3>';
-    if (cmp.n_cases) h += '<div class="fx" style="margin-bottom:6px">基于 ' + cmp.n_cases + ' 条病历统计</div>';
-    h += '<div class="chips">'
-       + (cmp.signature||[]).slice(0,10).map(function(s){
-           return '<span class="chip">' + esc(s.w) + ' <span style="color:#6e7a6c">' + Math.round((s.rate||0)*100) + '%</span></span>';
-         }).join("")
-       + '</div>';
+  if (f && (f.formulas||[]).length){
+    h += '<h3>代表方剂</h3><div class="chips">' + (f.formulas||[]).slice(0,12).map(function(v){
+      return '<span class="chip">' + esc(v) + '</span>';
+    }).join("") + '</div>';
+    if ((f.formulas||[]).length > 12) h += '<div class="fx">共 ' + f.formulas.length + ' 首</div>';
+  }
+  if (f && (f.treatments||[]).length){
+    h += '<h3>治法</h3><div class="chips">' + (f.treatments||[]).slice(0,12).map(function(v){
+      return '<span class="chip">' + esc(v) + '</span>';
+    }).join("") + '</div>';
+    if ((f.treatments||[]).length > 12) h += '<div class="fx">共 ' + f.treatments.length + ' 条</div>';
   }
 
-  // 易混证型：同分类优先 + Jaccard 相似度
-  var others = KB.filter(function(y){ return y.name !== name; })
-    .map(function(y){ return { name: y.name, cat: y.category, s: sim(x, y) }; })
-    .sort(function(a, b){ return b.s - a.s; })
-    .slice(0, 5);
-  if (others.length){
-    h += '<h3>症状最接近的证型</h3>';
-    others.forEach(function(o){
-      h += '<div class="cmp"><span>' + esc(o.name) + ' <span style="color:#6e7a6c;font-size:11px">' + esc(o.cat||"") + '</span></span>'
-         + '<span style="display:flex;align-items:center;gap:9px"><span class="bar"><i style="width:' + Math.round(o.s*100) + '%"></i></span>'
-         + '<span style="color:#7E9BB8;font-size:11.5px;width:38px;text-align:right">' + Math.round(o.s*100) + '%</span></span></div>';
+  if (sim.length){
+    h += '<h3>易混证型（概念相似度）</h3>';
+    sim.forEach(function(s){
+      h += '<div class="sim" data-go="' + esc(s.s) + '">'
+         + '<span>' + esc(s.s) + (s.syn ? ' <span style="color:var(--orange);font-size:10.5px">同义词</span>' : '') + '</span>'
+         + '<span style="display:flex;align-items:center;gap:8px">'
+         + '<span class="bar"><i style="width:' + Math.round((s.sim||0)*100) + '%"></i></span>'
+         + '<span style="color:var(--violet);font-size:11.5px;width:36px;text-align:right">' + Math.round((s.sim||0)*100) + '%</span></span></div>';
     });
-    h += '<div class="fx" style="margin-top:5px">相似度按典型症状的重合比例计算，仅供对照，不代表临床易混程度。</div>';
   }
 
-  // 相关经典条文
-  var rel = CLS.filter(function(e){ return (e.syndromes||[]).indexOf(name) >= 0; });
-  if (rel.length){
-    h += '<h3>相关经典条文</h3>';
-    rel.slice(0,3).forEach(function(e){
-      h += '<div class="cls"><b>《伤寒论》第' + e.no + '条</b><div>' + esc(e.text) + '</div></div>';
-    });
+  if (!d && !f){
+    h += '<div class="warn">该证型在 TCM-SD 中有 <b>' + num(x.n_cases) + '</b> 条真实病历，'
+       + '但当前配套知识库（72 个证型）未收录其详细档案。'
+       + '上方的高频表现来自病历统计，可作参考；也可去「医案研读」直接看原始病历。</div>';
   }
 
   h += '<div class="acts">'
-     + '<a class="p" href="/train.html?m=quiz">练这个证型</a>'
-     + '<a href="/train.html?m=compare">看与易混证型的鉴别</a>'
-     + '<a href="/train.html?m=formula">查方剂治法</a>'
-     + '<a href="/static/assistant.html">去问助手</a>'
+     + '<a class="p" href="/train.html?m=quiz">练相关题</a>'
+     + '<a href="/train.html?m=compare">看鉴别</a>'
+     + '<a href="/static/cases.html">读真实医案</a>'
+     + '<a href="/static/assistant.html">问助手</a>'
      + '</div>';
 
   $("main").innerHTML = h;
 }
 
-/* ---------- 事件 ---------- */
 $("list").addEventListener("click", function(e){
   var b = e.target.closest(".ci");
   if (b) select(b.dataset.n);
 });
+$("main").addEventListener("click", function(e){
+  var s = e.target.closest("[data-go]");
+  if (s) select(s.dataset.go);
+});
 $("q").addEventListener("input", function(){ renderList(this.value); });
 </script>
+<script src="/static/user.js"></script>
 </body>
 </html>

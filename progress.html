@@ -103,6 +103,40 @@ function render(d){
   else {tip="继续保持，多覆盖不同证型可以让薄弱点定位更准。";}
   h+='<div class="panel"><h3>下一步建议</h3><div class="note">'+esc(tip)+'</div><div style="margin-top:12px"><a href="/quiz.html" style="display:inline-block;background:var(--acid);color:#F7FAF6;padding:9px 18px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">去辨证训练 →</a> <a href="/compare.html" style="display:inline-block;border:1px solid var(--line);padding:9px 18px;border-radius:8px;font-size:13px;text-decoration:none;margin-left:8px">看相似证型鉴别</a></div></div>';
 
+  // ---- 今日推荐（基于薄弱点生成 3 个具体任务）----
+  (function(){
+    var weak = (d.weakest||[]).slice(0,2);
+    var tasks = [];
+    if (!d.total){
+      tasks = [
+        {t:"读 1 条经典原文", s:"从《伤寒论》太阳病篇开始", href:"/classics.html", tag:"学"},
+        {t:"做 5 道辨证题", s:"系统才能定位你的薄弱点", href:"/train.html?m=quiz", tag:"练"},
+        {t:"看一组相似证型", s:"先建立鉴别意识", href:"/train.html?m=compare", tag:"测"}
+      ];
+    } else if (weak.length){
+      weak.forEach(function(w){
+        tasks.push({t:"补练「"+w.syndrome+"」", s:"当前 "+pct(w.accuracy)+"，共 "+w.n+" 题", href:"/train.html?m=quiz", tag:"练"});
+      });
+      tasks.push({t:"看这些证型的鉴别要点", s:"系统已记录你的易混对", href:"/train.html?m=compare", tag:"测"});
+      tasks.push({t:"背 1 条对应的经典条文", s:"原文是最牢的记忆锚点", href:"/static/recite.html", tag:"学"});
+    } else {
+      tasks = [
+        {t:"扩大覆盖面", s:"辨证 / 方剂 / 舌脉各做 3 题", href:"/train.html?m=quiz", tag:"练"},
+        {t:"查一个证型的完整档案", s:"症状、舌脉、方剂一次看全", href:"/static/profile.html", tag:"学"},
+        {t:"问助手：推荐练什么", s:"它会按记录给路径", href:"/static/assistant.html", tag:"评"}
+      ];
+    }
+    var hh = '<div class="panel"><h3>今日推荐</h3><div class="note" style="margin-bottom:10px">按你当前的记录生成，做完可以回来刷新。</div>';
+    tasks.slice(0,3).forEach(function(x, i){
+      hh += '<a href="'+x.href+'" style="display:flex;align-items:center;gap:12px;padding:11px 13px;margin-bottom:7px;border:1px solid var(--line);border-radius:9px;text-decoration:none;color:var(--paper)">'
+         + '<span style="flex:none;width:22px;height:22px;border-radius:50%;background:var(--panel-raised);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--acid)">'+(i+1)+'</span>'
+         + '<span style="flex:1"><span style="font-size:13px">'+esc(x.t)+'</span><span style="display:block;font-size:11.5px;color:#9ba49a;margin-top:1px">'+esc(x.s)+'</span></span>'
+         + '<span class="tag" style="flex:none;font-size:10.5px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:#9ba49a">'+x.tag+'</span></a>';
+    });
+    hh += '</div>';
+    h = hh + h;
+  })();
+
   if((d.confusions||[]).length){
     h+='<div class="panel"><h3>易混淆证型对（错题中误选的去向）</h3><div class="note" style="margin-bottom:8px">仅统计「辨证题」，其他题型的误选不代表证型混淆。</div><table><tr><th>正确证型 → 误选</th><th style="width:90px">次数</th></tr>';
     d.confusions.forEach(function(x){var p=x.pair.split(" → ");h+='<tr><td><span class="ok">'+esc(p[0])+'</span> → <span class="warn">'+esc(p[1]||"")+'</span></td><td>'+x.count+' 次</td></tr>';});
@@ -140,5 +174,6 @@ function load(){
 }
 load();
 </script>
+<script src="/static/user.js"></script>
 </body>
 </html>

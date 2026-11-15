@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>错题本 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--orange:#C98A5E;--violet:#7E9BB8;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.8;}
+a{color:var(--muted);text-decoration:none;}
+a:hover{color:var(--acid);}
+.wrap{max-width:1000px;margin:0 auto;padding:22px 22px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}
+.brand b{color:var(--acid);}
+.nav{display:flex;gap:14px;font-size:13px;}
+.nav a{color:var(--muted);}
+h1{font-size:24px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:16px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px;margin-bottom:16px;}
+.st{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:15px 18px;}
+.st .n{font-size:26px;font-weight:700;color:var(--acid);line-height:1.2;}
+.st .l{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.warn{border:1px solid rgba(201,138,94,.5);background:rgba(201,138,94,.12);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:#7A4526;line-height:1.8;}
+.list{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;}
+.row{padding:15px 20px;border-bottom:1px solid var(--line);}
+.row:last-child{border-bottom:0;}
+.rhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+.rname{font-size:15px;font-weight:600;}
+.rcount{font-size:11.5px;color:var(--orange);background:rgba(201,138,94,.12);border:1px solid rgba(201,138,94,.3);border-radius:20px;padding:1px 9px;margin-left:8px;}
+.rkinds{font-size:11px;color:var(--muted);}
+.rbody{margin-top:7px;font-size:12.5px;color:var(--muted);}
+.rc{margin-top:4px;}
+.chip{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:20px;background:rgba(201,138,94,.12);color:var(--orange);margin:3px 5px 0 0;}
+.chip.h{background:rgba(47,107,82,.1);color:var(--acid);}
+.btn{background:transparent;border:1px solid var(--line);color:var(--paper);border-radius:7px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;}
+.btn:hover{border-color:var(--acid);color:var(--acid);}
+.btn.p{background:var(--acid);color:#F9FBF7;border-color:var(--acid);font-weight:600;}
+.qbox{display:none;margin-top:12px;padding:15px 18px;border-radius:10px;background:var(--panel-raised);border:1px solid var(--line);}
+.qstem{font-size:14px;line-height:1.9;margin-bottom:10px;}
+.o{display:block;width:100%;text-align:left;padding:9px 13px;margin-top:6px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--paper);font-size:13px;cursor:pointer;font-family:inherit;}
+.o:hover{border-color:rgba(47,107,82,.45);}
+.o.on{border-color:var(--acid);background:rgba(47,107,82,.08);}
+.o.ok{border-color:var(--acid);background:rgba(47,107,82,.14);}
+.o.no{border-color:var(--orange);background:rgba(201,138,94,.14);}
+.qres{margin-top:10px;font-size:12.5px;display:none;}
+.empty{color:var(--muted);font-size:13px;padding:30px;text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>错题本</b></div>
+    <div class="nav">
+      <a href="/">检索</a><a href="/classics.html">经典</a><a href="/static/recite.html">背诵</a>
+      <a href="/static/cases.html">医案</a><a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a><a href="/static/assistant.html">助手</a>
+      <a href="/static/profile.html">档案</a>
+    </div>
+  </div>
+  <h1>错题本</h1>
+  <div class="sub">把你答错过的证型集中起来，逐个补练。点「重练」会按该证型重新出一题。</div>
+  <div class="stats" id="stats"><div class="st"><div class="n">—</div><div class="l">加载中</div></div></div>
+  
+  <div class="list" id="list"><div class="empty">加载中…</div></div>
+</div>
+
+<script>
+var $ = function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+var KN = {quiz:"辨题型", formula:"方剂题", tp:"舌脉题", legacy:"历史记录"};
+
+fetch("/api/quiz/wrong").then(function(r){ return r.json(); }).then(function(j){
+  if (j.code !== 200) throw new Error(j.message || "读取失败");
+  var d = j.data || {};
+  var rows = d.rows || [];
+
+  $("stats").innerHTML =
+    '<div class="st"><div class="n">' + (d.total_wrong||0) + '</div><div class="l">错题总数</div></div>'
+  + '<div class="st"><div class="n">' + (d.distinct_syndromes||0) + '</div><div class="l">涉及证型</div></div>'
+  + '<div class="st"><div class="n">' + (rows.length ? rows[0].count : 0) + '</div><div class="l">最高单证型错次</div></div>';
+
+
+  if (!rows.length){
+    $("list").innerHTML = '<div class="empty">还没有错题。去「训练」做几道题吧。</div>';
+    return;
+  }
+
+  var h = "";
+  rows.forEach(function(x, i){
+    var kinds = (x.kinds||[]).map(function(kv){ return KN[kv[0]] + "×" + kv[1]; }).join("、");
+    var chs = (x.choices||[]).map(function(cv){ return '<span class="chip">' + esc(cv[0]) + ' ×' + cv[1] + '</span>'; }).join("");
+    h += '<div class="row">'
+      + '<div class="rhead"><div><span class="rname">' + esc(x.syndrome) + '</span>'
+      + '<span class="rcount">错 ' + x.count + ' 次</span></div>'
+      + '<button class="btn p" data-retry="' + esc(x.syndrome) + '">重练</button></div>'
+      + '<div class="rkinds">' + esc(kinds) + '</div>'
+      + '<div class="rbody"><div>你当时误选：</div><div class="rc">' + (chs || '<span style="color:#9AA69E">（无记录）</span>') + '</div></div>'
+      + '<div class="qbox" id="qb' + i + '"></div>'
+      + '</div>';
+  });
+  $("list").innerHTML = h;
+}).catch(function(e){
+  $("list").innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>';
+});
+
+/* 重练 */
+$("list").addEventListener("click", function(e){
+  var b = e.target.closest("[data-retry]");
+  if (!b) return;
+  var syn = b.dataset.retry;
+  var box = b.closest(".row").querySelector(".qbox");
+  b.disabled = true; b.textContent = "出题中…";
+  fetch("/api/quiz/generate", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ syndrome: syn })
+  }).then(function(r){ return r.json(); }).then(function(j){
+    if (j.code !== 200) throw new Error(j.message || "生成失败");
+    var q = j.data;
+    var h = '<div class="qstem">' + esc(q.stem) + '</div>';
+    (q.options||[]).forEach(function(o, i){
+      h += '<button class="o" data-i="' + i + '">' + String.fromCharCode(65+i) + '. ' + esc(o) + '</button>';
+    });
+    h += '<div class="qres"></div>';
+    box.innerHTML = h;
+    box.style.display = "block";
+    box.dataset.answer = q.answer;
+    box.dataset.explain = q.explain || "";
+    b.disabled = false; b.textContent = "重练";
+  }).catch(function(err){
+    box.innerHTML = '<div style="color:#C98A5E">' + esc(err.message) + '</div>';
+    box.style.display = "block";
+    b.disabled = false; b.textContent = "重练";
+  });
+});
+
+/* 选项点击 */
+$("list").addEventListener("click", function(e){
+  var o = e.target.closest(".o");
+  if (!o) return;
+  var box = o.closest(".qbox");
+  var ans = box.dataset.answer;
+  var mine = o.textContent.replace(/^[A-D]\.\s*/, "").trim();
+  box.querySelectorAll(".o").forEach(function(x){
+    x.classList.remove("on");
+    if (x.textContent.replace(/^[A-D]\.\s*/, "").trim() === ans) x.classList.add("ok");
+  });
+  if (mine !== ans) o.classList.add("no");
+  var res = box.querySelector(".qres");
+  res.style.display = "block";
+  res.innerHTML = '<b style="color:' + (mine === ans ? "#2F6B52" : "#C98A5E") + '">'
+    + (mine === ans ? "✓ 答对了" : "✗ 答错了") + '</b>　标准答案：' + esc(ans)
+    + (box.dataset.explain ? '<div style="margin-top:6px;color:#6E7A70">' + esc(box.dataset.explain) + '</div>' : "");
+});
+</script>
+
+<script>
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '20px';
+}
+</script>
+<script src="/static/user.js"></script>
+</body>
+</html>

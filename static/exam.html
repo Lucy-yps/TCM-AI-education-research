@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考试 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--orange:#C98A5E;--violet:#7E9BB8;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.8;}
+a{color:var(--muted);text-decoration:none;}a:hover{color:var(--acid);}
+.wrap{max-width:880px;margin:0 auto;padding:22px 22px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+.nav{display:flex;gap:14px;font-size:13px;}
+h1{font-size:23px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:20px;}
+.panel{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:22px 26px;margin-bottom:16px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+button{background:var(--acid);color:#F9FBF7;border:0;border-radius:9px;padding:11px 22px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+button:disabled{opacity:.45;cursor:default;}
+.choice{display:flex;gap:9px;}
+.ch{padding:9px 18px;border:1px solid var(--line);border-radius:9px;background:var(--panel-raised);cursor:pointer;font-size:13px;}
+.ch.on{border-color:var(--acid);background:rgba(47,107,82,.1);color:var(--acid);font-weight:600;}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.timer{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--acid);}
+.timer.warn{color:#B4552F;}
+.prog{font-size:12.5px;color:var(--muted);}
+.q{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:18px 22px;margin-bottom:12px;}
+.qh{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--muted);margin-bottom:8px;}
+.qs{font-size:13.5px;line-height:1.95;margin-bottom:12px;text-align:justify;}
+.o{display:block;width:100%;text-align:left;padding:10px 14px;margin-top:7px;border:1px solid var(--line);border-radius:9px;background:var(--panel-raised);color:var(--paper);font-size:13px;cursor:pointer;font-family:inherit;}
+.o:hover{border-color:rgba(47,107,82,.4);}
+.o.on{border-color:var(--acid);background:rgba(47,107,82,.1);}
+.o.ok{border-color:var(--acid);background:rgba(47,107,82,.16);font-weight:600;}
+.o.no{border-color:var(--orange);background:rgba(201,138,94,.14);}
+.res{margin-top:10px;padding:12px 15px;border-radius:9px;background:rgba(47,107,82,.07);border:1px solid rgba(47,107,82,.25);font-size:12.5px;line-height:1.85;}
+.score{text-align:center;padding:26px 0;}
+.score .n{font-size:54px;font-weight:800;color:var(--acid);line-height:1;}
+.score .t{font-size:13px;color:var(--muted);margin-top:8px;}
+.hide{display:none;}
+.empty{color:var(--muted);font-size:13px;text-align:center;padding:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>考试</b></div>
+    <div class="nav">
+      <a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html">训练</a>
+      <a href="/static/exam.html" style="color:var(--acid);font-weight:600">考试</a>
+      <a href="/progress.html">报告</a><a href="/static/account.html">我的</a>
+    </div>
+  </div>
+
+  <!-- 配置 -->
+  <div id="setup">
+    <h1>阶段测试</h1>
+    <div class="sub">从题库随机组卷，限时作答。交卷后给出得分与逐题解析。</div>
+    <div class="panel">
+      <div style="font-size:13px;margin-bottom:9px">题量</div>
+      <div class="choice" id="nChoice">
+        <div class="ch" data-n="5">5 题 · 5 分钟</div>
+        <div class="ch on" data-n="10">10 题 · 10 分钟</div>
+        <div class="ch" data-n="20">20 题 · 20 分钟</div>
+        <div class="ch" data-n="30">30 题 · 30 分钟</div>
+      </div>
+      <div class="row" style="margin-top:20px"><button id="btnStart">开始考试</button></div>
+      <div class="sub" style="margin:14px 0 0" id="bankInfo"></div>
+    </div>
+  </div>
+
+  <!-- 考试 -->
+  <div id="running" class="hide">
+    <div class="bar">
+      <div><span class="timer" id="timer">--:--</span> <span class="prog" id="prog"></span></div>
+      <div class="row"><button class="ghost" id="btnSubmit">交卷</button></div>
+    </div>
+    <div id="qlist"></div>
+  </div>
+
+  <!-- 结果 -->
+  <div id="done" class="hide">
+    <div class="panel">
+      <div class="score">
+        <div class="n" id="sScore">--</div>
+        <div class="t" id="sInfo"></div>
+      </div>
+      <div class="row" style="justify-content:center">
+        <button id="btnAgain">再考一次</button>
+        <button class="ghost" onclick="location.href='/static/account.html'">看成绩记录</button>
+      </div>
+    </div>
+    <div id="detail"></div>
+  </div>
+</div>
+
+<script src="/static/user.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+var N = 10, EID = null, QS = [], ANS = {}, LEFT = 0, TMR = null, T0 = 0;
+
+fetch("/api/exam/bank").then(function(r){ return r.json(); }).then(function(j){
+  var t = (j.data||{}).total || 0;
+  $("bankInfo").textContent = "题库共 " + t + " 题" + (t ? "" : "（题库为空）");
+}).catch(function(){});
+
+$("nChoice").addEventListener("click", function(e){
+  var c = e.target.closest(".ch");
+  if (!c) return;
+  N = parseInt(c.dataset.n, 10);
+  $("nChoice").querySelectorAll(".ch").forEach(function(x){ x.classList.toggle("on", x === c); });
+});
+
+$("btnStart").onclick = function(){
+  this.disabled = true;
+  fetch("/api/exam/start", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ n: N })
+  }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+  .then(function(o){
+    if (o.s !== 200) { alert(o.j.message || "组卷失败"); $("btnStart").disabled = false; return; }
+    EID = o.j.data.exam_id;
+    QS = o.j.data.questions;
+    ANS = {};
+    LEFT = o.j.data.seconds;
+    T0 = Date.now();
+    renderExam();
+    $("setup").classList.add("hide");
+    $("running").classList.remove("hide");
+    startTimer();
+  }).catch(function(e){ alert("网络错误：" + e.message); $("btnStart").disabled = false; });
+};
+
+function renderExam(){
+  $("qlist").innerHTML = QS.map(function(q){
+    return '<div class="q" data-q="' + q.idx + '">'
+      + '<div class="qh"><span>第 ' + q.idx + ' 题</span><span>' + q.options.length + ' 选 1</span></div>'
+      + '<div class="qs">' + esc(q.stem) + '</div>'
+      + q.options.map(function(o){
+          return '<button class="o" data-q="' + q.idx + '" data-o="' + esc(o) + '">' + esc(o) + '</button>';
+        }).join("")
+      + '</div>';
+  }).join("");
+  $("prog").textContent = "共 " + QS.length + " 题，已答 0 题";
+}
+
+$("qlist").addEventListener("click", function(e){
+  var b = e.target.closest(".o");
+  if (!b) return;
+  var qi = b.dataset.q, val = b.dataset.o;
+  ANS[qi] = val;
+  $("qlist").querySelectorAll('.o[data-q="' + qi + '"]').forEach(function(x){ x.classList.toggle("on", x === b); });
+  var done = Object.keys(ANS).length;
+  $("prog").textContent = "共 " + QS.length + " 题，已答 " + done + " 题";
+});
+
+function startTimer(){
+  clearInterval(TMR);
+  function tick(){
+    var left = LEFT - Math.floor((Date.now() - T0) / 1000);
+    if (left <= 0) { clearInterval(TMR); $("timer").textContent = "00:00"; submit(true); return; }
+    var m = Math.floor(left / 60), s = left % 60;
+    $("timer").textContent = String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+    $("timer").classList.toggle("warn", left <= 60);
+  }
+  tick();
+  TMR = setInterval(tick, 500);
+}
+
+$("btnSubmit").onclick = function(){
+  var done = Object.keys(ANS).length;
+  if (done < QS.length && !confirm("还有 " + (QS.length - done) + " 题未作答，确定交卷？")) return;
+  submit(false);
+};
+
+function submit(auto){
+  clearInterval(TMR);
+  $("btnSubmit").disabled = true;
+  var elapsed = Math.floor((Date.now() - T0) / 1000);
+  fetch("/api/exam/submit", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ exam_id: EID, answers: ANS, elapsed: elapsed })
+  }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+  .then(function(o){
+    if (o.s !== 200) { alert(o.j.message || "交卷失败"); $("btnSubmit").disabled = false; return; }
+    showResult(o.j.data, auto);
+  }).catch(function(e){ alert("网络错误：" + e.message); $("btnSubmit").disabled = false; });
+}
+
+function showResult(d, auto){
+  $("running").classList.add("hide");
+  $("done").classList.remove("hide");
+  $("sScore").textContent = d.score;
+  var cls = d.score >= 80 ? "" : (d.score >= 60 ? "" : "");
+  $("sInfo").textContent = "答对 " + d.right + " / " + d.n + " 题 · 用时 "
+    + Math.floor((d.elapsed||0)/60) + " 分 " + ((d.elapsed||0)%60) + " 秒"
+    + (auto ? " · 时间到自动交卷" : "");
+
+  $("detail").innerHTML = d.details.map(function(x){
+    var h = '<div class="q">'
+      + '<div class="qh"><span>第 ' + x.idx + ' 题</span><span style="color:' + (x.correct ? "#2F6B52" : "#B4552F") + '">'
+      + (x.correct ? "✓ 正确" : "✗ 错误") + '</span></div>'
+      + '<div class="qs">' + esc(x.stem) + '</div>';
+    x.options.forEach(function(o){
+      var c = "o";
+      if (o === x.answer) c += " ok";
+      else if (o === x.mine) c += " no";
+      h += '<div class="' + c + '" style="cursor:default">' + esc(o)
+        + (o === x.answer ? '　<span style="font-size:11px">← 正确答案</span>' : '')
+        + (o === x.mine && !x.correct ? '　<span style="font-size:11px;color:#B4552F">← 你的选择</span>' : '')
+        + '</div>';
+    });
+    if (x.explain) h += '<div class="res">' + esc(x.explain) + '</div>';
+    if ((x.key_points||[]).length) {
+      h += '<div class="res" style="background:transparent;border:0;padding:8px 0 0">'
+        + x.key_points.map(function(k){ return '· ' + esc(k); }).join("<br>") + '</div>';
+    }
+    h += '</div>';
+    return h;
+  }).join("");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+$("btnAgain").onclick = function(){
+  $("done").classList.add("hide");
+  $("setup").classList.remove("hide");
+  $("btnStart").disabled = false;
+};
+</script>
+
+<script>
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '16px';
+}
+</script>
+</body>
+</html>

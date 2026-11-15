@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>条文背诵 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--orange:#C98A5E;--violet:#7E9BB8;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.85;}
+a{color:var(--muted);text-decoration:none;}
+a:hover{color:var(--acid);}
+.wrap{max-width:1000px;margin:0 auto;padding:22px 22px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}
+.brand b{color:var(--acid);}
+.nav{display:flex;gap:15px;font-size:13px;}
+.nav a{color:var(--muted);}
+.nav a.on{color:var(--acid);font-weight:600;}
+h1{font-size:24px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:20px;}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:20px 24px;margin-bottom:16px;}
+.picker{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+select{background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;min-width:260px;}
+button{background:var(--acid);color:#F9FBF7;border:0;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+button:disabled{opacity:.45;cursor:default;}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--line);color:var(--muted);}
+.verse{font-size:21px;line-height:2.5;letter-spacing:.5px;padding:20px 22px;background:var(--panel-raised);border-radius:10px;border-left:3px solid var(--acid);margin-bottom:14px;}
+.blank{display:inline-block;min-width:66px;border-bottom:2px solid var(--acid);text-align:center;font-size:16px;color:var(--acid);padding:0 6px 1px;margin:0 2px;outline:none;font-family:inherit;background:transparent;}
+.blank:focus{background:rgba(47,107,82,.08);}
+.blank.ok{border-bottom-color:#2F6B52;color:#2F6B52;background:rgba(47,107,82,.1);}
+.blank.no{border-bottom-color:var(--orange);color:var(--orange);background:rgba(201,138,94,.1);}
+.acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px;}
+.score{font-size:13px;color:var(--muted);margin-left:auto;}
+.score b{font-size:18px;color:var(--acid);}
+.ans{display:none;margin-top:16px;padding:15px 18px;border-radius:10px;background:rgba(47,107,82,.07);border:1px solid rgba(47,107,82,.25);}
+.ans b{color:var(--acid);}
+.ans .full{font-size:16px;line-height:2;margin-top:6px;}
+.note{font-size:11.5px;color:var(--muted);margin-top:10px;}
+.hide{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>条文背诵</b></div>
+    <div class="nav">
+      <a href="/">检索</a>
+      <a href="/classics.html">经典</a>
+      <a href="/static/recite.html" class="on">背诵</a>
+      <a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a>
+      <a href="/static/assistant.html">助手</a>
+      <a href="/static/profile.html">档案</a>
+    </div>
+  </div>
+  <h1>条文背诵</h1>
+  <div class="sub">选一条原文，把空缺处补上。填空处是这条条文里的<b>关键症状或脉象</b>——背得住这些，辨证才有落点。</div>
+
+  <div class="panel">
+    <div class="picker">
+      <select id="sel"><option>加载中…</option></select>
+      <button id="newBtn">换一条</button>
+      <button class="ghost" id="showBtn">直接看原文</button>
+    </div>
+    <div class="meta" id="meta"></div>
+    <div class="verse" id="verse"><span style="color:var(--muted);font-size:14px">加载中…</span></div>
+    <div class="acts">
+      <button id="checkBtn" disabled>核对</button>
+      <button class="ghost" id="clearBtn">清空</button>
+      <span class="score" id="score"></span>
+    </div>
+    <div class="ans" id="ans"></div>
+    <div class="note">填空内容取自条文原文；核对时忽略标点与空格差异。</div>
+  </div>
+</div>
+
+<script>
+var $ = function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+var DATA = [], SYM = [], CUR = null, BLANKS = [];
+
+function getJSON(u){ return fetch(u).then(function(r){ return r.json(); }).catch(function(){ return null; }); }
+
+Promise.all([ getJSON("/api/classics"), getJSON("/api/syndromes") ]).then(function(res){
+  var c = res[0] || {};
+  DATA = (c.entries || []).filter(function(e){ return (e.text||"").length >= 8; });
+  var syn = (res[1] && res[1].data) || [];
+  var set = {};
+  syn.forEach(function(x){ (x.symptoms||[]).forEach(function(s){ if (s && s.length >= 2) set[s] = 1; }); });
+  SYM = Object.keys(set).sort(function(a,b){ return b.length - a.length; });   // 长词优先
+
+  var sel = $("sel");
+  sel.innerHTML = DATA.map(function(e, i){
+    var b = (c.books||[]).filter(function(x){ return x.id === e.book; })[0];
+    return '<option value="' + i + '">' + esc((b?b.name:"") + " 第" + e.no + "条 · " + (e.text||"").slice(0,20)) + '…</option>';
+  }).join("");
+  pick(0);
+  sel.addEventListener("change", function(){ pick(parseInt(this.value,10)); });
+});
+
+/* 自动确定挖空目标 */
+function targets(e){
+  var kw = (e.keywords || []).filter(function(k){ return k && (e.text||"").indexOf(k) >= 0; });
+  if (kw.length) return kw;
+  // 没有 keywords：用症状词表里被条文包含的词（长词优先，最多 4 个）
+  var out = [];
+  for (var i = 0; i < SYM.length && out.length < 4; i++){
+    var s = SYM[i];
+    if ((e.text||"").indexOf(s) >= 0 && !out.some(function(x){ return x.indexOf(s) >= 0 || s.indexOf(x) >= 0; })) out.push(s);
+  }
+  return out;
+}
+
+function pick(idx){
+  if (!isFinite(idx) || idx < 0 || idx >= DATA.length) return;
+  CUR = DATA[idx];
+  BLANKS = targets(CUR);
+  $("sel").value = String(idx);
+  var book = CUR.book;
+  $("meta").innerHTML = '<span class="tag">' + esc(CUR.chapter || "") + '</span>'
+    + '<span class="tag">第 ' + CUR.no + ' 条</span>'
+    + '<span class="tag">' + BLANKS.length + ' 处空缺</span>';
+
+  if (!BLANKS.length){
+    $("verse").innerHTML = esc(CUR.text);
+    $("checkBtn").disabled = true;
+    $("score").textContent = "这条没有可挖空的关键词，可直接阅读。";
+    return;
+  }
+
+  // 逐个关键词替换成输入框（长词优先，避免嵌套）
+  var html = esc(CUR.text);
+  BLANKS.forEach(function(k, i){
+    var e = esc(k);
+    html = html.replace(e, '<input class="blank" data-i="' + i + '" maxlength="' + (k.length + 2) + '" size="' + Math.max(4, k.length) + '">');
+  });
+  $("verse").innerHTML = html;
+  $("checkBtn").disabled = false;
+  $("ans").style.display = "none";
+  $("score").textContent = "";
+  $("verse").querySelectorAll(".blank").forEach(function(inp, i){
+    inp.addEventListener("keydown", function(ev){ if (ev.key === "Enter") check(); });
+  });
+}
+
+function norm(s){
+  return String(s||"").replace(/[\s，。、；：！？「」《》（）,. ;:!?()\[\]]/g, "");
+}
+
+function check(){
+  var ins = [].slice.call($("verse").querySelectorAll(".blank"));
+  var ok = 0;
+  ins.forEach(function(inp){
+    var i = parseInt(inp.dataset.i, 10);
+    var right = norm(BLANKS[i]);
+    var got = norm(inp.value);
+    if (got && got === right){ inp.classList.add("ok"); inp.classList.remove("no"); ok++; }
+    else { inp.classList.add("no"); inp.classList.remove("ok"); }
+  });
+  $("score").innerHTML = '得分 <b>' + ok + '/' + ins.length + '</b>';
+  var h = '<b>原文</b><div class="full">' + esc(CUR.text) + '</div>';
+  if (CUR.comment) h += '<div class="note" style="margin-top:10px">' + esc(CUR.comment) + '</div>';
+  $("ans").innerHTML = h;
+  $("ans").style.display = "block";
+}
+
+function clearAll(){
+  $("verse").querySelectorAll(".blank").forEach(function(inp){
+    inp.value = "";
+    inp.classList.remove("ok", "no");
+  });
+  $("score").textContent = "";
+  $("ans").style.display = "none";
+}
+
+$("checkBtn").addEventListener("click", check);
+$("clearBtn").addEventListener("click", clearAll);
+$("showBtn").addEventListener("click", function(){
+  if (!CUR) return;
+  var h = '<b>原文</b><div class="full">' + esc(CUR.text) + '</div>';
+  if (CUR.comment) h += '<div class="note" style="margin-top:10px">' + esc(CUR.comment) + '</div>';
+  $("ans").innerHTML = h;
+  $("ans").style.display = "block";
+});
+$("newBtn").addEventListener("click", function(){
+  var i = Math.floor(Math.random() * DATA.length);
+  if (DATA.length > 1 && DATA[i] === CUR) i = (i + 1) % DATA.length;
+  pick(i);
+});
+</script>
+<script src="/static/user.js"></script>
+</body>
+</html>

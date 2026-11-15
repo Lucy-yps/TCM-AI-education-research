@@ -1,3 +1,11 @@
+# ===== 账户与会话数据（含密码哈希，禁止入库）=====
+external_data/users.json
+external_data/tokens.json
+
+# ===== 答题与考试成绩（个人数据，禁止入库）=====
+external_data/exams*.jsonl
+external_data/quiz_progress_*.jsonl
+
 # ===== 密钥与本地配置（禁止入库）=====
 .env
 .env.*

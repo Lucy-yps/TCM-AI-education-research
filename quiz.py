@@ -7,6 +7,7 @@
   白名单 + 候选池    ->  约束选项，杜绝跨体系命名
 """
 import json, os, random, threading
+import re
 
 try:
     import compare_stats   # 相似证型鉴别的统计显著性检验
@@ -394,16 +395,32 @@ def compare_meta():
 
 # ---------------------------------------------------------------- 学习进度追踪
 _PROGRESS_PATH = os.path.join(BASE_DIR, "external_data", "quiz_progress.jsonl")
+_PROGRESS_DIR = os.path.join(BASE_DIR, "external_data")
 
 
-def _progress_write(rec):
+def _safe_user(user):
+    """清洗用户名，防止路径注入。只保留中文、字母、数字、下划线、短横线。"""
+    u = re.sub(r"[^\w\u4e00-\u9fa5-]", "", str(user or ""))[:24]
+    return u
+
+
+def _progress_path(user=None):
+    """按用户返回记录文件路径。未登录时沿用默认文件（兼容旧数据）。"""
+    u = _safe_user(user)
+    if not u:
+        return _PROGRESS_PATH
+    return os.path.join(_PROGRESS_DIR, "quiz_progress_" + u + ".jsonl")
+
+
+def _progress_write(rec, user=None):
+    path = _progress_path(user)
     with _LOCK:
-        os.makedirs(os.path.dirname(_PROGRESS_PATH), exist_ok=True)
-        with open(_PROGRESS_PATH, "a", encoding="utf-8") as f:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
-def record_answer(syndrome, chosen, correct, src=None, ms=None, kind="quiz"):
+def record_answer(syndrome, chosen, correct, src=None, ms=None, kind="quiz", user=None):
     """记录一次答题。返回累计统计。kind: quiz 辨证 | formula 方剂 | tp 舌脉。"""
     import time as _t
     rec = {
@@ -416,17 +433,21 @@ def record_answer(syndrome, chosen, correct, src=None, ms=None, kind="quiz"):
     }
     if ms is not None:
         rec["ms"] = int(ms)
-    _progress_write(rec)
-    return progress_stats()
+    u = _safe_user(user)
+    if u:
+        rec["user"] = u
+    _progress_write(rec, user=u)
+    return progress_stats(user=u)
 
 
-def progress_records():
-    """读取全部答题记录。"""
-    if not os.path.exists(_PROGRESS_PATH):
+def progress_records(user=None):
+    """读取答题记录。指定 user 时只读该用户的文件。"""
+    path = _progress_path(user)
+    if not os.path.exists(path):
         return []
     out = []
     try:
-        with open(_PROGRESS_PATH, encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -440,10 +461,10 @@ def progress_records():
     return out
 
 
-def progress_stats():
+def progress_stats(user=None):
     """汇总学习进度：总体、按证型、最薄弱、易混淆对、最近趋势。"""
     import time as _t
-    recs = progress_records()
+    recs = progress_records(user=user)
     # 按题型分组（旧记录无 kind，标为 legacy，不混入核心统计）
     _km = {}
     for r in recs:
@@ -524,11 +545,12 @@ def progress_stats():
     }
 
 
-def progress_reset():
-    """清空学习记录（不可恢复）。"""
+def progress_reset(user=None):
+    """清空学习记录（不可恢复）。指定 user 时只清该用户。"""
+    path = _progress_path(user)
     with _LOCK:
-        if os.path.exists(_PROGRESS_PATH):
-            os.remove(_PROGRESS_PATH)
+        if os.path.exists(path):
+            os.remove(path)
     return True
 
 

@@ -42,11 +42,14 @@ iframe{width:100%;height:100%;border:1px solid var(--line);border-radius:12px;ba
     <button class="tab" data-m="compare">相似鉴别</button>
     <button class="tab" data-m="formula">方剂治法</button>
     <button class="tab" data-m="tongue">舌脉辨识</button>
+    <button class="tab" data-m="cases">医案研读</button>
+    <button class="tab" data-m="wrong">错题本</button>
+    <button class="tab" data-m="exam">考试</button>
   </div>
   <div class="frame-wrap"><iframe id="fr" src="/quiz.html" title="训练模块"></iframe></div>
 </div>
 <script>
-var MAP = {quiz:"/quiz.html", compare:"/compare.html", formula:"/formula.html", tongue:"/tongue.html"};
+var MAP = {quiz:"/quiz.html", compare:"/compare.html", formula:"/formula.html", tongue:"/tongue.html", cases:"/static/cases.html", wrong:"/static/wrong.html", exam:"/static/exam.html"};
 var fr = document.getElementById("fr");
 
 function pick(m){
@@ -66,5 +69,6 @@ document.getElementById("tabs").addEventListener("click", function(e){
 var init = new URLSearchParams(location.search).get("m") || "quiz";
 pick(init);
 </script>
+<script src="/static/user.js"></script>
 </body>
 </html>

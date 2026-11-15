@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--orange:#C98A5E;}
+*{box-sizing:border-box;}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;display:flex;align-items:center;justify-content:center;padding:24px;line-height:1.7;}
+.card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:30px 34px;box-shadow:0 8px 40px rgba(38,49,42,.06);}
+.brand{font-size:12px;letter-spacing:2px;color:var(--muted);text-align:center;margin-bottom:6px;}
+.brand b{color:var(--acid);}
+h1{font-size:21px;text-align:center;margin:0 0 22px;font-weight:600;}
+.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--panel-raised);padding:4px;border-radius:10px;}
+.tab{flex:1;padding:9px;border:0;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;border-radius:7px;font-family:inherit;}
+.tab.on{background:var(--panel);color:var(--acid);box-shadow:0 1px 4px rgba(38,49,42,.08);}
+label{display:block;font-size:12px;color:var(--muted);margin:13px 0 5px;letter-spacing:.5px;}
+input[type=text],input[type=password]{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:9px;background:var(--panel-raised);color:var(--paper);font-size:14px;font-family:inherit;}
+input:focus{outline:none;border-color:rgba(47,107,82,.5);background:var(--panel);}
+.avs{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:6px;}
+.av{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:19px;border:1.5px solid var(--line);border-radius:9px;cursor:pointer;background:var(--panel-raised);}
+.av:hover{border-color:rgba(47,107,82,.35);}
+.av.on{border-color:var(--acid);background:rgba(47,107,82,.1);transform:scale(1.05);}
+button.submit{width:100%;margin-top:22px;padding:12px;border:0;border-radius:10px;background:var(--acid);color:#F9FBF7;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+button.submit:disabled{opacity:.5;cursor:default;}
+.msg{margin-top:14px;font-size:12.5px;text-align:center;min-height:20px;}
+.msg.err{color:#B4552F;}
+.msg.ok{color:var(--acid);}
+.foot{margin-top:18px;text-align:center;font-size:11.5px;color:var(--muted);}
+.foot a{color:var(--acid);text-decoration:none;}
+.hide{display:none;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">本草辨证 · <b>账户</b></div>
+  <h1 id="title">登录</h1>
+  <div class="tabs">
+    <button class="tab on" data-t="login">登录</button>
+    <button class="tab" data-t="reg">注册</button>
+  </div>
+
+  <!-- 登录 -->
+  <div id="pLogin">
+    <label>用户名</label>
+    <input type="text" id="lu" autocomplete="username" placeholder="输入用户名">
+    <label>密码</label>
+    <input type="password" id="lp" autocomplete="current-password" placeholder="输入密码">
+    <button class="submit" id="btnLogin">登录</button>
+  </div>
+
+  <!-- 注册 -->
+  <div id="pReg" class="hide">
+    <label>用户名（2-20 位，中英文/数字/下划线）</label>
+    <input type="text" id="ru" autocomplete="username" placeholder="例如 yanglin">
+    <label>昵称</label>
+    <input type="text" id="rd" placeholder="显示在页面右上角">
+    <label>密码（至少 4 位）</label>
+    <input type="password" id="rp" autocomplete="new-password" placeholder="设置密码">
+    <label>再输一次</label>
+    <input type="password" id="rp2" autocomplete="new-password" placeholder="确认密码">
+    <label>选一个头像</label>
+    <div class="avs" id="avs"></div>
+    <button class="submit" id="btnReg">注册并登录</button>
+  </div>
+
+  <div class="msg" id="msg"></div>
+  <div class="foot"><a href="/">← 返回首页（免登录也能用检索）</a></div>
+</div>
+
+<script src="/static/user.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var AVA = [], PICK = "";
+
+function msg(t, ok){
+  $("msg").textContent = t || "";
+  $("msg").className = "msg " + (t ? (ok ? "ok" : "err") : "");
+}
+
+function goNext(){
+  var n = "";
+  try { n = new URLSearchParams(location.search).get("next") || ""; } catch(e){}
+  location.href = n && n.charAt(0) === "/" ? n : "/";
+}
+
+/* 载入头像 */
+fetch("/api/auth/avatars").then(function(r){ return r.json(); }).then(function(j){
+  AVA = j.data || [];
+  PICK = AVA[0] || "👤";
+  $("avs").innerHTML = AVA.map(function(a, i){
+    return '<div class="av' + (i === 0 ? " on" : "") + '" data-a="' + a + '">' + a + '</div>';
+  }).join("");
+}).catch(function(){});
+
+$("avs").addEventListener("click", function(e){
+  var d = e.target.closest(".av");
+  if (!d) return;
+  PICK = d.dataset.a;
+  $("avs").querySelectorAll(".av").forEach(function(x){ x.classList.toggle("on", x === d); });
+});
+
+/* 切换 tab */
+document.querySelectorAll(".tab").forEach(function(b){
+  b.onclick = function(){
+    document.querySelectorAll(".tab").forEach(function(x){ x.classList.toggle("on", x === b); });
+    var isLogin = b.dataset.t === "login";
+    $("pLogin").classList.toggle("hide", !isLogin);
+    $("pReg").classList.toggle("hide", isLogin);
+    $("title").textContent = isLogin ? "登录" : "创建账户";
+    msg("");
+  };
+});
+
+/* 登录 */
+$("btnLogin").onclick = function(){
+  var u = $("lu").value.trim(), p = $("lp").value;
+  if (!u || !p) { msg("请填写用户名和密码"); return; }
+  this.disabled = true; msg("登录中…", true);
+  fetch("/api/auth/login", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ username: u, password: p })
+  }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+  .then(function(o){
+    if (o.s !== 200) { msg(o.j.message || "登录失败"); return; }
+    TCM.setAuth(o.j.data.token, o.j.data.user);
+    msg("登录成功，正在跳转…", true);
+    setTimeout(goNext, 500);
+  }).catch(function(e){ msg("网络错误：" + e.message); })
+  .finally(function(){ $("btnLogin").disabled = false; });
+};
+$("lp").addEventListener("keydown", function(e){ if (e.key === "Enter") $("btnLogin").click(); });
+
+/* 注册 */
+$("btnReg").onclick = function(){
+  var u = $("ru").value.trim(), d = $("rd").value.trim(),
+      p = $("rp").value, p2 = $("rp2").value;
+  if (!u || !p) { msg("请填写用户名和密码"); return; }
+  if (p !== p2) { msg("两次输入的密码不一致"); return; }
+  if (p.length < 4) { msg("密码至少 4 位"); return; }
+  if (!$("rd").value.trim()) d = u;
+  this.disabled = true; msg("注册中…", true);
+  fetch("/api/auth/register", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ username: u, password: p, display: d, avatar: PICK })
+  }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+  .then(function(o){
+    if (o.s !== 200) { msg(o.j.message || "注册失败"); return; }
+    return fetch("/api/auth/login", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ username: u, password: p })
+    }).then(function(r){ return r.json(); }).then(function(j){
+      if (j.code !== 200) { msg("注册成功，请手动登录", true); return; }
+      TCM.setAuth(j.data.token, j.data.user);
+      msg("注册成功，正在跳转…", true);
+      setTimeout(goNext, 500);
+    });
+  }).catch(function(e){ msg("网络错误：" + e.message); })
+  .finally(function(){ $("btnReg").disabled = false; });
+};
+$("rp2").addEventListener("keydown", function(e){ if (e.key === "Enter") $("btnReg").click(); });
+
+/* 已登录则直接跳 */
+if (TCM.token()) { msg("已登录，正在跳转…", true); setTimeout(goNext, 400); }
+</script>
+</body>
+</html>

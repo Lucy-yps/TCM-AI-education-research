@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>口语对话验证 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--orange:#C98A5E;--violet:#7E9BB8;--gold:#C9A35A;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.8;}
+a{color:var(--muted);text-decoration:none;}a:hover{color:var(--acid);}
+.wrap{max-width:1000px;margin:0 auto;padding:22px 22px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+.nav{display:flex;gap:13px;font-size:12.5px;}
+h1{font-size:24px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:16px;}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+select{background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12.5px;font-family:inherit;max-width:420px;}
+button{background:var(--acid);color:#F9FBF7;border:0;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+button:disabled{opacity:.45;cursor:default;}
+label.chk{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer;}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:20px 24px;margin-bottom:14px;}
+h3{font-size:11.5px;color:var(--muted);letter-spacing:2px;margin:0 0 9px;padding-left:8px;border-left:2px solid var(--acid);}
+.dlg{font-size:14px;line-height:2.05;white-space:pre-wrap;text-align:justify;color:#33443A;}
+.dlg .doc{color:#8A968C;font-size:12.5px;}
+.meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+.tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--line);color:var(--muted);}
+.tag.hi{border-color:rgba(47,107,82,.45);color:var(--acid);}
+.tag.w{border-color:rgba(201,138,94,.45);color:var(--orange);}
+.sys{display:none;}
+.syn{border-left:2px solid var(--acid);padding-left:11px;margin-bottom:11px;}
+.syn b{font-size:14.5px;color:var(--acid);}
+.syn .sc{color:var(--muted);font-size:11.5px;margin-left:7px;}
+.chip{display:inline-block;font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(47,107,82,.09);color:var(--acid);margin:3px 5px 0 0;}
+.chip.m{background:rgba(201,138,94,.12);color:var(--orange);}
+.gold{background:rgba(201,138,94,.07);border:1px solid rgba(201,138,94,.3);border-radius:10px;padding:14px 17px;font-size:13px;line-height:1.9;white-space:pre-wrap;}
+.note{font-size:11.5px;color:#7A4526;background:rgba(201,138,94,.09);border:1px solid rgba(201,138,94,.3);border-radius:9px;padding:12px 15px;line-height:1.9;margin-top:14px;}
+.stat{font-size:12px;color:var(--muted);}
+.loading{color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>口语对话验证</b></div>
+    <div class="nav">
+      <a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a><a href="/static/assistant.html">助手</a>
+      <a href="/static/profile.html">档案</a>
+      <a href="/static/dialogue.html" style="color:var(--acid);font-weight:600">口语验证</a>
+    </div>
+  </div>
+  <h1>口语化问诊对话 · 兼容性演示</h1>
+  <div class="sub">
+    数据：<b>MTCMB · TCM-CHGD</b>（CC-BY 4.0，100 条）· 对话由 DeepSeek-R1 基于官方病案生成、经执业医师审核。
+    本页用于验证系统<b>能接受非教材语言的输入</b>，<b>不做准确率评测</b>。
+  </div>
+
+  <div class="bar">
+    <select id="sel"></select>
+    <button id="btnRun">让系统分析</button>
+    <label class="chk"><input type="checkbox" id="onlyKb" checked> 只看「证型能对上」的（9 条）</label>
+    <span class="stat" id="stat"></span>
+  </div>
+
+  <div class="panel">
+    <h3>患者原话（节选）</h3>
+    <div class="dlg" id="pat"><span class="loading">加载中…</span></div>
+  </div>
+
+  <div class="panel sys" id="sysBox">
+    <h3>系统输出</h3>
+    <div id="sys"></div>
+  </div>
+
+  <div class="panel">
+    <h3>官方标准答案</h3>
+    <div class="gold" id="gold"><span class="loading">—</span></div>
+  </div>
+
+  <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.7">
+    ※ 两者分类体系不同（TCM-CHGD 用临床复合证名，本系统用教材证型名），此处仅演示输入兼容性，不做准确率评测。
+  </div>
+</div>
+
+<script src="/static/user.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+var DATA = [], CUR = null;
+
+fetch("/static/dialogue_samples.json?v=" + Date.now()).then(function(r){ return r.json(); }).then(function(j){
+  DATA = (j.items || []);
+  renderOptions();   // 内部已完成首次 pick（用当前筛选池的第一条）
+  // ?run=1：数据就绪后自动分析
+  try {
+    var sp = new URLSearchParams(location.search);
+    if (sp.get("run") === "1") setTimeout(function(){ if (CUR) runAnalysis(); }, 400);
+  } catch(e){}
+}).catch(function(e){
+  $("pat").innerHTML = '<span style="color:#C98A5E">数据加载失败：' + esc(e.message) + '</span>';
+});
+
+function pool(){
+  return $("onlyKb").checked ? DATA.filter(function(x){ return x.inKb; }) : DATA;
+}
+
+function renderOptions(){
+  var arr = pool();
+  $("sel").innerHTML = arr.map(function(x){
+    var tag = x.inKb ? "★" : "·";
+    return '<option value="' + x.id + '">' + tag + ' #' + x.id + ' '
+         + esc(x.disease || "") + (x.disease ? " · " : "") + esc(x.syndrome || "（无证候）") + '</option>';
+  }).join("");
+  $("stat").textContent = "共 " + arr.length + " 条可选";
+  if (arr.length) pick(arr[0].id);
+  else $("pat").innerHTML = '<span class="loading">没有可显示的样例</span>';
+}
+
+function pick(id){
+  var arr = pool();
+  CUR = arr.filter(function(x){ return String(x.id) === String(id); })[0];
+  if (!CUR) return;
+  $("sel").value = String(CUR.id);
+  var h = CUR.patient || CUR.dialogue;
+  $("pat").textContent = h;
+  $("gold").textContent = CUR.answer || "（无）";
+  // 有预计算结果则自动展示（演示时不依赖按钮与网络）
+  if (CUR.analysis) {
+    $("sys").innerHTML = '<span class="loading">分析中…</span>';
+    $("sysBox").style.display = "block";
+    setTimeout(function(){
+      try {
+        if (CUR && CUR.analysis) renderAnalysis(CUR.analysis);
+        else $("sys").innerHTML = '<span style="color:#6E7A70">该样例未预置分析结果，点「让系统分析」实时运行。</span>';
+      } catch(err) {
+        $("sys").innerHTML = '<span style="color:#C98A5E">渲染出错：' + (err && err.message ? err.message : err) + '</span>';
+      }
+    }, 220);
+  } else {
+    $("sysBox").style.display = "none";
+    $("sys").innerHTML = "";
+  }
+}
+
+$("sel").addEventListener("change", function(){ pick(this.value); });
+$("onlyKb").addEventListener("change", renderOptions);
+
+function renderAnalysis(a){
+  var obs = a.observed || [];
+  var ms = a.matches || [];
+  var h = "";
+  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'
+     + '风格判定：<b style="color:var(--acid)">' + (a.style === "record" ? "病历体" : "口语体") + '</b>'
+     + ' · 路由方法：<b>' + esc(a.route || "—") + '</b>'
+     + (obs.length ? ' · 识别症状 ' + obs.length + ' 个' : '') + '</div>';
+  if (obs.length) h += '<div style="margin-bottom:10px">' + obs.slice(0, 12).map(function(s){ return '<span class="chip">' + esc(s) + '</span>'; }).join("") + '</div>';
+  if (!ms.length) h += '<div style="color:#C98A5E">未产生候选证型（口语描述中缺少知识库症状词）。</div>';
+  ms.forEach(function(m){
+    var isHit = CUR.matched && m.syndrome === CUR.matched;
+    h += '<div class="syn" style="border-left-color:' + (isHit ? "#2F6B52" : "rgba(47,107,82,.35)") + '">'
+       + '<b>' + esc(m.syndrome) + '</b>'
+       + (isHit ? ' <span class="tag hi" style="font-size:10px">与官方可对应</span>' : '')
+       + '<span class="sc">匹配 ' + (m.score||0).toFixed(1) + '</span>';
+    if ((m.matched||[]).length)
+      h += '<div style="margin-top:4px">' + m.matched.slice(0,8).map(function(x){ return '<span class="chip">' + esc(x) + '</span>'; }).join("") + '</div>';
+    if ((m.missing||[]).length)
+      h += '<div style="margin-top:3px">' + m.missing.slice(0,5).map(function(x){ return '<span class="chip m">' + esc(x) + '</span>'; }).join("") + '</div>';
+    h += '</div>';
+  });
+  if (a.conf_label) h += '<div style="font-size:12px;color:var(--muted);margin-top:6px">把握程度：<b style="color:var(--paper)">'
+    + esc(a.conf_label) + '</b>' + (a.conf_acc != null ? '（该档历史实测 ' + Math.round(a.conf_acc*100) + '%）' : '') + '</div>';
+  $("sys").innerHTML = h;
+  $("sysBox").style.display = "block";
+}
+
+function runAnalysis(){
+  var _btn = $("btnRun");
+  if (!CUR) return;
+  // 有预计算结果就直接渲染（快、稳、演示不依赖网络）
+  if (CUR.analysis) {
+    $("sys").innerHTML = '<span class="loading">分析中…</span>';
+    $("sysBox").style.display = "block";
+    setTimeout(function(){ renderAnalysis(CUR.analysis); }, 260);
+    return;
+  }
+  var text = (CUR.patient || CUR.dialogue || "").slice(0, 900);
+  if (!text.trim()) { alert("该样例没有患者发言内容"); return; }
+  _btn.disabled = true; _btn.textContent = "分析中…";
+  fetch("/api/analyze", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ symptoms: text })
+  }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+  .then(function(o){
+    if (o.s !== 200) { throw new Error(o.j.message || "分析失败"); }
+    var d = o.j.data;
+    var obs = d.observed_symptoms || [];
+    var ms = (d.answer_matches || []).slice(0, 3);
+    var conf = d.answer_confidence || {};
+    var h = "";
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'
+       + '风格判定：<b style="color:var(--acid)">' + (d.style && d.style.style === "record" ? "病历体" : "口语体") + '</b>'
+       + ' · 路由方法：<b>' + ((d.route||{}).primary_method || "—") + '</b>'
+       + (obs.length ? ' · 识别症状 ' + obs.length + ' 个' : '') + '</div>';
+    if (obs.length) h += '<div style="margin-bottom:10px">' + obs.slice(0, 12).map(function(s){ return '<span class="chip">' + esc(s) + '</span>'; }).join("") + '</div>';
+    if (!ms.length) {
+      h += '<div style="color:#C98A5E">未产生候选证型（可能是口语描述中缺少知识库症状词）。</div>';
+    }
+    ms.forEach(function(m){
+      h += '<div class="syn"><b>' + esc(m.syndrome) + '</b><span class="sc">匹配 ' + (m.score||0).toFixed(1) + '</span>';
+      if ((m.matched_symptoms||[]).length)
+        h += '<div style="margin-top:4px">' + m.matched_symptoms.slice(0,8).map(function(x){ return '<span class="chip">' + esc(x) + '</span>'; }).join("") + '</div>';
+      if ((m.missing_profile_symptoms||[]).length)
+        h += '<div style="margin-top:3px">' + m.missing_profile_symptoms.slice(0,5).map(function(x){ return '<span class="chip m">' + esc(x) + '</span>'; }).join("") + '</div>';
+      h += '</div>';
+    });
+    if (conf.label) h += '<div style="font-size:12px;color:var(--muted);margin-top:6px">把握程度：<b style="color:var(--paper)">'
+      + esc(conf.label) + '</b>' + (conf.calibrated_accuracy != null ? '（该档历史实测 ' + Math.round(conf.calibrated_accuracy*100) + '%）' : '') + '</div>';
+    h += '<div style="font-size:11.5px;color:#6E7A70;margin-top:9px">系统按「症状匹配」排序；官方答案见下方，二者体系不同，不做对错判定。</div>';
+    $("sys").innerHTML = h;
+    $("sysBox").style.display = "block";
+  }).catch(function(e){
+    $("sys").innerHTML = '<div style="color:#C98A5E">' + esc(e.message) + '</div>';
+    $("sysBox").style.display = "block";
+  }).finally(function(){
+    _btn.disabled = false; _btn.textContent = "让系统分析";
+  });
+}
+$("btnRun").onclick = runAnalysis;
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>医案研读 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--orange:#C98A5E;--violet:#7E9BB8;--gold:#C9A35A;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.9;}
+a{color:var(--muted);text-decoration:none;}
+a:hover{color:var(--acid);}
+.wrap{max-width:960px;margin:0 auto;padding:22px 22px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}
+.brand b{color:var(--acid);}
+.nav{display:flex;gap:14px;font-size:13px;}
+.nav a{color:var(--muted);}
+.nav a.on{color:var(--acid);font-weight:600;}
+h1{font-size:24px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:18px;}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+button{background:var(--acid);color:#F9FBF7;border:0;border-radius:8px;padding:10px 19px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+button:disabled{opacity:.4;cursor:default;}
+.idx{font-size:12.5px;color:var(--muted);}
+.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:22px 26px;margin-bottom:14px;}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--line);color:var(--muted);}
+.tag.dis{border-color:rgba(126,155,184,.45);color:var(--violet);}
+.blk{margin-bottom:14px;}
+.blk dt{font-size:11.5px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px;}
+.blk dd{margin:0;font-size:14px;line-height:2;text-align:justify;}
+.ans{display:none;border:1px solid rgba(47,107,82,.3);border-radius:12px;background:rgba(47,107,82,.06);padding:18px 22px;margin-bottom:14px;}
+.ans .big{font-size:19px;font-weight:600;color:var(--acid);}
+.ans .lbl{font-size:11.5px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;}
+.sys{display:none;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px 22px;}
+.sys .row{padding:8px 0;border-bottom:1px solid rgba(217,227,214,.7);font-size:13px;}
+.sys .row:last-child{border-bottom:0;}
+.sys .nm{color:var(--acid);font-weight:600;}
+.chip{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:20px;background:rgba(47,107,82,.1);color:var(--acid);margin:3px 5px 0 0;}
+.chip.m{background:rgba(201,138,94,.12);color:var(--orange);}
+.foot{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>医案研读</b></div>
+    <div class="nav">
+      <a href="/">检索</a>
+      <a href="/classics.html">经典</a>
+      <a href="/static/recite.html">背诵</a>
+      <a href="/static/cases.html" class="on">医案</a>
+      <a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a>
+      <a href="/static/assistant.html">助手</a>
+      <a href="/static/profile.html">档案</a>
+    </div>
+  </div>
+  <h1>医案研读</h1>
+  <div class="sub">真实电子病历，先自己辨，再看答案。共 <span id="tot">—</span> 例。</div>
+
+  <div class="bar">
+    <button id="next">换一例</button>
+    <button class="ghost" id="reveal">看答案</button>
+    <button class="ghost" id="analyze" disabled>让系统分析</button>
+    <span class="idx" id="idx"></span>
+  </div>
+
+  <div class="card" id="card"><div style="color:var(--muted);font-size:13px">加载中…</div></div>
+  <div class="ans" id="ansBox"></div>
+  <div class="sys" id="sysBox"></div>
+  <div class="foot">
+    病历原文来自 TCM-SD（CC-BY-SA），仅作教学研读；系统分析基于本地知识库，不构成诊断或用药建议。
+  </div>
+</div>
+
+<script>
+var $ = function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function pct(x){ return x==null ? "—" : Math.round(x*100)+"%"; }
+
+var CASES = [], CUR = null, IDX = -1;
+
+fetch("/static/cases_sample.json").then(function(r){ return r.json(); }).then(function(j){
+  CASES = (j.cases || []);
+  $("tot").textContent = CASES.length;
+  next();
+}).catch(function(e){
+  $("card").innerHTML = '<div style="color:#C98A5E">医案数据加载失败：' + esc(e.message) + '</div>';
+});
+
+function next(){
+  if (!CASES.length) return;
+  IDX = Math.floor(Math.random() * CASES.length);
+  if (CASES.length > 1 && IDX === (CUR && CUR._i)) IDX = (IDX + 1) % CASES.length;
+  CUR = CASES[IDX];
+  CUR._i = IDX;
+  $("idx").textContent = "第 " + (IDX + 1) + " / " + CASES.length + " 例";
+  $("ansBox").style.display = "none";
+  $("sysBox").style.display = "none";
+  $("sysBox").innerHTML = "";
+  $("analyze").disabled = true;
+
+  var h = '<div class="meta">'
+    + (CUR.disease ? '<span class="tag dis">' + esc(CUR.disease) + '</span>' : '')
+    + '<span class="tag">共 ' + ((CUR.desc||"").length + (CUR.chief||"").length) + ' 字</span>'
+    + '<span class="tag">证型待判断</span></div>';
+  if (CUR.chief) h += '<dl class="blk"><dt>主诉</dt><dd>' + esc(CUR.chief) + '</dd></dl>';
+  if (CUR.desc) h += '<dl class="blk"><dt>现病史</dt><dd>' + esc(CUR.desc) + '</dd></dl>';
+  if (CUR.detect) h += '<dl class="blk"><dt>查体（节选）</dt><dd style="color:#4A5A50;font-size:13.5px">' + esc(CUR.detect) + '</dd></dl>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)">'
+     + '先自己想一想：这条更像哪个证型？从主诉、舌脉、病程里找依据，再点「看答案」。</div>';
+  $("card").innerHTML = h;
+}
+
+function reveal(){
+  if (!CUR) return;
+  $("ansBox").innerHTML = '<div class="lbl">参考答案</div><div class="big">' + esc(CUR.answer) + '</div>'
+    + '<div style="font-size:12.5px;color:var(--muted);margin-top:8px">来自原始病历的标注。'
+    + '你的判断可以不一样——临床本身允许多种解读。</div>';
+  $("ansBox").style.display = "block";
+  $("analyze").disabled = false;
+}
+
+function analyze(){
+  if (!CUR) return;
+  $("analyze").disabled = true;
+  $("analyze").textContent = "分析中…";
+  var text = (CUR.chief || "") + "。" + (CUR.desc || "");
+  fetch("/api/analyze", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ symptoms: text })
+  }).then(function(r){ return r.json(); }).then(function(j){
+    if (j.code !== 200) throw new Error(j.message || "分析失败");
+    var d = j.data;
+    var obs = d.observed_symptoms || [];
+    var ms = (d.answer_matches || []).slice(0, 3);
+    var conf = d.answer_confidence || {};
+    var h = '<div style="font-size:12px;letter-spacing:1px;color:var(--muted);margin-bottom:10px">系统分析（基于本地知识库）</div>';
+    if (obs.length) h += '<div style="margin-bottom:10px">识别到：' + obs.map(function(s){ return '<span class="chip">' + esc(s) + '</span>'; }).join("") + '</div>';
+    ms.forEach(function(m){
+      h += '<div class="row"><span class="nm">' + esc(m.syndrome) + '</span>'
+        + '<span style="color:var(--muted);font-size:11.5px;margin-left:8px">匹配 ' + (m.score||0).toFixed(1) + '</span>';
+      if ((m.matched_symptoms||[]).length)
+        h += '<div style="margin-top:4px">' + m.matched_symptoms.map(function(x){ return '<span class="chip">' + esc(x) + '</span>'; }).join("") + '</div>';
+      if ((m.missing_profile_symptoms||[]).length)
+        h += '<div style="margin-top:3px">' + m.missing_profile_symptoms.slice(0,4).map(function(x){ return '<span class="chip m">' + esc(x) + '</span>'; }).join("") + '</div>';
+      h += '</div>';
+    });
+    if (conf.label) h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">把握程度：<b style="color:var(--paper)">' + esc(conf.label) + '</b>'
+      + (conf.calibrated_accuracy != null ? '（该档历史实测 ' + pct(conf.calibrated_accuracy) + '）' : '') + '</div>';
+    h += '<div style="margin-top:8px;font-size:11.5px;color:var(--muted)">系统按「症状匹配」排序，与上面的参考答案可能不同——差异本身就是讨论点。</div>';
+    $("sysBox").innerHTML = h;
+    $("sysBox").style.display = "block";
+  }).catch(function(e){
+    $("sysBox").innerHTML = '<div style="color:#C98A5E">分析失败：' + esc(e.message) + '</div>';
+    $("sysBox").style.display = "block";
+  }).finally(function(){
+    $("analyze").textContent = "让系统分析";
+    $("analyze").disabled = false;
+  });
+}
+
+$("next").addEventListener("click", next);
+$("reveal").addEventListener("click", reveal);
+$("analyze").addEventListener("click", analyze);
+</script>
+
+<script>
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '20px';
+}
+</script>
+<script src="/static/user.js"></script>
+</body>
+</html>

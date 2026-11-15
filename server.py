@@ -14,10 +14,18 @@ from concurrent.futures import ThreadPoolExecutor
 
 import retrieval
 import quiz
+import auth
+import exam
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
+
+
+def _req_user():
+    """从请求头 X-User 取用户名（前端已 URL 编码，此处解码）。"""
+    from urllib.parse import unquote
+    return unquote(request.headers.get("X-User") or "").strip()[:24]
 
 AI_PROVIDERS = {
     "deepseek": {
@@ -354,7 +362,8 @@ def quiz_record():
             _c = (syndrome == chosen)   # 兼容旧调用：仅辨证题下成立
         stats = quiz.record_answer(syndrome, chosen, bool(_c),
                                    src=payload.get("src"), ms=payload.get("ms"),
-                                   kind=payload.get("kind") or "quiz")
+                                   kind=payload.get("kind") or "quiz",
+                                   user=_req_user())
     except Exception as exc:
         return jsonify({"code": 500, "message": "记录失败：" + type(exc).__name__}), 500
     return jsonify({"code": 200, "data": stats})
@@ -363,7 +372,7 @@ def quiz_record():
 @app.get("/api/quiz/progress")
 def quiz_progress():
     try:
-        return jsonify({"code": 200, "data": quiz.progress_stats()})
+        return jsonify({"code": 200, "data": quiz.progress_stats(user=_req_user())})
     except Exception as exc:
         return jsonify({"code": 500, "message": "读取失败：" + type(exc).__name__}), 500
 
@@ -371,10 +380,10 @@ def quiz_progress():
 @app.post("/api/quiz/progress/reset")
 def quiz_progress_reset():
     try:
-        quiz.progress_reset()
+        quiz.progress_reset(user=_req_user())
     except Exception as exc:
         return jsonify({"code": 500, "message": "重置失败：" + type(exc).__name__}), 500
-    return jsonify({"code": 200, "data": quiz.progress_stats()})
+    return jsonify({"code": 200, "data": quiz.progress_stats(user=_req_user())})
 
 
 @app.get("/progress.html")
@@ -551,6 +560,196 @@ def api_formulas():
 def train_page():
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "train.html"), encoding="utf-8") as f:
         return f.read()
+
+
+@app.get("/api/quiz/wrong")
+def quiz_wrong():
+    """错题本：从答题记录里筛出错题，按证型聚合。
+
+    不同题型的 chosen 语义不同（选证型 / 选治法 / 选舌脉表现），分开统计。
+    """
+    try:
+        recs = quiz.progress_records(user=_req_user())
+    except Exception as exc:
+        return jsonify({"code": 500, "message": "读取失败：" + type(exc).__name__}), 500
+    known = {row.get("syndrome") for row in retrieval.KNOWLEDGE_BASE}
+
+    def kind_of(r):
+        k = r.get("kind")
+        if k in ("quiz", "formula", "tp"):
+            return k
+        return "quiz" if (r.get("chosen") or "") in known else "legacy"
+
+    agg = {}
+    total = 0
+    for r in recs:
+        if r.get("correct"):
+            continue
+        total += 1
+        s = r.get("syndrome") or "(未知)"
+        k = kind_of(r)
+        d = agg.setdefault(s, {"syndrome": s, "count": 0, "kinds": {}, "choices": {}})
+        d["count"] += 1
+        d["kinds"][k] = d["kinds"].get(k, 0) + 1
+        c = r.get("chosen") or ""
+        if c:
+            d["choices"][c] = d["choices"].get(c, 0) + 1
+
+    rows = []
+    for d in agg.values():
+        rows.append({
+            "syndrome": d["syndrome"],
+            "count": d["count"],
+            "kinds": sorted(d["kinds"].items(), key=lambda x: -x[1]),
+            "choices": sorted(d["choices"].items(), key=lambda x: -x[1])[:3],
+        })
+    rows.sort(key=lambda x: (-x["count"], x["syndrome"]))
+
+    kind_total = {}
+    for r in recs:
+        if r.get("correct"):
+            continue
+        k = kind_of(r)
+        kind_total[k] = kind_total.get(k, 0) + 1
+
+    return jsonify({"code": 200, "data": {
+        "total_wrong": total,
+        "distinct_syndromes": len(rows),
+        "by_kind": kind_total,
+        "rows": rows,
+    }})
+
+
+@app.get("/api/quiz/users")
+def quiz_users():
+    """列出有答题记录的用户（从文件名反推）。"""
+    import glob as _g
+    names = []
+    for p in _g.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "external_data", "quiz_progress_*.jsonl")):
+        b = os.path.basename(p)
+        u = b[len("quiz_progress_"):-len(".jsonl")]
+        if u:
+            try:
+                n = sum(1 for line in open(p, encoding="utf-8") if line.strip())
+            except OSError:
+                n = 0
+            names.append({"user": u, "records": n})
+    names.sort(key=lambda x: -x["records"])
+    anon = os.path.join(os.path.dirname(os.path.abspath(__file__)), "external_data", "quiz_progress.jsonl")
+    anon_n = 0
+    if os.path.exists(anon):
+        try:
+            anon_n = sum(1 for line in open(anon, encoding="utf-8") if line.strip())
+        except OSError:
+            anon_n = 0
+    return jsonify({"code": 200, "data": {"users": names, "anonymous_records": anon_n}})
+
+
+# ---------------------------------------------------------------- 账户系统
+def _tok():
+    return (request.headers.get("X-Token") or "").strip()
+
+
+@app.get("/api/auth/avatars")
+def auth_avatars():
+    return jsonify({"code": 200, "data": auth.AVATARS})
+
+
+@app.post("/api/auth/register")
+def auth_register():
+    p = request.get_json(silent=True) or {}
+    ok, msg = auth.register(p.get("username"), p.get("password"),
+                            p.get("display"), p.get("avatar"))
+    if not ok:
+        return jsonify({"code": 400, "message": msg}), 400
+    return jsonify({"code": 200, "data": {"username": msg}})
+
+
+@app.post("/api/auth/login")
+def auth_login():
+    p = request.get_json(silent=True) or {}
+    ok, msg = auth.login(p.get("username"), p.get("password"))
+    if not ok:
+        return jsonify({"code": 401, "message": msg}), 401
+    me = auth.whoami(msg)
+    return jsonify({"code": 200, "data": {"token": msg, "user": me}})
+
+
+@app.post("/api/auth/logout")
+def auth_logout():
+    auth.logout(_tok())
+    return jsonify({"code": 200, "data": {"ok": True}})
+
+
+@app.get("/api/auth/me")
+def auth_me():
+    me = auth.whoami(_tok())
+    if not me:
+        return jsonify({"code": 401, "message": "未登录"}), 401
+    me["stats"] = auth.stats_for(me.get("username"))
+    return jsonify({"code": 200, "data": me})
+
+
+@app.post("/api/auth/profile")
+def auth_profile():
+    p = request.get_json(silent=True) or {}
+    ok, msg = auth.update_profile(_tok(), p.get("display"), p.get("avatar"))
+    if not ok:
+        return jsonify({"code": 400, "message": msg}), 400
+    return jsonify({"code": 200, "data": msg})
+
+
+@app.post("/api/auth/password")
+def auth_password():
+    p = request.get_json(silent=True) or {}
+    ok, msg = auth.change_password(_tok(), p.get("old"), p.get("new"))
+    if not ok:
+        return jsonify({"code": 400, "message": msg}), 400
+    return jsonify({"code": 200, "data": {"message": msg}})
+
+
+# ---------------------------------------------------------------- 考试模式
+def _who():
+    """优先用登录 token，回退到 X-User（兼容旧的轻量身份）。"""
+    me = auth.whoami(_tok())
+    if me:
+        return me.get("username")
+    return _req_user()
+
+
+@app.post("/api/exam/start")
+def exam_start():
+    p = request.get_json(silent=True) or {}
+    n = p.get("n") or 10
+    syn = (p.get("syndrome") or "").strip() or None
+    try:
+        res, err = exam.start(n=n, user=_who(), syndrome=syn)
+    except Exception as exc:
+        return jsonify({"code": 500, "message": "组卷失败：" + type(exc).__name__}), 500
+    if err:
+        return jsonify({"code": 400, "message": err}), 400
+    return jsonify({"code": 200, "data": res})
+
+
+@app.post("/api/exam/submit")
+def exam_submit():
+    p = request.get_json(silent=True) or {}
+    res, err = exam.submit(p.get("exam_id"), p.get("answers"),
+                           user=_who(), elapsed=p.get("elapsed"))
+    if err:
+        return jsonify({"code": 400, "message": err}), 400
+    return jsonify({"code": 200, "data": res})
+
+
+@app.get("/api/exam/history")
+def exam_history():
+    return jsonify({"code": 200, "data": exam.history(_who(), limit=12)})
+
+
+@app.get("/api/exam/bank")
+def exam_bank():
+    items = exam.bank()
+    return jsonify({"code": 200, "data": {"total": len(items)}})
 
 
 if __name__ == "__main__":
