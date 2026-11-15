@@ -8,6 +8,7 @@
 :root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--accent-strong:#1F4D3B;--accent-soft:rgba(47,107,82,.12);--orange:#C98A5E;--violet:#7E9BB8;--blue:#5B8DB8;--gold:#C9A35A;}
 *{box-sizing:border-box;}body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;}
 a{color:var(--acid);text-decoration:none;}
+.topbar a{color:var(--muted);}
 .wrap{max-width:1000px;margin:0 auto;padding:28px 22px 80px;}
 .topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px;}
 .brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
@@ -37,7 +38,7 @@ button:hover{color:var(--orange);border-color:var(--orange);}
 <div class="wrap">
   <div class="topbar">
     <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>学习报告</b></div>
-    <div><a href="/">检索</a> &nbsp; <a href="/classics.html">经典</a> &nbsp; <a href="/train.html">训练</a> &nbsp; <a href="/progress.html" style="color:#2F6B52;font-weight:600">报告</a>&nbsp; <a href="/static/assistant.html">助手</a>&nbsp; <a href="/static/profile.html" style="color:#7E9BB8;font-weight:600">档案</a></div>
+    <div><a href="/">检索</a> &nbsp; <a href="/classics.html">经典</a> &nbsp; <a href="/train.html">训练</a> &nbsp; <a href="/progress.html" style="color:var(--acid);font-weight:600">报告</a>&nbsp; <a href="/static/assistant.html">助手</a>&nbsp; <a href="/static/profile.html">档案</a></div>
   </div>
   <h1>学习报告</h1>
   <p class="sub">基于你的答题记录统计。系统据此定位<b>薄弱证型</b>与<b>易混淆证型对</b>，为定向补练提供依据。</p>
