@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>训练 · 中医内科学</title>
 <style>
-:root{color-scheme:dark;--ink:#101311;--panel:#171b18;--panel-raised:#1d231e;--paper:#f0f0e8;--muted:#9ba49a;--line:rgba(237,242,228,.14);--acid:#c8f169;--orange:#ff744d;--violet:#b9a5ff;--blue:#8fd4ff;}
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--accent-strong:#1F4D3B;--accent-soft:rgba(47,107,82,.12);--orange:#C98A5E;--violet:#7E9BB8;--blue:#5B8DB8;--gold:#C9A35A;}
 *{box-sizing:border-box;}
 html,body{height:100%;}
-body{margin:0;background:var(--ink);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;overflow:hidden;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;overflow:hidden;}
 a{color:var(--muted);text-decoration:none;}
 a:hover{color:var(--acid);}
 .wrap{height:100vh;display:flex;flex-direction:column;}
@@ -19,8 +19,8 @@ a:hover{color:var(--acid);}
 .nav a.on{color:var(--acid);font-weight:600;}
 .tabs{flex:none;display:flex;gap:8px;padding:12px 22px;flex-wrap:wrap;}
 .tab{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;}
-.tab:hover{color:var(--paper);border-color:rgba(237,242,228,.3);}
-.tab.on{background:var(--acid);color:#10160f;border-color:var(--acid);font-weight:700;}
+.tab:hover{color:var(--paper);border-color:rgba(47,107,82,.24);}
+.tab.on{background:var(--acid);color:#F7FAF6;border-color:var(--acid);font-weight:700;}
 .frame-wrap{flex:1;min-height:0;padding:0 22px 20px;}
 iframe{width:100%;height:100%;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:block;}
 @media(max-width:640px){.tabs{padding:10px 14px;}.frame-wrap{padding:0 14px 14px;}.tab{padding:8px 13px;font-size:12px;}}
@@ -35,7 +35,7 @@ iframe{width:100%;height:100%;border:1px solid var(--line);border-radius:12px;ba
       <a href="/classics.html">经典</a>
       <a href="/train.html" class="on">训练</a>
       <a href="/progress.html">报告</a>
-    &nbsp; <a href="/static/assistant.html" style="color:#c8f169;font-weight:600">助手</a>&nbsp; <a href="/static/profile.html" style="color:#b9a5ff;font-weight:600">档案</a></div>
+    &nbsp; <a href="/static/assistant.html" style="color:#2F6B52;font-weight:600">助手</a>&nbsp; <a href="/static/profile.html" style="color:#7E9BB8;font-weight:600">档案</a></div>
   </div>
   <div class="tabs" id="tabs">
     <button class="tab on" data-m="quiz">辨证训练</button>

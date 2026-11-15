@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#101311">
+    <meta name="theme-color" content="#F1F5EE">
     <title>面向中医教学与科研的知识检索辅助工具</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js" defer></script>
     <style>
         :root {
-            color-scheme: dark;
-            --ink: #101311;
-            --panel: #171b18;
-            --panel-raised: #1d231e;
-            --paper: #f0f0e8;
-            --muted: #9ba49a;
-            --line: rgba(237, 242, 228, .14);
-            --acid: #c8f169;
-            --orange: #ff744d;
+            color-scheme: light;
+            --bg: #EDF2EC; --ink: #26312A;
+            --panel: #F9FBF7; --panel-raised: #F1F5EE;
+            --paper: #26312A; --muted: #6E7A70; --line: #D9E3D6;
+            --acid: #2F6B52; --orange: #C98A5E;
             --gutter: clamp(22px, 6vw, 96px);
             --ease: cubic-bezier(.2, .75, .2, 1);
         }
@@ -24,7 +20,7 @@
         html { scroll-behavior: smooth; scroll-padding-top: 80px; }
         body {
             margin: 0;
-            background: var(--ink);
+            background: var(--bg);
             color: var(--paper);
             font-family: Inter, "Microsoft YaHei", "PingFang SC", sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -51,9 +47,9 @@
             overflow: hidden;
             padding: 0 var(--gutter) 40px;
             background:
-                radial-gradient(ellipse at 72% 49%, rgba(107, 147, 74, .24), transparent 39%),
-                radial-gradient(ellipse at 20% 110%, rgba(67, 81, 51, .23), transparent 47%),
-                #101311;
+                radial-gradient(ellipse at 72% 49%, rgba(47,107,82,.16), transparent 39%),
+                radial-gradient(ellipse at 20% 110%, rgba(31,77,59,.12), transparent 47%),
+                #EDF2EC;
         }
         .header::after {
             content: "";
@@ -85,7 +81,7 @@
         .wordmark-mark::before { width: 1px; height: 18px; left: 13px; top: 4px; }
         .wordmark-mark::after { height: 1px; width: 18px; left: 4px; top: 13px; }
         .nav-links { display: flex; gap: clamp(18px, 3vw, 42px); align-items: center; }
-        .nav-links a { text-decoration: none; color: #c3c8bf; font-size: 12px; letter-spacing: .08em; transition: color .25s ease; }
+        .nav-links a { text-decoration: none; color: #3A463E; font-size: 12px; letter-spacing: .08em; transition: color .25s ease; }
         .nav-links a:hover { color: var(--acid); }
         .hero-main { position: relative; z-index: 1; display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 8vh 0 7vh; }
         .eyebrow, .section-kicker, .hero-foot, .graph-index { color: var(--acid); font-size: 10px; letter-spacing: .2em; line-height: 1.6; text-transform: uppercase; }
@@ -101,14 +97,14 @@
             text-wrap: balance;
         }
         .header h1 span { color: var(--acid); }
-        .header p { max-width: 560px; margin: 28px 0 0; color: #b1b9ae; font-size: clamp(14px, 1.4vw, 18px); line-height: 1.8; }
+        .header p { max-width: 560px; margin: 28px 0 0; color: #4A564C; font-size: clamp(14px, 1.4vw, 18px); line-height: 1.8; }
         .hero-actions { display: flex; align-items: center; gap: 26px; margin-top: 38px; }
-        .hero-cta { display: inline-flex; align-items: center; gap: 26px; min-height: 56px; padding: 0 21px; color: var(--ink); background: var(--acid); font-size: 13px; font-weight: 700; text-decoration: none; transition: transform .3s var(--ease), background .3s ease; }
-        .hero-cta:hover { transform: translateY(-3px); background: #dcff8c; }
+        .hero-cta { display: inline-flex; align-items: center; gap: 26px; min-height: 56px; padding: 0 21px; color:#F7FAF6; background: var(--acid); font-size: 13px; font-weight: 700; text-decoration: none; transition: transform .3s var(--ease), background .3s ease; }
+        .hero-cta:hover { transform: translateY(-3px); background: #265944; }
         .hero-cta span { font-size: 20px; font-weight: 400; transition: transform .3s var(--ease); }
         .hero-cta:hover span { transform: translate(3px, -3px); }
-        .hero-note { color: #879087; font-size: 11px; letter-spacing: .04em; }
-        .hero-foot { display: flex; justify-content: space-between; align-items: end; color: #899188; }
+        .hero-note { color: #6E7A70; font-size: 11px; letter-spacing: .04em; }
+        .hero-foot { display: flex; justify-content: space-between; align-items: end; color: #6E7A70; }
         .scroll-cue { display: flex; align-items: center; gap: 12px; color: var(--paper); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
         .scroll-cue::before { content: ""; width: 1px; height: 42px; background: linear-gradient(var(--acid), transparent); }
         .hero-coord { text-align: right; }
@@ -124,89 +120,89 @@
         .panel { min-width: 0; width: 100%; max-width: 900px; }
         .left-panel { padding: clamp(28px, 4vw, 56px); background: var(--panel); border: 1px solid var(--line); }
         .panel-title { display: flex; align-items: center; gap: 12px; margin: 0 0 28px; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--paper); font-size: clamp(18px, 2vw, 23px); font-weight: 500; letter-spacing: -.025em; }
-        .panel-title::before { content: ""; width: 8px; height: 8px; background: var(--acid); border-radius: 50%; box-shadow: 0 0 20px rgba(200,241,105,.65); }
+        .panel-title::before { content: ""; width: 8px; height: 8px; background: var(--acid); border-radius: 50%; box-shadow: 0 0 20px rgba(47,107,82,.55); }
         .input-group { margin: 0 0 22px; }
-        .input-group label { display: block; margin-bottom: 11px; color: #c3c9bf; font-size: 14px; }
-        .input-group textarea { width: 100%; min-height: 220px; resize: vertical; padding: 22px; border: 1px solid rgba(237,242,228,.19); border-radius: 0; background: #111512; color: var(--paper); font-size: 16px; line-height: 2; transition: border-color .25s ease, box-shadow .25s ease; }
-        .input-group textarea::placeholder { color: #6f786f; }
-        .input-group textarea:focus { outline: none; border-color: var(--acid); box-shadow: 0 0 0 3px rgba(200,241,105,.08); }
+        .input-group label { display: block; margin-bottom: 11px; color: #3A463E; font-size: 14px; }
+        .input-group textarea { width: 100%; min-height: 220px; resize: vertical; padding: 22px; border: 1px solid rgba(47,107,82,.14); border-radius: 0; background: #F1F5EE; color: var(--paper); font-size: 16px; line-height: 2; transition: border-color .25s ease, box-shadow .25s ease; }
+        .input-group textarea::placeholder { color: #6E7A70; }
+        .input-group textarea:focus { outline: none; border-color: var(--acid); box-shadow: 0 0 0 3px rgba(47,107,82,.08); }
         .quick-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-        .quick-tag { padding: 8px 11px; border: 1px solid rgba(237,242,228,.13); border-radius: 99px; background: transparent; color: #b5bdb2; font-size: 11px; cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s var(--ease); }
-        .quick-tag:hover { transform: translateY(-2px); border-color: var(--acid); color: var(--acid); background: rgba(200,241,105,.06); }
+        .quick-tag { padding: 8px 11px; border: 1px solid rgba(47,107,82,.12); border-radius: 99px; background: transparent; color: #6E7A70; font-size: 11px; cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s var(--ease); }
+        .quick-tag:hover { transform: translateY(-2px); border-color: var(--acid); color: var(--acid); background: rgba(47,107,82,.06); }
         .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; }
         .btn { min-height: 48px; padding: 0 18px; border: 1px solid var(--acid); background: var(--acid); color: var(--ink); font-size: 12px; font-weight: 700; cursor: pointer; transition: transform .25s var(--ease), box-shadow .25s ease, background .25s ease; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(200,241,105,.12); background: #dbff8b; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(47,107,82,.12); background: #265944; }
         .btn:disabled { opacity: .58; cursor: wait; transform: none; }
-        .btn-secondary { border-color: var(--line); background: transparent; color: #c5ccc2; }
-        .btn-secondary:hover { border-color: rgba(237,242,228,.38); background: #242a25; box-shadow: none; }
-        .status-bar { margin-top: 20px; padding: 12px 14px; border-left: 2px solid var(--acid); background: rgba(200,241,105,.06); color: #d0d7c9; font-size: 11px; line-height: 1.7; display: none; }
+        .btn-secondary { border-color: var(--line); background: transparent; color: #3A463E; }
+        .btn-secondary:hover { border-color: rgba(47,107,82,.30); background: #F1F5EE; box-shadow: none; }
+        .status-bar { margin-top: 20px; padding: 12px 14px; border-left: 2px solid var(--acid); background: rgba(47,107,82,.06); color: #3A463E; font-size: 11px; line-height: 1.7; display: none; }
         .status-bar.show { display: block; }
-        .disclaimer { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--line); color: #929a90; font-size: 11px; line-height: 1.8; }
+        .disclaimer { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--line); color: #6E7A70; font-size: 11px; line-height: 1.8; }
         .disclaimer strong { color: var(--orange); font-weight: 600; }
         .result-area { display: none; margin-top: 28px; }
         .result-area.show { display: block; animation: result-in .7s var(--ease) both; }
         @keyframes result-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-        .result-section { margin-top: 16px; padding: 18px; background: #111512; border: 1px solid var(--line); }
+        .result-section { margin-top: 16px; padding: 18px; background: #F1F5EE; border: 1px solid var(--line); }
         .result-section h4 { margin: 0 0 13px; color: var(--acid); font-size: 12px; font-weight: 600; letter-spacing: .05em; }
         .match-card { padding: 15px 0; border-top: 1px solid var(--line); }
         .match-card .title { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 10px; }
         .match-card .name { color: var(--paper); font-size: 14px; font-weight: 600; }
-        .match-card .score { padding: 5px 8px; background: rgba(200,241,105,.12); color: var(--acid); font-size: 10px; white-space: nowrap; }
-        .match-card p { margin: 5px 0; color: #aeb6ab; font-size: 11px; line-height: 1.8; }
-        .match-card strong { color: #dce1d8; font-weight: 500; }
+        .match-card .score { padding: 5px 8px; background: rgba(47,107,82,.12); color: var(--acid); font-size: 10px; white-space: nowrap; }
+        .match-card p { margin: 5px 0; color: #6E7A70; font-size: 11px; line-height: 1.8; }
+        .match-card strong { color: #26312A; font-weight: 500; }
         .ai-comparison { display: grid; grid-template-columns: 1fr; gap: 14px; }
-        .ai-model-card { min-width: 0; padding: 18px 20px; border: 1px solid var(--line); background: #171c18; }
+        .ai-model-card { min-width: 0; padding: 18px 20px; border: 1px solid var(--line); background: #F1F5EE; }
         .ai-model-heading { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 12px; color: var(--paper); font-size: 13px; font-weight: 600; }
-        .ai-model-status { color: #aeb6ab; font-size: 11px; font-weight: 400; text-align: right; }
-        .ai-model-analysis { color: #c7cec4; font-size: 13px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .ai-model-status { color: #6E7A70; font-size: 11px; font-weight: 400; text-align: right; }
+        .ai-model-analysis { color: #3A463E; font-size: 13px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
         #graphChart { width: 100%; height: min(68vh, 680px); min-height: 460px; }
-        .graph-panel { border: 1px solid var(--line); background: #141815; }
+        .graph-panel { border: 1px solid var(--line); background: #F1F5EE; }
         #knowledge-graph { padding: 60px 0 clamp(100px, 16vw, 220px); }
         .graph-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 36px; }
-        .graph-heading .panel-title { margin-bottom: 18px; padding: 0; border: 0; font-size: 12px; color: #c6cec2; letter-spacing: .06em; }
+        .graph-heading .panel-title { margin-bottom: 18px; padding: 0; border: 0; font-size: 12px; color: #3A463E; letter-spacing: .06em; }
         .graph-heading .panel-title::before { width: 6px; height: 6px; }
         .graph-heading h2 { max-width: 700px; }
-        .graph-index { color: #859083; text-align: right; white-space: nowrap; font-size: 9px; line-height: 1.9; letter-spacing: .12em; }
+        .graph-index { color: #6E7A70; text-align: right; white-space: nowrap; font-size: 9px; line-height: 1.9; letter-spacing: .12em; }
         .graph-panel { overflow: hidden; }
-        .graph-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 14px 19px; border-bottom: 1px solid var(--line); color: #8d998a; font-size: 9px; letter-spacing: .12em; }
+        .graph-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 14px 19px; border-bottom: 1px solid var(--line); color: #6E7A70; font-size: 9px; letter-spacing: .12em; }
         .graph-toolbar-actions { display: flex; align-items: center; gap: 17px; }
-        .graph-data-count { color: #d3d9ce; letter-spacing: .04em; }
-        .graph-data-count span { color: #92a087; }
-        .graph-reset { border: 0; padding: 6px 0; background: transparent; color: #b7c1ae; font: inherit; font-size: 10px; cursor: pointer; text-decoration: underline; text-decoration-color: #596553; text-underline-offset: 4px; }
+        .graph-data-count { color: #3A463E; letter-spacing: .04em; }
+        .graph-data-count span { color: #6E7A70; }
+        .graph-reset { border: 0; padding: 6px 0; background: transparent; color: #4A564C; font: inherit; font-size: 10px; cursor: pointer; text-decoration: underline; text-decoration-color: #2F6B52; text-underline-offset: 4px; }
         .graph-reset:hover, .graph-reset:focus-visible { color: var(--acid); }
         .graph-atlas-grid { display: grid; grid-template-columns: minmax(0, 1fr) 270px; min-height: 500px; }
-        .graph-map { position: relative; min-width: 0; background-color: #111612; background-image: linear-gradient(rgba(189,202,177,.026) 1px, transparent 1px), linear-gradient(90deg, rgba(189,202,177,.026) 1px, transparent 1px); background-size: 34px 34px; }
-        .graph-map::before { content: "FIELD MAP  /  01"; position: absolute; z-index: 1; top: 16px; left: 18px; color: rgba(200,211,190,.43); font-size: 8px; letter-spacing: .18em; pointer-events: none; }
-        .graph-map::after { content: "N"; position: absolute; z-index: 1; top: 14px; right: 18px; width: 19px; height: 27px; border-top: 1px solid rgba(193,205,180,.4); color: rgba(193,205,180,.55); font-size: 8px; line-height: 17px; text-align: center; pointer-events: none; }
-        .graph-inspector { display: flex; min-width: 0; flex-direction: column; border-left: 1px solid var(--line); background: #171c18; }
+        .graph-map { position: relative; min-width: 0; background-color: #F1F5EE; background-image: linear-gradient(rgba(47,107,82,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(47,107,82,.07) 1px, transparent 1px); background-size: 34px 34px; }
+        .graph-map::before { content: "FIELD MAP  /  01"; position: absolute; z-index: 1; top: 16px; left: 18px; color: rgba(47,107,82,.4); font-size: 8px; letter-spacing: .18em; pointer-events: none; }
+        .graph-map::after { content: "N"; position: absolute; z-index: 1; top: 14px; right: 18px; width: 19px; height: 27px; border-top: 1px solid rgba(47,107,82,.4); color: rgba(47,107,82,.5); font-size: 8px; line-height: 17px; text-align: center; pointer-events: none; }
+        .graph-inspector { display: flex; min-width: 0; flex-direction: column; border-left: 1px solid var(--line); background: #F1F5EE; }
         .graph-inspector-top { padding: 20px 18px 15px; border-bottom: 1px solid var(--line); }
-        .graph-inspector-kicker { color: #889482; font-size: 8px; letter-spacing: .17em; }
+        .graph-inspector-kicker { color: #6E7A70; font-size: 8px; letter-spacing: .17em; }
         .graph-inspector h3 { margin: 10px 0 5px; color: var(--paper); font-size: 19px; font-weight: 500; letter-spacing: -.04em; overflow-wrap: anywhere; }
-        .graph-inspector-category { color: #b9c4ae; font-size: 10px; }
-        .graph-inspector-copy { margin: 12px 0 0; color: #98a194; font-size: 10px; line-height: 1.8; }
+        .graph-inspector-category { color: #4A564C; font-size: 10px; }
+        .graph-inspector-copy { margin: 12px 0 0; color: #6E7A70; font-size: 10px; line-height: 1.8; }
         .graph-related { padding: 16px 18px 19px; }
-        .graph-related-heading { display: flex; justify-content: space-between; gap: 10px; color: #aeb9a6; font-size: 9px; letter-spacing: .06em; }
-        .graph-related-count { color: #778373; }
+        .graph-related-heading { display: flex; justify-content: space-between; gap: 10px; color: #6E7A70; font-size: 9px; letter-spacing: .06em; }
+        .graph-related-count { color: #6E7A70; }
         .graph-related-list { display: flex; max-height: 330px; flex-direction: column; gap: 2px; overflow: auto; margin-top: 10px; padding-right: 3px; }
-        .graph-related-button { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%; border: 0; border-bottom: 1px solid rgba(230,237,223,.055); padding: 8px 2px; background: transparent; color: #c4ccbf; font: inherit; font-size: 10px; text-align: left; cursor: pointer; }
+        .graph-related-button { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%; border: 0; border-bottom: 1px solid rgba(47,107,82,.08); padding: 8px 2px; background: transparent; color: #3A463E; font: inherit; font-size: 10px; text-align: left; cursor: pointer; }
         .graph-related-button:hover, .graph-related-button:focus-visible { color: var(--acid); }
-        .graph-related-type { flex: none; color: #75816f; font-size: 8px; }
-        .graph-inspector-empty { margin: 14px 0 0; color: #889284; font-size: 10px; line-height: 1.9; }
+        .graph-related-type { flex: none; color: #6E7A70; font-size: 8px; }
+        .graph-inspector-empty { margin: 14px 0 0; color: #6E7A70; font-size: 10px; line-height: 1.9; }
         .graph-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 11px 22px; padding: 15px 19px; border-top: 1px solid var(--line); color: #adb5aa; font-size: 9px; letter-spacing: .03em; }
         .legend-item { display: inline-flex; align-items: center; gap: 8px; }
         .legend-symbol { display: inline-block; width: 10px; height: 10px; flex: none; border: 1px solid currentColor; }
-        .legend-syndrome { color: #c4d0a0; transform: rotate(45deg) scale(.78); }
-        .legend-symptom { color: #d6a08a; border-radius: 50%; }
-        .legend-formula { color: #b9adcb; border-radius: 2px; }
-        .legend-line { display: inline-block; width: 22px; border-top: 1px solid #aabe9a; opacity: .75; }
-        .legend-line.formula { border-top-style: dashed; border-color: #b9adcb; }
-        .graph-legend-note { margin-left: auto; color: #798476; font-size: 8px; }
+        .legend-syndrome { color: #4E8A6E; transform: rotate(45deg) scale(.78); }
+        .legend-symptom { color: #C98A5E; border-radius: 50%; }
+        .legend-formula { color: #7E9BB8; border-radius: 2px; }
+        .legend-line { display: inline-block; width: 22px; border-top: 1px solid #8FAE9A; opacity: .75; }
+        .legend-line.formula { border-top-style: dashed; border-color: #7E9BB8; }
+        .graph-legend-note { margin-left: auto; color: #6E7A70; font-size: 8px; }
         .graph-tooltip { min-width: 120px; padding: 2px 1px; }
-        .graph-tooltip-type { margin-bottom: 5px; color: #bac6ad; font-size: 9px; letter-spacing: .12em; }
-        .graph-tooltip-name { color: #f0f0e8; font-size: 13px; font-weight: 600; }
-        .graph-tooltip-note { margin-top: 5px; color: #9da799; font-size: 9px; line-height: 1.6; }
-        .loading { display: grid; place-content: center; min-height: 260px; gap: 13px; color: #858e83; text-align: center; font-size: 12px; }
-        .loading-spinner { width: 25px; height: 25px; margin: auto; border: 1px solid rgba(200,241,105,.2); border-top-color: var(--acid); border-radius: 50%; animation: spin 1s linear infinite; }
+        .graph-tooltip-type { margin-bottom: 5px; color: #4A564C; font-size: 9px; letter-spacing: .12em; }
+        .graph-tooltip-name { color: #26312A; font-size: 13px; font-weight: 600; }
+        .graph-tooltip-note { margin-top: 5px; color: #6E7A70; font-size: 9px; line-height: 1.6; }
+        .loading { display: grid; place-content: center; min-height: 260px; gap: 13px; color: #6E7A70; text-align: center; font-size: 12px; }
+        .loading-spinner { width: 25px; height: 25px; margin: auto; border: 1px solid rgba(47,107,82,.2); border-top-color: var(--acid); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .herb-image-credit a { color: var(--acid); text-underline-offset: 3px; }
         .herb-library { padding-top: clamp(76px, 11vw, 160px); padding-bottom: clamp(90px, 13vw, 180px); }
@@ -215,17 +211,17 @@
         .herb-library-head p { max-width: 450px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.9; }
         .herb-group { margin-top: 32px; }
         .herb-group h4 { margin: 0 0 13px; color: var(--acid); font-size: 11px; font-weight: 500; letter-spacing: .1em; }
-        .herb-group-description { max-width: 800px; margin: -3px 0 14px; color: #929a90; font-size: 10px; line-height: 1.8; }
+        .herb-group-description { max-width: 800px; margin: -3px 0 14px; color: #6E7A70; font-size: 10px; line-height: 1.8; }
         .herb-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-        .herb-card { min-width: 0; padding: 9px; border: 1px solid var(--line); background: #151a16; transition: border-color .25s ease, transform .25s var(--ease); }
-        .herb-card:hover { transform: translateY(-3px); border-color: rgba(200,241,105,.55); }
-        .herb-card img { display: block; width: 100%; height: 148px; object-fit: cover; background: #0c0f0d; }
+        .herb-card { min-width: 0; padding: 9px; border: 1px solid var(--line); background: #F1F5EE; transition: border-color .25s ease, transform .25s var(--ease); }
+        .herb-card:hover { transform: translateY(-3px); border-color: rgba(47,107,82,.5); }
+        .herb-card img { display: block; width: 100%; height: 148px; object-fit: cover; background: #F1F5EE; }
         .herb-card-title { display: block; margin-top: 10px; color: var(--paper); font-size: 13px; font-weight: 600; }
-        .herb-card-part { display: block; margin-top: 4px; color: #a3aca0; font-size: 9px; line-height: 1.7; }
-        .herb-card-note { display: block; margin-top: 7px; color: #c5ccc1; font-size: 9px; line-height: 1.75; }
-        .herb-image-credit { margin: 8px 2px 1px; color: #788276; font-size: 8px; line-height: 1.65; overflow-wrap: anywhere; }
-        .herb-library-note { margin-top: 25px; padding: 14px 16px; border-left: 2px solid var(--orange); background: rgba(255,116,77,.045); color: #9ba49a; font-size: 10px; line-height: 1.85; }
-        .site-footer { display: flex; justify-content: space-between; gap: 20px; padding: 22px var(--gutter); border-top: 1px solid var(--line); color: #7d867b; font-size: 10px; letter-spacing: .08em; }
+        .herb-card-part { display: block; margin-top: 4px; color: #6E7A70; font-size: 9px; line-height: 1.7; }
+        .herb-card-note { display: block; margin-top: 7px; color: #3A463E; font-size: 9px; line-height: 1.75; }
+        .herb-image-credit { margin: 8px 2px 1px; color: #6E7A70; font-size: 8px; line-height: 1.65; overflow-wrap: anywhere; }
+        .herb-library-note { margin-top: 25px; padding: 14px 16px; border-left: 2px solid var(--orange); background: rgba(201,138,94,.08); color: #6E7A70; font-size: 10px; line-height: 1.85; }
+        .site-footer { display: flex; justify-content: space-between; gap: 20px; padding: 22px var(--gutter); border-top: 1px solid var(--line); color: #6E7A70; font-size: 10px; letter-spacing: .08em; }
         [data-reveal] { opacity: 1; transform: none; }
         body.js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .85s var(--ease), transform .85s var(--ease); }
         body.js [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
@@ -301,7 +297,7 @@
         <canvas id="ambientCanvas" aria-hidden="true"></canvas>
         <nav class="site-nav" aria-label="主导航">
             <a class="wordmark" href="#top" aria-label="中医药AI知识检索辅助系统首页"><span class="wordmark-mark" aria-hidden="true"></span><span>FIELD NOTES&nbsp; / &nbsp;TCM AI</span></a>
-            <div class="nav-links"><a href="#experience">探索</a><a href="#herb-library">本草</a><a href="#knowledge-graph">图谱</a><a href="classics.html">经典</a><a href="train.html" style="color:#c8f169;font-weight:600">训练</a><a href="progress.html">报告</a>&nbsp; <a href="/static/assistant.html" style="color:#c8f169;font-weight:600">助手</a><a href="/static/profile.html" style="color:#b9a5ff;font-weight:600">档案</a></div>
+            <div class="nav-links"><a href="#experience">探索</a><a href="#herb-library">本草</a><a href="#knowledge-graph">图谱</a><a href="classics.html">经典</a><a href="train.html" style="color:#2F6B52;font-weight:600">训练</a><a href="progress.html">报告</a>&nbsp; <a href="/static/assistant.html" style="color:#2F6B52;font-weight:600">助手</a><a href="/static/profile.html" style="color:#7E9BB8;font-weight:600">档案</a></div>
         </nav>
         <div class="hero-main">
             <p class="eyebrow">AN EXPLORATION OF PATTERNS · 01</p>
@@ -347,12 +343,12 @@
                     <div class="result-area" id="resultArea" aria-live="polite">
                         <div class="result-section" id="routePanel" style="margin-bottom:14px;"></div>
                         <details class="result-section" style="cursor:pointer;">
-                            <summary style="cursor:pointer;color:#7a8577;font-size:12px;outline:none;list-style:none;padding:8px 0;">
+                            <summary style="cursor:pointer;color:#6E7A70;font-size:12px;outline:none;list-style:none;padding:8px 0;">
                                 📊 基线方法对比（点击展开查看实验数据）
                             </summary>
                             <div id="matchResults" style="margin-top:12px;"></div>
                             <div id="methodCompare" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:14px;"></div>
-                            <p style="color:#7a8577;font-size:11px;margin-top:8px;line-height:1.6;">
+                            <p style="color:#6E7A70;font-size:11px;margin-top:8px;line-height:1.6;">
                                 同一批方法在两种输入风格下结论完全相反，这也是本系统按输入风格路由的依据：<br>· <strong>口语体</strong>（教材 37 例）：TF-IDF 检索 91.9%、BM25 86.5%、RRF 81.1%、词项F1 67.6%，而分类器仅 5.4%；三家大模型零样本也只有 37.8%~40.5%。<br>· <strong>病历体</strong>（TCM-SD 去泄漏 683 例）：分类器 93.0%（多数类基线 77.3%，即仅高出 15.7 个百分点；macro-F1 71.4%），检索 3.9%~13.6%，<strong>DeepSeek 零样本 75.8%</strong>——分类器领先大模型 17.2 个百分点。<br>· 三家大模型同批对照（分层抽样 42 条）：DeepSeek 50.0%、ModelScope 54.8%、智谱 35.7%，轻量分类器 85.7%。<br>· 分类器高置信档（概率≥0.87，覆盖 62.2%）实测 99.1%。<br>所有数字可在 测试案例/、calibration_data.json 与 external_data/llm_baseline/ 中追溯。</p>
                         </details>
                         <div class="result-section">
@@ -581,8 +577,8 @@
                 const statusBar = document.getElementById('statusBar');
                 statusBar.classList.add('show');
                 statusBar.textContent = '❌ 无法连接后端服务，请确认 server.py 已启动';
-                statusBar.style.background = 'rgba(255,116,77,.1)';
-                statusBar.style.color = '#ff9b7d';
+                statusBar.style.background = 'rgba(201,138,94,.12)';
+                statusBar.style.color = '#C96A4E';
             }
         }
 
@@ -628,9 +624,9 @@
             graphSelectedId = null;
             graphChart = echarts.init(chartDom, null, { renderer: 'canvas' });
             const categoryMeta = {
-                0: { name: '证型', color: '#c4d0a0', symbol: 'diamond', size: 22 },
-                1: { name: '症状', color: '#d6a08a', symbol: 'circle', size: 12 },
-                2: { name: '方剂', color: '#b9adcb', symbol: 'roundRect', size: 17 }
+                0: { name: '证型', color: '#4E8A6E', symbol: 'diamond', size: 22 },
+                1: { name: '症状', color: '#C98A5E', symbol: 'circle', size: 12 },
+                2: { name: '方剂', color: '#7E9BB8', symbol: 'roundRect', size: 17 }
             };
             const isMobile = window.matchMedia('(max-width: 600px)').matches;
             graphIsMobile = isMobile;
@@ -648,14 +644,14 @@
                     ...node,
                     symbol: meta.symbol,
                     symbolSize: meta.size,
-                    itemStyle: { color: meta.color, borderColor: '#172019', borderWidth: 1.2, opacity: .96 },
+                    itemStyle: { color: meta.color, borderColor: '#F9FBF7', borderWidth: 1.2, opacity: .96 },
                     label: {
                         show: !isMobile && Number(node.category) === 0,
-                        position: 'right', distance: 7, color: '#d2d9cb', fontSize: 10, fontWeight: 500,
+                        position: 'right', distance: 7, color: '#26312A', fontSize: 10, fontWeight: 500,
                         formatter: params => params.data.name
                     },
-                    emphasis: { label: { show: true, color: '#f1f2e8', fontSize: 12, fontWeight: 600 }, itemStyle: { borderColor: '#e1e6d8', borderWidth: 1.5 } },
-                    select: { label: { show: true, color: '#f1f2e8', fontSize: 12, fontWeight: 600 }, itemStyle: { borderColor: '#edf0e4', borderWidth: 2 } }
+                    emphasis: { label: { show: true, color: '#1F4D3B', fontSize: 12, fontWeight: 600 }, itemStyle: { borderColor: '#2F6B52', borderWidth: 1.5 } },
+                    select: { label: { show: true, color: '#1F4D3B', fontSize: 12, fontWeight: 600 }, itemStyle: { borderColor: '#2F6B52', borderWidth: 2 } }
                 };
             });
             const renderedLinks = graphLinks.map(link => {
@@ -665,16 +661,16 @@
                 return {
                     ...link,
                     lineStyle: isFormula
-                        ? { color: 'rgba(185,173,203,.22)', width: 1, type: 'dashed', curveness: .22 }
-                        : { color: 'rgba(179,197,163,.16)', width: .8, type: 'solid', curveness: .06 }
+                        ? { color: 'rgba(126,155,184,.25)', width: 1, type: 'dashed', curveness: .22 }
+                        : { color: 'rgba(47,107,82,.18)', width: .8, type: 'solid', curveness: .06 }
                 };
             });
             const option = {
                 backgroundColor: 'transparent',
                 animationDuration: 450,
                 tooltip: {
-                    trigger: 'item', confine: true, backgroundColor: 'rgba(18,23,19,.97)', borderColor: 'rgba(177,194,161,.28)', borderWidth: 1,
-                    padding: [10, 12], textStyle: { color: '#f0f0e8', fontSize: 11 },
+                    trigger: 'item', confine: true, backgroundColor: 'rgba(249,251,247,.97)', borderColor: 'rgba(47,107,82,.25)', borderWidth: 1,
+                    padding: [10, 12], textStyle: { color: '#26312A', fontSize: 11 },
                     formatter: params => {
                         if (params.dataType === 'edge') {
                             const source = graphNodesById.get(String(params.data.source));
@@ -838,15 +834,15 @@
 
         // 方法口径：分数名必须与实际算法一致（旧版把 TF-IDF 余弦相似度标成了"词项 F1"）
         const METHOD_META = {
-            keyword: { label: '词项 F1 检索', score: '词项 F1', color: '#88968a' },
-            bm25:    { label: 'BM25 检索',   score: 'BM25 分', color: '#7ec8e3' },
-            tfidf:   { label: 'TF-IDF 检索', score: '余弦相似度', color: '#c8f169' },
-            hybrid:  { label: 'RRF 融合检索', score: 'RRF 分', color: '#b9a5ff' },
-            clf:     { label: 'TF-IDF+LR 分类器', score: '预测概率', color: '#ffd479' },
+            keyword: { label: '词项 F1 检索', score: '词项 F1', color: '#6E7A70' },
+            bm25:    { label: 'BM25 检索',   score: 'BM25 分', color: '#5B8DB8' },
+            tfidf:   { label: 'TF-IDF 检索', score: '余弦相似度', color: '#2F6B52' },
+            hybrid:  { label: 'RRF 融合检索', score: 'RRF 分', color: '#7E9BB8' },
+            clf:     { label: 'TF-IDF+LR 分类器', score: '预测概率', color: '#C9A35A' },
         };
         const LEVEL_COLOR = {
-            reliable: '#c8f169', hint: '#ffd479', low: '#ff9b7d',
-            insufficient: '#88968a', no_match: '#88968a', abstain: '#ff744d',
+            reliable: '#2F6B52', hint: '#C9A35A', low: '#C96A4E',
+            insufficient: '#6E7A70', no_match: '#6E7A70', abstain: '#ff744d',
         };
 
         function renderRoutePanel(data) {
@@ -856,7 +852,7 @@
             const route = data.route || {};
             const conf = data.answer_confidence || {};
             const key = conf.level || 'insufficient';
-            const color = LEVEL_COLOR[key] || '#88968a';
+            const color = LEVEL_COLOR[key] || '#6E7A70';
             const styleName = st.style === 'record' ? '电子病历体' : '口语描述';
             const items = [
                 ['输入风格', styleName + '（倾向分 ' + (st.score ?? '-') + '）'],
@@ -867,14 +863,14 @@
                 ['置信等级', (conf.label || '未知') + '｜' + (conf.reason || '')],
             ];
             box.innerHTML = ''
-                + '<div style="border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.03)">'
-                +   '<div style="font-size:11px;letter-spacing:1px;color:#9ba49a;margin-bottom:10px">系统判定 · 路由与置信度</div>'
+                + '<div style="border:1px solid rgba(31,77,59,.08);border-radius:12px;padding:16px 18px;background:rgba(31,77,59,.04)">'
+                +   '<div style="font-size:11px;letter-spacing:1px;color:#6E7A70;margin-bottom:10px">系统判定 · 路由与置信度</div>'
                 +   items.map(([k, v]) =>
                         '<div style="display:flex;gap:10px;margin:5px 0;font-size:12px;line-height:1.7">'
-                      +   '<span style="flex:0 0 62px;color:#7a8577">' + k + '</span>'
-                      +   '<span style="color:#d8ddd4">' + v + '</span>'
+                      +   '<span style="flex:0 0 62px;color:#6E7A70">' + k + '</span>'
+                      +   '<span style="color:#26312A">' + v + '</span>'
                       + '</div>').join('')
-                +   '<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;line-height:1.8;color:' + color + '">'
+                +   '<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(31,77,59,.06);font-size:12px;line-height:1.8;color:' + color + '">'
                 +     (data.status_note || '') + '</div>'
                 + '</div>';
         }
@@ -886,25 +882,25 @@
             ['keyword', 'bm25', 'tfidf', 'hybrid', 'clf'].forEach(mkey => {
                 const info = (data.method_results || {})[mkey];
                 if (!info) return;
-                const meta = METHOD_META[mkey] || { label: mkey, color: '#9ba49a' };
+                const meta = METHOD_META[mkey] || { label: mkey, color: '#6E7A70' };
                 const rows = info.matches || [];
                 const conf = info.confidence_detail || {};
                 const isAnswer = (data.answer_method === mkey);
                 const key = conf.level || 'insufficient';
-                const color = LEVEL_COLOR[key] || '#9ba49a';
+                const color = LEVEL_COLOR[key] || '#6E7A70';
                 const card = document.createElement('div');
-                card.style.cssText = 'border:1px solid ' + (isAnswer ? color : 'rgba(255,255,255,.08)')
-                    + ';border-radius:8px;padding:10px 12px;background:rgba(255,255,255,.02)';
+                card.style.cssText = 'border:1px solid ' + (isAnswer ? color : 'rgba(31,77,59,.06)')
+                    + ';border-radius:8px;padding:10px 12px;background:rgba(31,77,59,.03)';
                 let html = '<div style="font-size:10px;color:' + meta.color + ';letter-spacing:.3px;margin-bottom:5px">'
                     + meta.label + (isAnswer ? ' · 本次采用' : '') + '</div>';
                 if (rows.length === 0) {
-                    html += '<div style="color:#999;font-size:11px;">无结果</div>';
+                    html += '<div style="color:#6E7A70;font-size:11px;">无结果</div>';
                 } else {
-                    html += '<div style="font-size:13px;font-weight:600;color:#d8ddd4;margin:3px 0;">'
+                    html += '<div style="font-size:13px;font-weight:600;color:#26312A;margin:3px 0;">'
                         + rows[0].syndrome
-                        + ' <span style="font-size:10px;color:#999;font-weight:400;">' + meta.score + ' ' + rows[0].score + '</span></div>';
+                        + ' <span style="font-size:10px;color:#6E7A70;font-weight:400;">' + meta.score + ' ' + rows[0].score + '</span></div>';
                     if (rows[1]) {
-                        html += '<div style="font-size:10px;color:#888;margin:2px 0;">2. ' + rows[1].syndrome + '</div>';
+                        html += '<div style="font-size:10px;color:#6E7A70;margin:2px 0;">2. ' + rows[1].syndrome + '</div>';
                     }
                 }
                 html += '<div style="font-size:10px;margin-top:6px;color:' + color + '">'
@@ -922,7 +918,7 @@
             const scoreNote = '分数为「' + (((METHOD_META[data.answer_method] || {}).score) || '匹配度')
                 + '」，不是诊断概率。';
             const p = document.createElement('p');
-            p.style.cssText = 'color:#aeb6ab;margin:10px 0;line-height:1.8;font-size:11px';
+            p.style.cssText = 'color:#6E7A70;margin:10px 0;line-height:1.8;font-size:11px';
             p.textContent = '已抽取症状：' + (observed.length ? observed.join('、') : '未识别到知识库词条')
                 + '。未识别文本：' + (unmatched.length ? unmatched.join('；') : '无')
                 + '。置信等级：' + (conf.label || data.confidence || '未知') + '。' + scoreNote;
@@ -949,7 +945,7 @@
             const meta = METHOD_META[answerMethod] || { label: answerMethod, score: '分数' };
             const conf = data.answer_confidence || {};
             const key = conf.level || 'insufficient';
-            const color = LEVEL_COLOR[key] || '#88968a';
+            const color = LEVEL_COLOR[key] || '#6E7A70';
             const rows = data.answer_matches || [];
 
             if (title) {
@@ -959,42 +955,42 @@
             clfBox.innerHTML = '';
             const big = document.createElement('div');
             big.style.cssText = 'border:2px solid ' + color + ';border-radius:12px;padding:22px 24px;'
-                + 'background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01))';
+                + 'background:linear-gradient(135deg,rgba(31,77,59,.05),rgba(31,77,59,.02))';
             let html = '<div style="font-size:12px;color:' + color + ';letter-spacing:1px;margin-bottom:12px;font-weight:600">'
                 + '置信等级：' + (conf.label || '未知')
                 + (conf.calibrated_accuracy != null ? ' · 该分数档实测准确率 ' + (conf.calibrated_accuracy * 100).toFixed(0) + '%' : '')
                 + '</div>';
             if (data.answer_is_fallback) {
-                html += '<div style="font-size:12px;color:#ffd479;line-height:1.7;margin-bottom:10px">'
+                html += '<div style="font-size:12px;color:#C9A35A;line-height:1.7;margin-bottom:10px">'
                     + '首选方法置信度不足，以下为回落的候选线索，不作为结论。</div>';
             }
             if (rows.length === 0) {
-                html += '<div style="color:#999;font-size:14px;">无结果</div>';
+                html += '<div style="color:#6E7A70;font-size:14px;">无结果</div>';
             } else {
                 rows.slice(0, 3).forEach((r, i) => {
                     if (i === 0) {
-                        html += '<div style="font-size:28px;font-weight:700;color:#fff;margin:8px 0;">' + r.syndrome
+                        html += '<div style="font-size:28px;font-weight:700;color:#26312A;margin:8px 0;">' + r.syndrome
                             + ' <span style="font-size:14px;color:' + color + ';font-weight:400;">'
                             + meta.score + ' ' + r.score + '</span></div>';
                     } else {
                         html += '<div style="font-size:13px;color:#b0b8af;margin:4px 0;">' + (i + 1) + '. '
-                            + r.syndrome + ' <span style="color:#888;">' + r.score + '</span></div>';
+                            + r.syndrome + ' <span style="color:#6E7A70;">' + r.score + '</span></div>';
                     }
                 });
                 const top = rows[0] || {};
                 if ((top.matched_symptoms || []).length) {
-                    html += '<div style="font-size:11px;color:#9ba49a;margin-top:10px;line-height:1.7">证据命中：'
+                    html += '<div style="font-size:11px;color:#6E7A70;margin-top:10px;line-height:1.7">证据命中：'
                         + top.matched_symptoms.join('、') + '</div>';
                 }
             }
-            html += '<div style="font-size:11px;color:#7a8577;margin-top:12px;line-height:1.7">'
+            html += '<div style="font-size:11px;color:#6E7A70;margin-top:12px;line-height:1.7">'
                 + (conf.reason || '') + '</div>';
             big.innerHTML = html;
             clfBox.appendChild(big);
 
             if ((data.limitations || []).length) {
                 const lim = document.createElement('div');
-                lim.style.cssText = 'font-size:11px;color:#7a8577;margin-top:10px;line-height:1.8';
+                lim.style.cssText = 'font-size:11px;color:#6E7A70;margin-top:10px;line-height:1.8';
                 lim.innerHTML = data.limitations.map(x => '· ' + x).join('<br>');
                 clfBox.appendChild(lim);
             }
@@ -1074,7 +1070,7 @@
                     const drift = staticMode ? 0 : Math.sin(time * light.speed + light.phase) * .035;
                     const x = (light.x + drift) * width, y = (light.y + Math.cos(time * light.speed + light.phase) * (staticMode ? 0 : .035)) * height;
                     const gradient = ctx.createRadialGradient(x, y, 0, x, y, light.r);
-                    gradient.addColorStop(0, 'rgba(200,241,105,.12)');
+                    gradient.addColorStop(0, 'rgba(47,107,82,.12)');
                     gradient.addColorStop(1, 'rgba(200,241,105,0)');
                     ctx.fillStyle = gradient; ctx.fillRect(x - light.r, y - light.r, light.r * 2, light.r * 2);
                 }
