@@ -10,6 +10,7 @@
 body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;}
 a{color:var(--acid);text-decoration:none;}
 .topbar a{color:var(--muted);}
+.nav{display:flex;gap:15px;font-size:13px;align-items:center;}
 .wrap{max-width:1080px;margin:0 auto;padding:28px 22px 80px;}
 .topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px;}
 .brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
@@ -55,7 +56,7 @@ button.ghost{background:transparent;color:var(--paper);border:1px solid var(--li
 <div class="wrap">
   <div class="topbar">
     <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>相似证型鉴别</b></div>
-    <div><a href="/">检索</a> &nbsp; <a href="/classics.html">经典</a> &nbsp; <a href="/train.html" style="color:var(--acid);font-weight:600">训练</a> &nbsp; <a href="/progress.html">报告</a>&nbsp; <a href="/static/assistant.html">助手</a>&nbsp; <a href="/static/profile.html">档案</a></div>
+    <div class="nav"><a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html" style="color:var(--acid);font-weight:600">训练</a><a href="/progress.html">报告</a><a href="/static/assistant.html">助手</a><a href="/static/profile.html">档案</a></div>
   </div>
   <h1>中医内科学 · 相似证型鉴别</h1>
   <p class="sub">选择两个易混淆的证型，系统基于<b>真实病历</b>统计各自的高发症状，展示二者的鉴别要点。
