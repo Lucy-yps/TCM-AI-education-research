@@ -145,7 +145,8 @@ def calibration():
 @app.get("/api/syndromes")
 def syndromes():
     return jsonify({"code": 200, "data": [
-        {"name": x["syndrome"], "symptoms": x["symptoms"], "category": x.get("category", "")}
+        {"name": x["syndrome"], "symptoms": x["symptoms"], "category": x.get("category", ""),
+         "detail": x.get("detail") or {}}
         for x in retrieval.KNOWLEDGE_BASE]})
 
 

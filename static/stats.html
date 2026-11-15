@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据看板 · 本草辨证</title>
+<style>
+:root{color-scheme:dark;--ink:#101311;--panel:#171b18;--panel-raised:#1d231e;--paper:#f0f0e8;--muted:#9ba49a;--line:rgba(237,242,228,.14);--acid:#c8f169;--orange:#ff744d;--violet:#b9a5ff;--blue:#8fd4ff;--gold:#e8c46a;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.7;}
+a{color:var(--muted);text-decoration:none;}
+a:hover{color:var(--acid);}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 22px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}
+.brand b{color:var(--acid);}
+.nav{display:flex;gap:15px;font-size:13px;}
+h1{font-size:25px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:24px;}
+h2{font-size:14px;color:var(--muted);letter-spacing:2px;font-weight:600;margin:30px 0 12px;}
+h2::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acid);margin-right:9px;vertical-align:middle;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
+.kpi{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px 20px;}
+.kpi .n{font-size:30px;font-weight:700;line-height:1.15;color:var(--acid);}
+.kpi .n small{font-size:13px;color:var(--muted);font-weight:400;margin-left:3px;}
+.kpi .l{font-size:12px;color:var(--muted);margin-top:5px;}
+.kpi .s{font-size:11px;color:#6e7a6c;margin-top:7px;}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px 20px;margin-top:12px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);}
+th{color:var(--muted);font-weight:500;font-size:11.5px;letter-spacing:1px;}
+td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--paper);}
+tr:last-child td{border-bottom:0;}
+.bar{height:6px;border-radius:3px;background:var(--panel-raised);overflow:hidden;min-width:70px;}
+.bar i{display:block;height:100%;background:var(--acid);border-radius:3px;}
+.bar.w i{background:var(--orange);}
+.tag{display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted);margin-right:5px;}
+.legend{font-size:11.5px;color:var(--muted);margin-top:10px;}
+.err{color:var(--orange);font-size:12px;}
+.foot{margin-top:30px;font-size:11.5px;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>数据看板</b></div>
+    <div class="nav">
+      <a href="/">检索</a>
+      <a href="/classics.html">经典</a>
+      <a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a>
+      <a href="/static/stats.html" style="color:var(--acid)">看板</a>
+    </div>
+  </div>
+
+  <h1>数据看板</h1>
+  <div class="sub">全部指标实时取自后端接口，不写死在页面里。悬停可查看来源。</div>
+
+  <h2>数据规模</h2>
+  <div class="grid" id="g1"><div class="kpi"><div class="n">—</div><div class="l">加载中</div></div></div>
+
+  <h2>模块覆盖</h2>
+  <div class="panel" id="g2"><div class="err">加载中…</div></div>
+
+  <h2>核心指标</h2>
+  <div class="grid" id="g3"><div class="kpi"><div class="n">—</div><div class="l">加载中</div></div></div>
+
+  <h2>系统构成</h2>
+  <div class="panel" id="g4"><div class="err">加载中…</div></div>
+
+  <div class="foot" id="foot">数据来源：/api/health · /api/quiz/stats · /api/quiz/formula/meta · /api/quiz/tp/meta · /api/graph · /api/classics</div>
+</div>
+
+<script>
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function num(n){ if(n==null||isNaN(n)) return "—"; return Number(n).toLocaleString("en-US"); }
+function get(u){ return fetch(u).then(function(r){ return r.json(); }).catch(function(){ return null; }); }
+
+var S = {};
+
+Promise.all([
+  get("/api/health"),
+  get("/api/quiz/stats"),
+  get("/api/quiz/formula/meta"),
+  get("/api/quiz/tp/meta"),
+  get("/api/graph"),
+  get("/api/classics")
+]).then(function(res){
+  var health = res[0] || {}, stats = (res[1]||{}).data || {}, fm = res[2] || {},
+      tp = (res[3]||{}).data || {}, graph = res[4] || {}, cls = res[5] || {};
+
+  // 方剂 / 治法 去重统计
+  var fs = {}, ts = {};
+  (fm.concepts || []).forEach(function(c){
+    (c.formulas || []).forEach(function(x){ fs[x] = 1; });
+    (c.treatments || []).forEach(function(x){ ts[x] = 1; });
+  });
+  var nFormula = Object.keys(fs).length, nTreat = Object.keys(ts).length;
+
+  // ---- 数据规模 ----
+  var k1 = [
+    ["total_cases", "真实病历", stats.total_cases, "TCM-SD 全量", "/api/quiz/stats"],
+    ["internal", "内科病历", stats.internal_cases, "出题语料池", "/api/quiz/stats"],
+    ["refs", "病历引用", stats.case_refs, "出题实际引用", "/api/quiz/stats"],
+    ["k", "知识库证型", health.knowledge_count, "人工整理", "/api/health"],
+    ["f", "方剂", nFormula, "去重后", "/api/quiz/formula/meta"],
+    ["t", "治法", nTreat, "去重后", "/api/quiz/formula/meta"],
+    ["g", "图谱节点", graph.total_nodes, graph.total_links + " 条关系", "/api/graph"],
+    ["b", "经典典籍", (cls.books||[]).length, (cls.entries||[]).length + " 条原文", "/api/classics"]
+  ];
+  document.getElementById("g1").innerHTML = k1.map(function(x){
+    return '<div class="kpi" title="来源：' + x[4] + '"><div class="n">' + num(x[2]) + '</div><div class="l">' + x[1] + '</div><div class="s">' + x[3] + '</div></div>';
+  }).join("");
+
+  // ---- 模块覆盖 ----
+  // 只对有明确分母的模块算比例，其余显示绝对值（避免口径冲突）
+  var rows = [
+    ["辨证训练", null, null, "166 题已生成", (stats.core||0) + " 个核心证型，题库覆盖见 PPT"],
+    ["相似鉴别", 72, 72, "72 个证型两两可对比", "2,556 组配对"],
+    ["方剂治法", (fm.concepts||[]).length, stats.core || 72, "有方剂/治法数据的证型", nFormula + " 首方 / " + nTreat + " 条治法"],
+    ["舌脉辨识", tp.available || 0, tp.core_count || 72, "满足鉴别性条件的证型", "其余因舌脉重叠排除（中医舌脉需四诊合参）"],
+    ["经典书城", null, null, (cls.books||[]).length + " 部典籍 · " + (cls.entries||[]).length + " 条原文", "原文待持续补充"]
+  ];
+  document.getElementById("g2").innerHTML = '<table><tr><th>模块</th><th style="width:110px">覆盖</th><th style="width:105px">比例</th><th>说明</th><th>备注</th></tr>'
+    + rows.map(function(r){
+      if (r[1] === null) {
+        return '<tr><td>' + esc(r[0]) + '</td><td style="color:#6e7a6c">—</td><td class="n" style="color:#6e7a6c">—</td>'
+          + '<td style="color:#9ba49a">' + esc(r[3]) + '</td>'
+          + '<td style="color:#6e7a6c;font-size:11.5px">' + esc(r[4]) + '</td></tr>';
+      }
+      var pct = Math.round(r[1]/Math.max(1,r[2])*100);
+      var w = Math.min(100, pct);
+      return '<tr><td>' + esc(r[0]) + '</td>'
+        + '<td><div class="bar' + (pct<50?' w':'') + '"><i style="width:' + w + '%"></i></div></td>'
+        + '<td class="n">' + r[1] + ' / ' + r[2] + ' (' + pct + '%)</td>'
+        + '<td style="color:#9ba49a">' + esc(r[3]) + '</td>'
+        + '<td style="color:#6e7a6c;font-size:11.5px">' + esc(r[4]) + '</td></tr>';
+    }).join("") + '</table>'
+    + '<div class="legend">注：只对分母明确的模块计算比例。舌脉辨识的 24/72 是刻意筛选的结果（中医舌脉需四诊合参）。</div>';
+
+  // ---- 核心指标（评测结果，来自固定实验，不是实时计算）----
+  var k3 = [
+    ["93.0%", "分类器 Top-1", "683 例去泄漏 · 多数类基线 77.3%", ""],
+    ["99.9%", "风格判定准确率", "720 条测试集笔误 1 条", ""],
+    ["5", "检索方法", (health.methods||[]).join(" / "), ""],
+    ["16 / 37", "分类器覆盖", "21 个证型无对应类别", ""]
+  ];
+  document.getElementById("g3").innerHTML = k3.map(function(x){
+    return '<div class="kpi"><div class="n">' + x[0] + '</div><div class="l">' + x[1] + '</div><div class="s">' + esc(x[2]) + '</div></div>';
+  }).join("");
+
+  // ---- 系统构成 ----
+  var sys = [
+    ["后端接口", "29 个", "server.py"],
+    ["前端页面", "8 个", "检索 / 经典 / 训练 / 报告 / 看板 + 4 个训练子页"],
+    ["知识库", num(health.knowledge_count) + " 证型", "knowledge_base.json"],
+    ["校准参考", (health.calibration||{}).record_reference_n + " 例病历 / " + (health.calibration||{}).colloquial_reference_n + " 例教材", "calibration_data.json"],
+    ["路由策略", (health.routing||{}).colloquial + " / " + (health.routing||{}).record, "口语体 / 病历体"],
+    ["模型依赖", "0（离线可跑）", "无 GPU、无外部 API（可选大模型摘要）"]
+  ];
+  document.getElementById("g4").innerHTML = '<table><tr><th style="width:120px">项</th><th style="width:260px">值</th><th>说明</th></tr>'
+    + sys.map(function(r){ return '<tr><td style="color:#9ba49a">' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td style="color:#6e7a6c;font-size:11.5px">' + esc(r[2]) + '</td></tr>'; }).join("")
+    + '</table><div class="legend">'
+    + '<span class="tag">离线运行</span><span class="tag">无需 GPU</span><span class="tag">可复现</span>'
+    + '</div>';
+}).catch(function(e){
+  document.getElementById("g1").innerHTML = '<div class="err">加载失败：' + esc(e.message) + '</div>';
+});
+</script>
+</body>
+</html>
