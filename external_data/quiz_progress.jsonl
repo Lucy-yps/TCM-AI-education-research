@@ -16,3 +16,7 @@
 {"ts": 1791338148, "syndrome": "湿热内蕴证", "chosen": "痰热内扰证", "correct": false, "src": "train#40460"}
 {"ts": 1791338210, "syndrome": "气虚不摄证", "chosen": "气虚不摄证", "correct": true, "src": ""}
 {"ts": 1791338239, "syndrome": "肾虚水泛证", "chosen": "舌红，苔黄，脉滑", "correct": false, "src": ""}
+{"ts": 1794715732, "syndrome": "风寒感冒", "chosen": "风寒感冒", "correct": true, "src": "", "kind": "quiz"}
+{"ts": 1794715780, "syndrome": "风寒感冒", "chosen": "辛温解表", "correct": true, "src": "", "kind": "formula"}
+{"ts": 1794715780, "syndrome": "风寒感冒", "chosen": "舌红苔黄", "correct": false, "src": "", "kind": "tp"}
+{"ts": 1794715780, "syndrome": "风寒感冒", "chosen": "风寒感冒", "correct": true, "src": "", "kind": "quiz"}

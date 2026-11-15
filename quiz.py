@@ -403,8 +403,8 @@ def _progress_write(rec):
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
-def record_answer(syndrome, chosen, correct, src=None, ms=None):
-    """记录一次答题。返回累计统计。"""
+def record_answer(syndrome, chosen, correct, src=None, ms=None, kind="quiz"):
+    """记录一次答题。返回累计统计。kind: quiz 辨证 | formula 方剂 | tp 舌脉。"""
     import time as _t
     rec = {
         "ts": int(_t.time()),
@@ -412,6 +412,7 @@ def record_answer(syndrome, chosen, correct, src=None, ms=None):
         "chosen": chosen or "",
         "correct": bool(correct),
         "src": src or "",
+        "kind": kind or "quiz",
     }
     if ms is not None:
         rec["ms"] = int(ms)
@@ -443,7 +444,21 @@ def progress_stats():
     """汇总学习进度：总体、按证型、最薄弱、易混淆对、最近趋势。"""
     import time as _t
     recs = progress_records()
+    # 按题型分组（旧记录无 kind，标为 legacy，不混入核心统计）
+    _km = {}
+    for r in recs:
+        k = r.get("kind") if r.get("kind") in ("quiz", "formula", "tp") else "legacy"
+        r["_kind"] = k
+        d = _km.setdefault(k, {"n": 0, "c": 0})
+        d["n"] += 1
+        if r.get("correct"):
+            d["c"] += 1
+    by_kind = [{"kind": k, "n": v["n"], "correct": v["c"],
+                "accuracy": round(v["c"] / v["n"], 3) if v["n"] else None}
+               for k, v in sorted(_km.items(), key=lambda x: -x[1]["n"])]
+
     total = len(recs)
+    quiz_recs = [r for r in recs if r.get("_kind") == "quiz"]
     if total == 0:
         return {"total": 0, "correct": 0, "accuracy": None, "by_syndrome": [],
                 "weakest": [], "confusions": [], "recent": [], "days": 0,
@@ -453,7 +468,7 @@ def progress_stats():
 
     # 按证型
     agg = {}
-    for r in recs:
+    for r in quiz_recs:
         s = r.get("syndrome") or "(未知)"
         d = agg.setdefault(s, {"n": 0, "c": 0})
         d["n"] += 1
@@ -465,7 +480,7 @@ def progress_stats():
 
     # 易混淆对：答错时 正确证型 -> 误选证型
     conf = {}
-    for r in recs:
+    for r in quiz_recs:
         if r.get("correct"):
             continue
         g = r.get("syndrome") or ""
@@ -501,6 +516,10 @@ def progress_stats():
         "confusions": confusions,
         "recent": recent,
         "days": len(days),
+        "by_kind": by_kind,
+        "quiz_total": len(quiz_recs),
+        "quiz_correct": sum(1 for r in quiz_recs if r.get("correct")),
+        "quiz_accuracy": (round(sum(1 for r in quiz_recs if r.get("correct")) / len(quiz_recs), 4) if quiz_recs else None),
         "distinct_syndromes": len(agg),
     }
 

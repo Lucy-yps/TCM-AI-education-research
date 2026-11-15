@@ -348,8 +348,12 @@ def quiz_record():
     if not syndrome or not chosen:
         return jsonify({"code": 400, "message": "需要 syndrome 与 chosen 两个字段"}), 400
     try:
-        stats = quiz.record_answer(syndrome, chosen, syndrome == chosen,
-                                   src=payload.get("src"), ms=payload.get("ms"))
+        _c = payload.get("correct")
+        if _c is None:
+            _c = (syndrome == chosen)   # 兼容旧调用：仅辨证题下成立
+        stats = quiz.record_answer(syndrome, chosen, bool(_c),
+                                   src=payload.get("src"), ms=payload.get("ms"),
+                                   kind=payload.get("kind") or "quiz")
     except Exception as exc:
         return jsonify({"code": 500, "message": "记录失败：" + type(exc).__name__}), 500
     return jsonify({"code": 200, "data": stats})
@@ -483,6 +487,69 @@ def selective_score():
         "combined_alpha0": round(selective.combined_score(proba), 4),
         "combined_alpha035": round(selective.combined_score(proba, 0.35), 4),
     }})
+
+
+
+# ---------------------------------------------------------------- 经典书城
+_HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+@app.route("/classics.html")
+def classics_page():
+    with open(os.path.join(_HERE, "classics.html"), encoding="utf-8") as f:
+        return f.read()
+
+
+@app.get("/api/classics")
+def api_classics():
+    """返回经典原文条目与划词术语词典。"""
+    try:
+        with open(os.path.join(_HERE, "docs", "classics.json"), encoding="utf-8") as f:
+            data = json.load(f)
+        terms = {}
+        tp = os.path.join(_HERE, "docs", "classic_terms.json")
+        if os.path.exists(tp):
+            with open(tp, encoding="utf-8") as f:
+                terms = json.load(f)
+        data["terms"] = terms
+        return jsonify(data)
+    except Exception as exc:
+        return jsonify({"code": 500, "message": "经典数据不可用：" + type(exc).__name__}), 500
+
+
+
+@app.get("/api/formulas")
+def api_formulas():
+    """方剂速查：证型 → 方名 → 功效 → 组成（逐味药）。"""
+    rows = []
+    for x in retrieval.KNOWLEDGE_BASE:
+        d = x.get("detail") or {}
+        f = d.get("formula") or {}
+        name = (f.get("name") or "").strip()
+        if not name:
+            continue
+        comp = (f.get("composition") or "").strip()
+        herbs = [h.strip() for h in comp.replace("、", "，").replace(",", "，").split("，") if h.strip()]
+        rows.append({
+            "syndrome": x.get("syndrome") or "",
+            "name": name,
+            "effect": (f.get("effect") or "").strip(),
+            "composition": comp,
+            "herbs": herbs,
+            "tongue": (d.get("tongue") or "").strip(),
+            "pulse": (d.get("pulse") or "").strip(),
+        })
+    return jsonify({"code": 200, "data": rows})
+
+
+
+
+
+
+@app.route("/train.html")
+def train_page():
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "train.html"), encoding="utf-8") as f:
+        return f.read()
 
 
 if __name__ == "__main__":

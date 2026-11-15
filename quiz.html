@@ -64,7 +64,7 @@
 <div class="wrap">
     <div class="topbar">
         <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>辨证训练</b></div>
-        <div><a href="/">← 知识检索</a> &nbsp; <a href="/compare.html" style="color:#b9a5ff;font-weight:600">相似证型鉴别</a> &nbsp; <a href="/progress.html" style="color:#c8f169;font-weight:600">学习报告</a> &nbsp; <a href="/formula.html" style="color:#e8c46a;font-weight:600">方剂治法</a> &nbsp; <a href="/tongue.html" style="color:#8fd4ff;font-weight:600">舌脉辨识</a></div>
+        <div><a href="/">检索</a> &nbsp; <a href="/classics.html">经典</a> &nbsp; <a href="/train.html" style="color:#c8f169;font-weight:600">训练</a> &nbsp; <a href="/progress.html">报告</a></div>
     </div>
 
     <h1>中医内科学 · 辨证思维训练</h1>
@@ -179,7 +179,7 @@ function submit(idx) {
     try {
         fetch('/api/quiz/record', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ syndrome: current.syndrome, chosen: chosen, src: current.source && current.source.line ? (current.source.split + '#' + current.source.line) : '' })
+            body: JSON.stringify({ syndrome: current.syndrome, chosen: chosen, kind: 'quiz', correct: correct, src: current.source && current.source.line ? (current.source.split + '#' + current.source.line) : '' })
         }).catch(function () {});
     } catch (e) { /* 记录失败不影响答题 */ }
 }
@@ -210,6 +210,16 @@ $('genBtn').addEventListener('click', generate);
 $('nextBtn').addEventListener('click', generate);
 loadStats();
 loadSyndromes();
+</script>
+
+<script>
+/* 嵌入训练中心时隐藏自身导航，避免套娃 */
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '20px';
+}
 </script>
 </body>
 </html>

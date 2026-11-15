@@ -37,7 +37,7 @@ button:hover{color:var(--orange);border-color:var(--orange);}
 <div class="wrap">
   <div class="topbar">
     <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>学习报告</b></div>
-    <div><a href="/quiz.html">← 辨证训练</a> &nbsp; <a href="/compare.html">相似证型鉴别</a> &nbsp; <a href="/formula.html" style="color:#e8c46a;font-weight:600">方剂治法</a> &nbsp; <a href="/tongue.html" style="color:#8fd4ff;font-weight:600">舌脉辨识</a></div>
+    <div><a href="/">检索</a> &nbsp; <a href="/classics.html">经典</a> &nbsp; <a href="/train.html">训练</a> &nbsp; <a href="/progress.html" style="color:#b9a5ff;font-weight:600">报告</a></div>
   </div>
   <h1>学习报告</h1>
   <p class="sub">基于你的答题记录统计。系统据此定位<b>薄弱证型</b>与<b>易混淆证型对</b>，为定向补练提供依据。</p>
@@ -54,16 +54,61 @@ function render(d){
     $("stage").innerHTML='<div class="panel"><div class="empty">尚无答题记录。请先到「辨证训练」完成几道题，再回来查看报告。</div></div>';
     return;
   }
+  var KL={quiz:"辨证 · 选证型",formula:"方剂 · 选治法",tp:"舌脉 · 选表现",legacy:"历史记录 · 未标注题型"};
+  var bk=d.by_kind||[], qr=null, lg=null;
+  bk.forEach(function(x){ if(x.kind==="quiz")qr=x; if(x.kind==="legacy")lg=x; });
+
   var h='<div class="cards">';
   h+='<div class="card"><div class="k">累计答题</div><div class="v">'+d.total+' <small>题</small></div></div>';
-  h+='<div class="card"><div class="k">总体正确率</div><div class="v">'+pct(d.accuracy)+'<small>%</small></div></div>';
-  h+='<div class="card"><div class="k">答对</div><div class="v">'+d.correct+' <small>题</small></div></div>';
+  if(qr&&qr.n){h+='<div class="card"><div class="k">辨证题正确率</div><div class="v">'+pct(qr.accuracy)+'<small>%</small></div></div>';}
+  else{h+='<div class="card"><div class="k">辨证题正确率</div><div class="v" style="font-size:14px;color:var(--muted)">暂无</div></div>';}
   h+='<div class="card"><div class="k">覆盖证型</div><div class="v">'+d.distinct_syndromes+' <small>个</small></div></div>';
   h+='<div class="card"><div class="k">学习天数</div><div class="v">'+d.days+' <small>天</small></div></div>';
   h+='</div>';
 
+  if(bk.length){
+    h+='<div class="panel"><h3>分题型正确率</h3>';
+    h+='<div class="note" style="margin-bottom:12px">不同题型的答案语义不同（选证型 / 选治法 / 选舌脉表现），分开统计才有意义。</div>';
+    bk.forEach(function(x){
+      var acc=x.accuracy, cls=acc==null?"":(acc<0.5?"low":(acc<0.75?"mid":""));
+      var w=acc==null?0:pct(acc);
+      h+='<div class="bar-row"><span>'+esc(KL[x.kind]||x.kind)+'</span><div class="track"><div class="fill '+cls+'" style="width:'+w+'%"></div></div><span class="num">'+x.correct+'/'+x.n+(acc==null?"":" ("+pct(acc)+"%)")+'</span></div>';
+    });
+    if(lg){h+='<div class="note" style="margin-top:10px">⚠ 历史记录 '+lg.n+' 条产生于「题型标注」上线前，未区分题型，其正确率不能作为学习效果依据。</div>';}
+    h+='</div>';
+  }
+
+  if((d.recent||[]).length){
+    var R=d.recent, W=560, H=150, P=34;
+    var maxN=Math.max.apply(null,R.map(function(x){return x.n;}))||1;
+    var pts=R.map(function(x,i){
+      var px=P+(R.length===1?0:i*(W-2*P)/(R.length-1));
+      var py=H-P-pct(x.accuracy)*(H-2*P)/100;
+      return {x:px,y:py,d:x.day,a:pct(x.accuracy),n:x.n};
+    });
+    var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;max-width:640px;height:auto">';
+    for(var g=0;g<=4;g++){var gy=P+g*(H-2*P)/4;svg+='<line x1="'+P+'" y1="'+gy+'" x2="'+(W-P)+'" y2="'+gy+'" stroke="rgba(237,242,228,.1)" stroke-width="1"/><text x="'+(P-6)+'" y="'+(gy+4)+'" fill="#9ba49a" font-size="10" text-anchor="end">'+(100-g*25)+'%</text>';}
+    if(pts.length>1){svg+='<polyline points="'+pts.map(function(p){return p.x+','+p.y;}).join(' ')+'" fill="none" stroke="#c8f169" stroke-width="2"/>';}
+    pts.forEach(function(p){svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#c8f169"/><text x="'+p.x+'" y="'+(H-P+16)+'" fill="#9ba49a" font-size="10" text-anchor="middle">'+esc(p.d)+'</text><text x="'+p.x+'" y="'+(p.y-9)+'" fill="#c8f169" font-size="10" text-anchor="middle">'+p.a+'%</text>';});
+    svg+='</svg>';
+    h+='<div class="panel"><h3>最近练习趋势</h3>'+svg+'<div class="note">每条代表一天，纵轴为该日正确率。</div></div>';
+  }
+
+  var tip="";
+  if(qr&&qr.n>=3&&qr.accuracy<0.6){tip="辨证题正确率偏低（"+pct(qr.accuracy)+"%），建议先到「相似证型鉴别」看易混证型的差异要点，再回「辨证训练」定向补练。";}
+  else if(d.weakest&&d.weakest.length){tip="薄弱证型："+d.weakest.map(function(x){return x.syndrome;}).slice(0,3).join("、")+"。建议针对这些证型多练几道。";}
+  else if(lg&&lg.n){tip="目前大部分记录来自题型标注上线前，建议重新做几道题，让报告按题型统计。";}
+  else {tip="继续保持，多覆盖不同证型可以让薄弱点定位更准。";}
+  h+='<div class="panel"><h3>下一步建议</h3><div class="note">'+esc(tip)+'</div><div style="margin-top:12px"><a href="/quiz.html" style="display:inline-block;background:var(--acid);color:#10160f;padding:9px 18px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">去辨证训练 →</a> <a href="/compare.html" style="display:inline-block;border:1px solid var(--line);padding:9px 18px;border-radius:8px;font-size:13px;text-decoration:none;margin-left:8px">看相似证型鉴别</a></div></div>';
+
+  if((d.confusions||[]).length){
+    h+='<div class="panel"><h3>易混淆证型对（错题中误选的去向）</h3><div class="note" style="margin-bottom:8px">仅统计「辨证题」，其他题型的误选不代表证型混淆。</div><table><tr><th>正确证型 → 误选</th><th style="width:90px">次数</th></tr>';
+    d.confusions.forEach(function(x){var p=x.pair.split(" → ");h+='<tr><td><span class="ok">'+esc(p[0])+'</span> → <span class="warn">'+esc(p[1]||"")+'</span></td><td>'+x.count+' 次</td></tr>';});
+    h+='</table></div>';
+  }
+
   if((d.weakest||[]).length){
-    h+='<div class="panel"><h3>⚠ 薄弱证型（至少答过 3 题）</h3>';
+    h+='<div class="panel"><h3>薄弱证型（至少答过 3 题）</h3>';
     d.weakest.forEach(function(x){
       var cls=x.accuracy<0.5?"low":(x.accuracy<0.75?"mid":"");
       h+='<div class="bar-row"><span>'+esc(x.syndrome)+'</span><div class="track"><div class="fill '+cls+'" style="width:'+pct(x.accuracy)+'%"></div></div><span class="num">'+x.correct+'/'+x.n+' ('+pct(x.accuracy)+'%)</span></div>';
@@ -71,25 +116,9 @@ function render(d){
     h+='</div>';
   }
 
-  if((d.confusions||[]).length){
-    h+='<div class="panel"><h3>易混淆证型对（错题中误选的去向）</h3><table><tr><th>正确证型 → 误选</th><th style="width:90px">次数</th></tr>';
-    d.confusions.forEach(function(x){
-      var parts=x.pair.split(" → ");
-      h+='<tr><td><span class="ok">'+esc(parts[0])+'</span> → <span class="warn">'+esc(parts[1]||"")+'</span></td><td>'+x.count+' 次</td></tr>';
-    });
-    h+='</table><div class="note">建议到「相似证型鉴别」查看这些证型对的差异要点。</div></div>';
-  }
-
-  h+='<div class="panel"><h3>各证型掌握情况</h3><table><tr><th>证型</th><th style="width:120px">正确率</th><th style="width:90px">答题数</th></tr>';
-  d.by_syndrome.forEach(function(x){
-    var cls=x.accuracy<0.5?"warn":(x.accuracy>=0.8?"ok":"");
-    h+='<tr><td>'+esc(x.syndrome)+'</td><td class="'+cls+'">'+pct(x.accuracy)+'%</td><td>'+x.n+'</td></tr>';
-  });
-  h+='</table></div>';
-
-  if((d.recent||[]).length){
-    h+='<div class="panel"><h3>最近练习</h3><table><tr><th>日期</th><th>题数</th><th>正确率</th></tr>';
-    d.recent.forEach(function(x){h+='<tr><td>'+esc(x.day)+'</td><td>'+x.n+'</td><td>'+pct(x.accuracy)+'%</td></tr>';});
+  if((d.by_syndrome||[]).length){
+    h+='<div class="panel"><h3>各证型掌握情况</h3><div class="note" style="margin-bottom:8px">含全部题型，仅供参考；按题型拆分见上方。</div><table><tr><th>证型</th><th style="width:120px">正确率</th><th style="width:90px">答题数</th></tr>';
+    d.by_syndrome.forEach(function(x){var cls=x.accuracy<0.5?"warn":(x.accuracy>=0.8?"ok":"");h+='<tr><td>'+esc(x.syndrome)+'</td><td class="'+cls+'">'+pct(x.accuracy)+'%</td><td>'+x.n+'</td></tr>';});
     h+='</table></div>';
   }
 

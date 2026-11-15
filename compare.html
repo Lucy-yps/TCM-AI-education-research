@@ -54,7 +54,7 @@ button.ghost{background:transparent;color:var(--paper);border:1px solid var(--li
 <div class="wrap">
   <div class="topbar">
     <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>相似证型鉴别</b></div>
-    <div><a href="/">← 知识检索</a> &nbsp; <a href="/quiz.html">辨证训练</a></div>
+    <div><a href="/">检索</a> &nbsp; <a href="/classics.html">经典</a> &nbsp; <a href="/train.html" style="color:#c8f169;font-weight:600">训练</a> &nbsp; <a href="/progress.html">报告</a></div>
   </div>
   <h1>中医内科学 · 相似证型鉴别</h1>
   <p class="sub">选择两个易混淆的证型，系统基于<b>真实病历</b>统计各自的高发症状，展示二者的鉴别要点。
@@ -140,6 +140,16 @@ function compare(){
 $("cmpBtn").addEventListener("click",compare);
 $("swapBtn").addEventListener("click",function(){var t=$("selA").value;$("selA").value=$("selB").value;$("selB").value=t;if($("selA").value&&$("selB").value){compare();}});
 loadList();
+</script>
+
+<script>
+/* 嵌入训练中心时隐藏自身导航，避免套娃 */
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '20px';
+}
 </script>
 </body>
 </html>

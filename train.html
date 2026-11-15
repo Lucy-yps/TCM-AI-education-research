@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>训练 · 中医内科学</title>
+<style>
+:root{color-scheme:dark;--ink:#101311;--panel:#171b18;--panel-raised:#1d231e;--paper:#f0f0e8;--muted:#9ba49a;--line:rgba(237,242,228,.14);--acid:#c8f169;--orange:#ff744d;--violet:#b9a5ff;--blue:#8fd4ff;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;overflow:hidden;}
+a{color:var(--muted);text-decoration:none;}
+a:hover{color:var(--acid);}
+.wrap{height:100vh;display:flex;flex-direction:column;}
+.topbar{flex:none;display:flex;justify-content:space-between;align-items:center;padding:16px 22px 12px;border-bottom:1px solid var(--line);}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}
+.brand b{color:var(--acid);}
+.nav{display:flex;gap:16px;font-size:13px;}
+.nav a.on{color:var(--acid);font-weight:600;}
+.tabs{flex:none;display:flex;gap:8px;padding:12px 22px;flex-wrap:wrap;}
+.tab{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;}
+.tab:hover{color:var(--paper);border-color:rgba(237,242,228,.3);}
+.tab.on{background:var(--acid);color:#10160f;border-color:var(--acid);font-weight:700;}
+.frame-wrap{flex:1;min-height:0;padding:0 22px 20px;}
+iframe{width:100%;height:100%;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:block;}
+@media(max-width:640px){.tabs{padding:10px 14px;}.frame-wrap{padding:0 14px 14px;}.tab{padding:8px 13px;font-size:12px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>训练中心</b></div>
+    <div class="nav">
+      <a href="/">检索</a>
+      <a href="/classics.html">经典</a>
+      <a href="/train.html" class="on">训练</a>
+      <a href="/progress.html">报告</a>
+    </div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-m="quiz">辨证训练</button>
+    <button class="tab" data-m="compare">相似鉴别</button>
+    <button class="tab" data-m="formula">方剂治法</button>
+    <button class="tab" data-m="tongue">舌脉辨识</button>
+  </div>
+  <div class="frame-wrap"><iframe id="fr" src="/quiz.html" title="训练模块"></iframe></div>
+</div>
+<script>
+var MAP = {quiz:"/quiz.html", compare:"/compare.html", formula:"/formula.html", tongue:"/tongue.html"};
+var fr = document.getElementById("fr");
+
+function pick(m){
+  if (!MAP[m]) return;
+  document.querySelectorAll(".tab").forEach(function(b){
+    b.classList.toggle("on", b.dataset.m === m);
+  });
+  if (fr.getAttribute("src") !== MAP[m]) fr.src = MAP[m];
+  try { history.replaceState(null, "", "/train.html?m=" + m); } catch(e){}
+}
+
+document.getElementById("tabs").addEventListener("click", function(e){
+  var b = e.target.closest(".tab");
+  if (b) pick(b.dataset.m);
+});
+
+var init = new URLSearchParams(location.search).get("m") || "quiz";
+pick(init);
+</script>
+</body>
+</html>

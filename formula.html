@@ -42,7 +42,7 @@ button.ghost{background:transparent;color:var(--paper);border:1px solid var(--li
 <div class="wrap">
   <div class="topbar">
     <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>方剂治法联想</b></div>
-    <div><a href="/quiz.html">辨证训练</a> &nbsp; <a href="/compare.html">相似证型鉴别</a> &nbsp; <a href="/progress.html">学习报告</a> &nbsp; <a href="/tongue.html" style="color:#8fd4ff;font-weight:600">舌脉辨识</a></div>
+    <div><a href="/">检索</a> &nbsp; <a href="/classics.html">经典</a> &nbsp; <a href="/train.html" style="color:#c8f169;font-weight:600">训练</a> &nbsp; <a href="/progress.html">报告</a></div>
   </div>
   <h1>中医内科学 · 方剂治法联想</h1>
   <p class="sub">辨证之后要论治。本模块练习<b>证型 ↔ 治法 ↔ 方剂</b>的对应关系。干扰项取自<b>相似证型</b>的治法方剂，需要真正掌握对应关系才能答对。</p>
@@ -60,6 +60,16 @@ button.ghost{background:transparent;color:var(--paper);border:1px solid var(--li
   </div>
   <div id="stage"><div class="panel"><div class="loading">点击「出题」开始练习</div></div></div>
   <div class="note" id="meta"></div>
+
+  <div class="sec" style="margin-top:34px">
+    <h2 style="font-size:18px;margin:0 0 6px">方剂组成速查</h2>
+    <div class="note" style="margin-bottom:12px">收录知识库 <b>37 首代表方</b>（含完整组成数据）。上方的 215 个方剂名中，其余 178 首目前仅有方名、无组成，故不在此列出。点击任一药味可筛选含该药的方剂。</div>
+    <div class="bar">
+      <input id="fq" placeholder="搜索：方剂名 / 药味 / 证型 / 功效" style="flex:1;min-width:220px;background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px">
+      <span id="fc" class="note" style="margin:0"></span>
+    </div>
+    <div id="flist"><div class="panel"><div class="note">正在加载方剂数据…</div></div></div>
+  </div>
 </div>
 <script>
 var $=function(id){return document.getElementById(id);};
@@ -112,7 +122,7 @@ function submit(idx){
   $("nextBtn").style.display="inline-block";
   try{
     fetch("/api/quiz/record",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({syndrome:current.syndrome,chosen:chosen})}).catch(function(){});
+      body:JSON.stringify({syndrome:current.syndrome,chosen:chosen,kind:'formula',correct:correct})}).catch(function(){});
   }catch(e){}
 }
 
@@ -129,6 +139,71 @@ function generate(){
 $("genBtn").addEventListener("click",generate);
 $("nextBtn").addEventListener("click",generate);
 loadMeta();
+
+/* ---------- 方剂组成速查 ---------- */
+var FD = [];
+function loadFormulas(){
+  fetch("/api/formulas").then(function(r){return r.json();}).then(function(j){
+    FD = (j && j.data) || [];
+    renderF("");
+  }).catch(function(e){
+    $("flist").innerHTML='<div class="panel"><div class="note">方剂数据加载失败：'+esc(e.message)+'</div></div>';
+  });
+}
+function renderF(q){
+  q = (q||"").trim();
+  var rows = FD;
+  if (q) rows = FD.filter(function(x){
+    return (x.name+x.syndrome+x.composition+x.effect).indexOf(q) >= 0;
+  });
+  $("fc").textContent = "共 " + rows.length + " 首";
+  if (!rows.length){
+    $("flist").innerHTML = '<div class="panel"><div class="note">没有匹配的方剂。</div></div>';
+    return;
+  }
+  var h = "";
+  rows.forEach(function(x){
+    h += '<div class="panel" style="margin-bottom:10px;padding:14px 16px">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">';
+    h += '<div><b style="font-size:15px;color:var(--acid)">' + esc(x.name) + '</b>';
+    if (x.syndrome) h += '<span class="tag" style="margin-left:8px">' + esc(x.syndrome) + '</span>';
+    h += '</div>';
+    if (x.effect) h += '<div class="note" style="font-size:12px;margin:0">' + esc(x.effect) + '</div>';
+    h += '</div>';
+    if ((x.herbs||[]).length){
+      h += '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">';
+      x.herbs.forEach(function(hb){
+        h += '<span class="hw" style="font-size:12px;padding:4px 10px;border-radius:6px;background:var(--panel-raised);border:1px solid var(--line);cursor:pointer">' + esc(hb) + '</span>';
+      });
+      h += '</div>';
+    }
+    if (x.tongue || x.pulse){
+      h += '<div class="note" style="margin-top:8px;font-size:12px">舌：' + esc(x.tongue||"—") + '　脉：' + esc(x.pulse||"—") + '</div>';
+    }
+    h += '</div>';
+  });
+  $("flist").innerHTML = h;
+}
+document.addEventListener("click", function(e){
+  if (e.target && e.target.classList.contains("hw")){
+    var w = e.target.textContent.trim();
+    $("fq").value = w;
+    renderF(w);
+  }
+});
+$("fq").addEventListener("input", function(){ renderF($("fq").value); });
+loadFormulas();
+
+</script>
+
+<script>
+/* 嵌入训练中心时隐藏自身导航，避免套娃 */
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '20px';
+}
 </script>
 </body>
 </html>
