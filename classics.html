@@ -345,6 +345,25 @@ document.addEventListener('click', e => {
 });
 
 boot();
+/* 支持 ?book=shl&tab=reading 直达 */
+setTimeout(function(){
+  try {
+    var _p = new URLSearchParams(location.search);
+    var _b = _p.get("book");
+    if (_b && typeof openBook === "function") {
+      openBook(_b);
+      var _t = _p.get("tab");
+      if (_t) {
+        CUR_TAB = _t;
+        document.querySelectorAll("#tabs button").forEach(function(btn){
+          btn.classList.toggle("on", btn.dataset.tab === _t);
+        });
+        renderPanel();
+      }
+    }
+  } catch(e) {}
+}, 500);
+
 </script>
 </body>
 </html>
