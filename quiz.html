@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>辨证训练 · 中医内科学</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --ink: #101311; --panel: #171b18; --panel-raised: #1d231e;
+            --paper: #f0f0e8; --muted: #9ba49a; --line: rgba(237,242,228,.14);
+            --acid: #c8f169; --orange: #ff744d; --violet: #b9a5ff;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--ink); color: var(--paper);
+               font-family: Inter, "Microsoft YaHei", "PingFang SC", sans-serif; line-height: 1.75; }
+        a { color: var(--acid); text-decoration: none; }
+        .wrap { max-width: 960px; margin: 0 auto; padding: 28px 22px 80px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center;
+                  border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 24px; }
+        .brand { font-size: 13px; letter-spacing: 2px; color: var(--muted); }
+        .brand b { color: var(--acid); font-weight: 600; }
+        h1 { font-size: 26px; margin: 0 0 6px; }
+        .sub { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
+        .card { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: var(--panel); }
+        .card .k { font-size: 11px; color: var(--muted); letter-spacing: .5px; }
+        .card .v { font-size: 21px; font-weight: 700; margin-top: 4px; }
+        .card .v small { font-size: 12px; color: var(--muted); font-weight: 400; }
+        .bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+        select { background: var(--panel-raised); color: var(--paper); border: 1px solid var(--line);
+                 border-radius: 8px; padding: 10px 12px; font-size: 13px; min-width: 260px; }
+        button { background: var(--acid); color: #10160f; border: 0; border-radius: 8px;
+                 padding: 11px 20px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        button:disabled { opacity: .5; cursor: default; }
+        button.ghost { background: transparent; color: var(--paper); border: 1px solid var(--line); font-weight: 500; }
+        .panel { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--panel); margin-bottom: 16px; }
+        .tag { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 20px;
+               border: 1px solid var(--line); color: var(--muted); margin-right: 6px; }
+        .stem { font-size: 15px; line-height: 1.9; margin: 14px 0 18px; }
+        .opt { display: block; width: 100%; text-align: left; background: var(--panel-raised); color: var(--paper);
+               border: 1px solid var(--line); border-radius: 10px; padding: 13px 16px; margin-bottom: 9px;
+               font-size: 14px; cursor: pointer; font-weight: 500; transition: border-color .15s; }
+        .opt:hover { border-color: var(--acid); }
+        .opt.correct { border-color: var(--acid); background: rgba(200,241,105,.12); }
+        .opt.wrong { border-color: var(--orange); background: rgba(255,116,77,.12); }
+        .opt:disabled { cursor: default; }
+        .verdict { font-size: 17px; font-weight: 700; margin: 6px 0 14px; }
+        .ok { color: var(--acid); } .no { color: var(--orange); }
+        .sec { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 16px; }
+        .sec h4 { margin: 0 0 8px; font-size: 13px; color: var(--muted); letter-spacing: .5px; font-weight: 600; }
+        .sec p { margin: 6px 0; font-size: 13.5px; }
+        .kp { color: var(--acid); }
+        .dr { font-size: 13px; margin: 8px 0; padding-left: 12px; border-left: 2px solid var(--line); }
+        .dr b { color: var(--violet); }
+        .src { font-size: 11.5px; color: var(--muted); }
+        .qc { font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+        .qc span { margin-right: 10px; }
+        .loading { color: var(--muted); font-size: 13px; padding: 16px 0; }
+        .err { color: var(--orange); font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>辨证训练</b></div>
+        <div><a href="/">← 知识检索</a> &nbsp; <a href="/compare.html" style="color:#b9a5ff;font-weight:600">相似证型鉴别</a> &nbsp; <a href="/progress.html" style="color:#c8f169;font-weight:600">学习报告</a> &nbsp; <a href="/formula.html" style="color:#e8c46a;font-weight:600">方剂治法</a> &nbsp; <a href="/tongue.html" style="color:#8fd4ff;font-weight:600">舌脉辨识</a></div>
+    </div>
+
+    <h1>中医内科学 · 辨证思维训练</h1>
+    <p class="sub">
+        题目由真实电子病历自动生成，标准答案取自证型权威知识库的「典型表现」，
+        干扰项限定在同范畴相近证型内。生成与判定分离，答案不由模型自由决定。
+    </p>
+
+    <div class="cards" id="stats"><div class="loading">正在加载出题池…</div></div>
+
+    <div class="bar">
+        <select id="syndrome"><option value="">全部核心证型（随机）</option></select>
+        <button id="genBtn">出题</button>
+        <button class="ghost" id="nextBtn" style="display:none">下一题 →</button>
+    </div>
+
+    <div id="stage"></div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let current = null;
+
+function esc(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+async function loadStats() {
+    try {
+        const r = await fetch('/api/quiz/stats');
+        const j = await r.json();
+        if (j.code !== 200) throw new Error(j.message || '出题引擎不可用');
+        const d = j.data;
+        $('stats').innerHTML = [
+            ['学科范围', esc(d.discipline), ''],
+            ['内科病历', Number(d.internal_cases).toLocaleString(), '条'],
+            ['出题证型', d.core + ' 核心 / ' + d.extended + ' 拓展', ''],
+            ['素材引用', Number(d.case_refs).toLocaleString(), '条'],
+            ['建议题量', d.quota, '题'],
+            ['已生成', d.bank_size, '题']
+        ].map(([k, v, u]) =>
+            '<div class="card"><div class="k">' + k + '</div><div class="v">' + v +
+            (u ? ' <small>' + u + '</small>' : '') + '</div></div>').join('');
+    } catch (e) {
+        $('stats').innerHTML = '<div class="err">出题池加载失败：' + esc(e.message) + '</div>';
+    }
+}
+
+async function loadSyndromes() {
+    try {
+        const r = await fetch('/api/quiz/syndromes');
+        const j = await r.json();
+        if (j.code !== 200) return;
+        const sel = $('syndrome');
+        j.data.filter(x => x.tier === 'core').forEach(x => {
+            const o = document.createElement('option');
+            o.value = x.syndrome;
+            o.textContent = x.syndrome + '（素材 ' + x.n_cases + ' 条，配额 ' + x.quota + ' 题）';
+            sel.appendChild(o);
+        });
+    } catch (e) { /* 忽略 */ }
+}
+
+function render(q) {
+    current = q;
+    const opts = (q.options || []).map((o, i) =>
+        '<button class="opt" data-i="' + i + '">' + String.fromCharCode(65 + i) + '. ' + esc(o) + '</button>').join('');
+    $('stage').innerHTML =
+        '<div class="panel">' +
+            '<div><span class="tag">' + esc(q.syndrome) + '</span>' +
+            '<span class="tag">来源 ' + esc(q.source.lcd_name || '') + '</span>' +
+            '<span class="tag">' + esc(q.source.split) + ' #' + esc(q.source.line) + '</span></div>' +
+            '<div class="stem">' + esc(q.stem) + '</div>' +
+            '<div id="opts">' + opts + '</div>' +
+            '<div id="result"></div>' +
+        '</div>';
+    document.querySelectorAll('.opt').forEach(b => {
+        b.addEventListener('click', () => submit(Number(b.dataset.i)));
+    });
+    $('nextBtn').style.display = 'none';
+}
+
+function submit(idx) {
+    if (!current) return;
+    const chosen = current.options[idx];
+    const correct = chosen === current.answer;
+    document.querySelectorAll('.opt').forEach(b => {
+        b.disabled = true;
+        const t = current.options[Number(b.dataset.i)];
+        if (t === current.answer) b.classList.add('correct');
+        else if (Number(b.dataset.i) === idx) b.classList.add('wrong');
+    });
+    const reasons = (current.distractor_reasons || []).map(d =>
+        '<div class="dr"><b>' + esc(d.syndrome) + '</b>：' + esc(d.why) + '</div>').join('');
+    const kp = (current.key_points || []).map(k => '<span class="kp">· ' + esc(k) + '</span>').join(' ');
+    const qc = current.quality || {};
+    const qcItems = Object.keys(qc).filter(k => k !== 'passed')
+        .map(k => '<span>' + k + ' ' + (qc[k] ? '✓' : '✗') + '</span>').join('');
+    $('result').innerHTML =
+        '<div class="verdict ' + (correct ? 'ok' : 'no') + '">' +
+            (correct ? '✅ 回答正确' : '❌ 回答错误') + '　标准答案：' + esc(current.answer) +
+        '</div>' +
+        (kp ? '<div class="sec"><h4>辨证关键点</h4><p>' + kp + '</p></div>' : '') +
+        '<div class="sec"><h4>解析</h4><p>' + esc(current.explain) + '</p></div>' +
+        (reasons ? '<div class="sec"><h4>干扰项辨析</h4>' + reasons + '</div>' : '') +
+        '<div class="qc">质量校验：' + qcItems + '</div>' +
+        '<div class="src">题目由真实病历生成，标准答案取自证型知识库「典型表现」。' +
+        '本工具仅用于教学练习，不构成医学诊断或用药建议。</div>';
+    $('nextBtn').style.display = 'inline-block';
+    // 记录本次答题（用于学习进度追踪）
+    try {
+        fetch('/api/quiz/record', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ syndrome: current.syndrome, chosen: chosen, src: current.source && current.source.line ? (current.source.split + '#' + current.source.line) : '' })
+        }).catch(function () {});
+    } catch (e) { /* 记录失败不影响答题 */ }
+}
+
+async function generate() {
+    const btn = $('genBtn');
+    btn.disabled = true;
+    btn.textContent = '生成中…';
+    $('stage').innerHTML = '<div class="panel"><div class="loading">正在从真实病历生成题目（约 10~20 秒）…</div></div>';
+    try {
+        const r = await fetch('/api/quiz/generate', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ syndrome: $('syndrome').value })
+        });
+        const j = await r.json();
+        if (j.code !== 200) throw new Error(j.message || '生成失败');
+        render(j.data);
+        loadStats();
+    } catch (e) {
+        $('stage').innerHTML = '<div class="panel"><div class="err">' + esc(e.message) + '</div></div>';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '出题';
+    }
+}
+
+$('genBtn').addEventListener('click', generate);
+$('nextBtn').addEventListener('click', generate);
+loadStats();
+loadSyndromes();
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习报告 · 辨证训练</title>
+<style>
+:root{color-scheme:dark;--ink:#101311;--panel:#171b18;--panel-raised:#1d231e;--paper:#f0f0e8;--muted:#9ba49a;--line:rgba(237,242,228,.14);--acid:#c8f169;--orange:#ff744d;--violet:#b9a5ff;}
+*{box-sizing:border-box;}body{margin:0;background:var(--ink);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;}
+a{color:var(--acid);text-decoration:none;}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 22px 80px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+h1{font-size:26px;margin:0 0 6px;}.sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);}
+.card .k{font-size:11px;color:var(--muted);}.card .v{font-size:22px;font-weight:700;margin-top:4px;}
+.card .v small{font-size:12px;color:var(--muted);font-weight:400;}
+.panel{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--panel);margin-bottom:16px;}
+.panel h3{margin:0 0 14px;font-size:14px;color:var(--muted);letter-spacing:.5px;}
+.bar-row{display:grid;grid-template-columns:130px 1fr 70px;gap:10px;align-items:center;margin-bottom:8px;font-size:13px;}
+.track{height:10px;background:var(--panel-raised);border-radius:5px;overflow:hidden;}
+.fill{height:100%;background:var(--acid);}
+.fill.mid{background:#e8c46a;}.fill.low{background:var(--orange);}
+.num{text-align:right;font-size:12px;color:var(--muted);}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);}
+th{color:var(--muted);font-weight:500;font-size:12px;}
+.warn{color:var(--orange);font-weight:700;}.ok{color:var(--acid);}
+.empty{color:var(--muted);font-size:13.5px;padding:10px 0;}
+button{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;}
+button:hover{color:var(--orange);border-color:var(--orange);}
+.note{font-size:12px;color:var(--muted);margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>学习报告</b></div>
+    <div><a href="/quiz.html">← 辨证训练</a> &nbsp; <a href="/compare.html">相似证型鉴别</a> &nbsp; <a href="/formula.html" style="color:#e8c46a;font-weight:600">方剂治法</a> &nbsp; <a href="/tongue.html" style="color:#8fd4ff;font-weight:600">舌脉辨识</a></div>
+  </div>
+  <h1>学习报告</h1>
+  <p class="sub">基于你的答题记录统计。系统据此定位<b>薄弱证型</b>与<b>易混淆证型对</b>，为定向补练提供依据。</p>
+  <div id="stage"><div class="empty">正在加载…</div></div>
+  <div class="note">记录仅保存在本地（external_data/quiz_progress.jsonl），不上传任何数据。</div>
+</div>
+<script>
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function pct(x){return Math.round((x||0)*100);}
+
+function render(d){
+  if(!d.total){
+    $("stage").innerHTML='<div class="panel"><div class="empty">尚无答题记录。请先到「辨证训练」完成几道题，再回来查看报告。</div></div>';
+    return;
+  }
+  var h='<div class="cards">';
+  h+='<div class="card"><div class="k">累计答题</div><div class="v">'+d.total+' <small>题</small></div></div>';
+  h+='<div class="card"><div class="k">总体正确率</div><div class="v">'+pct(d.accuracy)+'<small>%</small></div></div>';
+  h+='<div class="card"><div class="k">答对</div><div class="v">'+d.correct+' <small>题</small></div></div>';
+  h+='<div class="card"><div class="k">覆盖证型</div><div class="v">'+d.distinct_syndromes+' <small>个</small></div></div>';
+  h+='<div class="card"><div class="k">学习天数</div><div class="v">'+d.days+' <small>天</small></div></div>';
+  h+='</div>';
+
+  if((d.weakest||[]).length){
+    h+='<div class="panel"><h3>⚠ 薄弱证型（至少答过 3 题）</h3>';
+    d.weakest.forEach(function(x){
+      var cls=x.accuracy<0.5?"low":(x.accuracy<0.75?"mid":"");
+      h+='<div class="bar-row"><span>'+esc(x.syndrome)+'</span><div class="track"><div class="fill '+cls+'" style="width:'+pct(x.accuracy)+'%"></div></div><span class="num">'+x.correct+'/'+x.n+' ('+pct(x.accuracy)+'%)</span></div>';
+    });
+    h+='</div>';
+  }
+
+  if((d.confusions||[]).length){
+    h+='<div class="panel"><h3>易混淆证型对（错题中误选的去向）</h3><table><tr><th>正确证型 → 误选</th><th style="width:90px">次数</th></tr>';
+    d.confusions.forEach(function(x){
+      var parts=x.pair.split(" → ");
+      h+='<tr><td><span class="ok">'+esc(parts[0])+'</span> → <span class="warn">'+esc(parts[1]||"")+'</span></td><td>'+x.count+' 次</td></tr>';
+    });
+    h+='</table><div class="note">建议到「相似证型鉴别」查看这些证型对的差异要点。</div></div>';
+  }
+
+  h+='<div class="panel"><h3>各证型掌握情况</h3><table><tr><th>证型</th><th style="width:120px">正确率</th><th style="width:90px">答题数</th></tr>';
+  d.by_syndrome.forEach(function(x){
+    var cls=x.accuracy<0.5?"warn":(x.accuracy>=0.8?"ok":"");
+    h+='<tr><td>'+esc(x.syndrome)+'</td><td class="'+cls+'">'+pct(x.accuracy)+'%</td><td>'+x.n+'</td></tr>';
+  });
+  h+='</table></div>';
+
+  if((d.recent||[]).length){
+    h+='<div class="panel"><h3>最近练习</h3><table><tr><th>日期</th><th>题数</th><th>正确率</th></tr>';
+    d.recent.forEach(function(x){h+='<tr><td>'+esc(x.day)+'</td><td>'+x.n+'</td><td>'+pct(x.accuracy)+'%</td></tr>';});
+    h+='</table></div>';
+  }
+
+  h+='<div style="text-align:right"><button id="resetBtn">清空学习记录</button></div>';
+  $("stage").innerHTML=h;
+  $("resetBtn").addEventListener("click",function(){
+    if(!confirm("确定清空全部学习记录？此操作不可恢复。")) return;
+    fetch("/api/quiz/progress/reset",{method:"POST"}).then(function(r){return r.json();}).then(function(){load();});
+  });
+}
+
+function load(){
+  fetch("/api/quiz/progress").then(function(r){return r.json();}).then(function(j){
+    if(j.code!==200){throw new Error(j.message||"加载失败");}
+    render(j.data);
+  }).catch(function(e){$("stage").innerHTML='<div class="panel"><div class="empty">'+esc(e.message)+'</div></div>';});
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+{
+ "generated_from": "external_data/llm_baseline + local rerun on identical subsets",
+ "record_sample_local": {
+  "clf": 0.8571,
+  "clf_high_conf_acc": 0.9545,
+  "clf_high_conf_cov": 0.5238,
+  "tfidf": 0.1905,
+  "bm25": 0.2143,
+  "hybrid": 0.2381,
+  "keyword": 0.1667,
+  "majority_baseline": 0.0952,
+  "majority_class": "气滞血瘀"
+ },
+ "textbook_local": {
+  "clf": 0.0541,
+  "clf_high_conf_acc": null,
+  "clf_high_conf_cov": 0,
+  "tfidf": 0.9189,
+  "bm25": 0.8649,
+  "hybrid": 0.8108,
+  "keyword": 0.6757,
+  "majority_baseline": 0.027,
+  "majority_class": "风寒感冒"
+ },
+ "record_full_local": {
+  "clf": 0.93,
+  "clf_high_conf_acc": 0.9906,
+  "clf_high_conf_cov": 0.6224,
+  "tfidf": 0.1268,
+  "bm25": 0.1356,
+  "hybrid": 0.0612,
+  "keyword": 0.0394,
+  "majority_baseline": 0.7726,
+  "majority_class": "气滞血瘀"
+ },
+ "llm": {
+  "deepseek_record_sample": {
+   "n": 42,
+   "acc": 0.5,
+   "unparsed": 0,
+   "avg_sec": 0.71,
+   "in_tok": 19010,
+   "out_tok": 135
+  },
+  "deepseek_record_full": {
+   "n": 683,
+   "acc": 0.758,
+   "unparsed": 0,
+   "avg_sec": 0.67,
+   "in_tok": 299156,
+   "out_tok": 2540
+  },
+  "zhipu_record_sample": {
+   "n": 42,
+   "acc": 0.3571,
+   "unparsed": 0,
+   "avg_sec": 1,
+   "in_tok": 19474,
+   "out_tok": 231
+  },
+  "modelscope_record_sample": {
+   "n": 42,
+   "acc": 0.5476,
+   "unparsed": 0,
+   "avg_sec": 10.2,
+   "in_tok": 21131,
+   "out_tok": 26908
+  },
+  "deepseek_textbook": {
+   "n": 37,
+   "acc": 0.4054,
+   "unparsed": 3,
+   "avg_sec": 0.64,
+   "in_tok": 6080,
+   "out_tok": 106
+  },
+  "zhipu_textbook": {
+   "n": 37,
+   "acc": 0.3784,
+   "unparsed": 3,
+   "avg_sec": 0.9,
+   "in_tok": 6401,
+   "out_tok": 192
+  },
+  "modelscope_textbook": {
+   "n": 37,
+   "acc": 0.4054,
+   "unparsed": 0,
+   "avg_sec": 10.8,
+   "in_tok": 8014,
+   "out_tok": 23099
+  }
+ },
+ "error_analysis": {
+  "gold_dist": {
+   "气滞血瘀": 530,
+   "脾胃气虚": 3,
+   "肝胆湿热": 5,
+   "肝阳上亢": 20,
+   "气血两虚": 6,
+   "肝郁气滞": 14,
+   "肾气虚": 5,
+   "痰湿内阻": 7,
+   "肝胃不和": 61,
+   "肝郁脾虚": 6,
+   "心血虚": 13,
+   "大肠湿热": 5,
+   "阳虚寒凝": 3,
+   "中气下陷": 4,
+   "肺阴虚": 2,
+   "肾阳虚": 2
+  },
+  "pred_dist": {
+   "气滞血瘀": 433,
+   "大肠湿热": 25,
+   "肝郁气滞": 48,
+   "痰湿内阻": 13,
+   "心血虚": 6,
+   "肝胆湿热": 13,
+   "阳虚寒凝": 2,
+   "肝胃不和": 55,
+   "肝郁脾虚": 29,
+   "气血两虚": 29,
+   "肾气虚": 10,
+   "肝阳上亢": 15,
+   "中气下陷": 3,
+   "肺阴虚": 3,
+   "肾阳虚": 1,
+   "脾胃气虚": 1
+  },
+  "per_class": {
+   "气滞血瘀": {
+    "gold": 530,
+    "pred": 433,
+    "recall": 0.8057
+   },
+   "脾胃气虚": {
+    "gold": 3,
+    "pred": 1,
+    "recall": 0
+   },
+   "肝胆湿热": {
+    "gold": 5,
+    "pred": 13,
+    "recall": 1
+   },
+   "肝阳上亢": {
+    "gold": 20,
+    "pred": 15,
+    "recall": 0.55
+   },
+   "气血两虚": {
+    "gold": 6,
+    "pred": 29,
+    "recall": 0.5
+   },
+   "肝郁气滞": {
+    "gold": 14,
+    "pred": 48,
+    "recall": 0.5
+   },
+   "肾气虚": {
+    "gold": 5,
+    "pred": 10,
+    "recall": 0.8
+   },
+   "痰湿内阻": {
+    "gold": 7,
+    "pred": 13,
+    "recall": 0.5714
+   },
+   "肝胃不和": {
+    "gold": 61,
+    "pred": 55,
+    "recall": 0.7541
+   },
+   "肝郁脾虚": {
+    "gold": 6,
+    "pred": 29,
+    "recall": 0.3333
+   },
+   "心血虚": {
+    "gold": 13,
+    "pred": 6,
+    "recall": 0.3846
+   },
+   "大肠湿热": {
+    "gold": 5,
+    "pred": 25,
+    "recall": 0.6
+   },
+   "阳虚寒凝": {
+    "gold": 3,
+    "pred": 2,
+    "recall": 0
+   },
+   "中气下陷": {
+    "gold": 4,
+    "pred": 3,
+    "recall": 0.5
+   },
+   "肺阴虚": {
+    "gold": 2,
+    "pred": 3,
+    "recall": 0.5
+   },
+   "肾阳虚": {
+    "gold": 2,
+    "pred": 1,
+    "recall": 0
+   }
+  }
+ }
+}
