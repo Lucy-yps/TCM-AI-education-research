@@ -28,9 +28,15 @@ h1{font-size:24px;margin:0 0 4px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;}
 .book-card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px;display:flex;flex-direction:column;gap:12px;transition:border-color .15s;}
 .book-card:hover{border-color:var(--acid);}
-.book-card .cover{width:120px;height:168px;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(0,0,0,.45);align-self:center;}
-.cv{writing-mode:vertical-rl;font-size:20px;letter-spacing:7px;color:#f0f0e8;font-weight:600;}
-.seal{position:absolute;right:9px;bottom:10px;width:24px;height:24px;border-radius:4px;color:#10160f;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+/* 仿古函套书封 */
+.book-card .cover{width:120px;height:168px;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.08);align-self:center;overflow:hidden;
+  background-image:linear-gradient(160deg,rgba(255,255,255,.10),rgba(0,0,0,.24)),repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 2px,transparent 2px 12px);}
+.cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(90deg,rgba(0,0,0,.38),rgba(0,0,0,0));}
+.cover::after{content:"";position:absolute;inset:7px;border:1px solid rgba(240,236,222,.22);border-radius:3px;pointer-events:none;}
+.cover .label{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 7px;background:linear-gradient(180deg,rgba(242,237,221,.97),rgba(228,221,199,.95));border:1px solid rgba(74,62,40,.35);border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,.32);}
+.cv{writing-mode:vertical-rl;font-size:19px;letter-spacing:6px;color:#262019;font-weight:600;}
+.author-tag{writing-mode:vertical-rl;font-size:9px;letter-spacing:2px;color:#6b5f49;max-height:74px;overflow:hidden;}
+.seal{position:absolute;right:12px;bottom:12px;width:26px;height:26px;border-radius:4px;color:#f7efe2;background:#a8322a;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 1px 3px rgba(0,0,0,.3);z-index:1;}
 .book-card .b-name{font-size:18px;font-weight:700;}
 .book-card .b-author{font-size:12px;color:var(--muted);line-height:1.6;}
 .book-card .b-status{font-size:12.5px;color:var(--acid);}
@@ -41,7 +47,10 @@ h1{font-size:24px;margin:0 0 4px;}
 /* 详情 */
 .layout{display:grid;grid-template-columns:230px 1fr;gap:22px;align-items:start;}
 .cover-col .cover{width:180px;height:252px;margin:0 auto;}
+.cover-col .label{padding:18px 11px;gap:12px;}
 .cover-col .cv{font-size:26px;letter-spacing:10px;}
+.cover-col .author-tag{font-size:10.5px;letter-spacing:3px;max-height:120px;}
+.cover-col .seal{right:16px;bottom:16px;width:32px;height:32px;font-size:16px;}
 .detail-main h1{font-size:28px;margin-bottom:6px;}
 .author{color:var(--muted);font-size:13px;margin-bottom:18px;}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:16px 0;}
@@ -88,13 +97,10 @@ h3{font-size:13.5px;color:var(--muted);letter-spacing:1px;margin:20px 0 8px;font
   <div class="topbar">
     <div class="brand">本草辨证 · <b>经典书城</b></div>
     <div class="nav">
-      <a href="/main.html">检索</a>
-      <a href="/quiz.html">辨证训练</a>
-      <a href="/compare.html">相似鉴别</a>
-      <a href="/formula.html">方剂治法</a>
-      <a href="/tongue.html">舌脉辨识</a>
-      <a href="/progress.html">学习报告</a>
-      <a href="/classics.html" class="on">经典书城</a>
+      <a href="/">检索</a>
+      <a href="/classics.html" class="on">经典</a>
+      <a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a>
     </div>
   </div>
 
@@ -159,11 +165,21 @@ async function boot(){
   }
 }
 
+function shortAuthor(a){
+  if (!a) return '';
+  return String(a).replace(/[（(].*?[)）]/g, '').trim();
+}
+
 function coverHTML(book, big){
   const c = book.cover || {};
-  return '<div class="cover" style="background:' + esc(c.color || '#222') + '">'
+  const sealChar = (book.name || '经').slice(0, 1);
+  const author = big ? shortAuthor(book.author) : '';
+  return '<div class="cover" style="background-color:' + esc(c.color || '#222') + '">'
+    + '<div class="label">'
     + '<span class="cv">' + esc(book.name) + '</span>'
-    + '<span class="seal" style="background:' + esc(c.seal || '#c8f169') + '">经</span></div>';
+    + (author ? '<span class="author-tag">' + esc(author) + '</span>' : '')
+    + '</div>'
+    + '<span class="seal">' + esc(sealChar) + '</span></div>';
 }
 
 function renderShelf(){
