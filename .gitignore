@@ -1,6 +1,7 @@
 # ===== 密钥与本地配置（禁止入库）=====
 .env
 .env.*
+!.env.example
 config.local.*
 *.key
 
