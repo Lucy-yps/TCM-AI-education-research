@@ -1,0 +1,4763 @@
+{
+ "meta": {
+  "core_count": 72,
+  "valid_cases_syndromes": 72,
+  "available": 24,
+  "unavailable": 45,
+  "coverage_note": "舌脉训练收录同时满足以下条件的证型：(1) 病历数 >= 20；(2) 有 >= 2 个鉴别性舌脉特征（出现率 >= 40% 且在不超过 30% 的证型中出现）；(3) 舌脉特征覆盖 >= 2 个维度（舌质/舌苔/脉象）。符合条件者共 24 / 72 个核心证型。其余证型因舌脉特征与其它证型重叠过多或维度单一而排除——这反映中医舌脉需四诊合参、单个特征难以独立辨识的实际情况。",
+  "method": "舌脉特征取自 TCM-SD 真实病历统计（每证型最多 80 条）；鉴别性评分 = 出现率 × ln(有效证型数 / 文档频率)；specific 标记：出现率 >=40% 且文档频率 <=30% 的证型。",
+  "min_rate": 0.3,
+  "min_cases": 20,
+  "ambiguous_count": 0,
+  "dropped_single_dim": [
+   "肝郁血瘀证",
+   "心肺气虚证",
+   "风热犯肺证"
+  ]
+ },
+ "syndromes": {
+  "气虚血瘀证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.49,
+     "df": 4,
+     "score": 1.409,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.68,
+     "df": 15,
+     "score": 1.059,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.4,
+     "df": 6,
+     "score": 0.994,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.54,
+     "df": 24,
+     "score": 0.591,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.59,
+     "df": 44,
+     "score": 0.289,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.46,
+     "df": 46,
+     "score": 0.207,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.3,
+     "df": 40,
+     "score": 0.176,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "细",
+     "缓"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.49,
+     "df": 4,
+     "score": 1.409,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.68,
+     "df": 15,
+     "score": 1.059,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.4,
+     "df": 6,
+     "score": 0.994,
+     "specific": true
+    }
+   ],
+   "combo": "舌紫暗，苔薄白，脉涩",
+   "n_dim": 3
+  },
+  "风痰瘀阻证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.42,
+     "df": 20,
+     "score": 0.544,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.39,
+     "df": 5,
+     "score": 1.034,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.34,
+     "df": 12,
+     "score": 0.605,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.34,
+     "df": 15,
+     "score": 0.529,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.85,
+     "df": 40,
+     "score": 0.5,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.44,
+     "df": 46,
+     "score": 0.196,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "紫暗"
+    ],
+    "coat": [
+     "滑"
+    ],
+    "pulse": [
+     "弦",
+     "滑"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "痰湿蕴肺证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.71,
+     "df": 11,
+     "score": 1.339,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.91,
+     "df": 46,
+     "score": 0.409,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.75,
+     "df": 44,
+     "score": 0.369,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白",
+     "白腻"
+    ],
+    "pulse": [
+     "滑",
+     "濡"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肝胃郁热证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.5,
+     "df": 12,
+     "score": 0.896,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.51,
+     "df": 20,
+     "score": 0.656,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.93,
+     "df": 40,
+     "score": 0.544,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.46,
+     "df": 44,
+     "score": 0.228,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.39,
+     "df": 46,
+     "score": 0.174,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "红"
+    ],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "弦",
+     "滑"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.5,
+     "df": 12,
+     "score": 0.896,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.51,
+     "df": 20,
+     "score": 0.656,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔黄",
+   "n_dim": 2
+  },
+  "脾肾两虚证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.44,
+     "df": 9,
+     "score": 0.91,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.47,
+     "df": 24,
+     "score": 0.522,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.62,
+     "df": 44,
+     "score": 0.308,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.49,
+     "df": 40,
+     "score": 0.287,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.64,
+     "df": 46,
+     "score": 0.286,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": []
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肝肾亏虚证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.42,
+     "df": 9,
+     "score": 0.884,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.51,
+     "df": 24,
+     "score": 0.563,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.72,
+     "df": 44,
+     "score": 0.357,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.66,
+     "df": 46,
+     "score": 0.297,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.42,
+     "df": 40,
+     "score": 0.25,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": []
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "气阴两虚证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.41,
+     "df": 6,
+     "score": 1.025,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.55,
+     "df": 24,
+     "score": 0.604,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.31,
+     "df": 15,
+     "score": 0.49,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.61,
+     "df": 44,
+     "score": 0.302,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "红",
+     "绛"
+    ],
+    "coat": [
+     "少苔"
+    ],
+    "pulse": [
+     "数",
+     "无力",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "湿热瘀阻证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.91,
+     "df": 5,
+     "score": 2.434,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.9,
+     "df": 6,
+     "score": 2.236,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.95,
+     "df": 12,
+     "score": 1.702,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.78,
+     "df": 11,
+     "score": 1.456,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.61,
+     "df": 15,
+     "score": 0.961,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.36,
+     "df": 20,
+     "score": 0.464,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄"
+    ],
+    "pulse": [
+     "数",
+     "滑"
+    ]
+   },
+   "n_specific": 5,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.91,
+     "df": 5,
+     "score": 2.434,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.9,
+     "df": 6,
+     "score": 2.236,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.95,
+     "df": 12,
+     "score": 1.702,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.78,
+     "df": 11,
+     "score": 1.456,
+     "specific": true
+    }
+   ],
+   "combo": "苔黄腻，脉数",
+   "n_dim": 2
+  },
+  "阳虚水泛证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "迟",
+     "rate": 0.42,
+     "df": 1,
+     "score": 1.818,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.57,
+     "df": 9,
+     "score": 1.196,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.44,
+     "df": 5,
+     "score": 1.167,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.7,
+     "df": 15,
+     "score": 1.098,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.74,
+     "df": 46,
+     "score": 0.33,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡",
+     "齿痕"
+    ],
+    "coat": [],
+    "pulse": [
+     "沉",
+     "细"
+    ]
+   },
+   "n_specific": 4,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "迟",
+     "rate": 0.42,
+     "df": 1,
+     "score": 1.818,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.57,
+     "df": 9,
+     "score": 1.196,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.44,
+     "df": 5,
+     "score": 1.167,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.7,
+     "df": 15,
+     "score": 1.098,
+     "specific": true
+    }
+   ],
+   "combo": "舌紫暗，苔黄腻，脉迟",
+   "n_dim": 3
+  },
+  "脾胃虚寒证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "弱",
+     "rate": 0.44,
+     "df": 3,
+     "score": 1.39,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.56,
+     "df": 24,
+     "score": 0.618,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.89,
+     "df": 44,
+     "score": 0.437,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.86,
+     "df": 46,
+     "score": 0.386,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.47,
+     "df": 40,
+     "score": 0.279,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白"
+    ],
+    "pulse": [
+     "无力",
+     "沉",
+     "迟"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "风寒袭肺证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.4,
+     "df": 5,
+     "score": 1.067,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.84,
+     "df": 46,
+     "score": 0.375,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.72,
+     "df": 44,
+     "score": 0.357,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "薄白"
+    ],
+    "pulse": [
+     "浮",
+     "紧"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "痰瘀痹阻证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.59,
+     "df": 4,
+     "score": 1.698,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "胖大",
+     "rate": 0.4,
+     "df": 2,
+     "score": 1.433,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.47,
+     "df": 15,
+     "score": 0.745,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "齿痕",
+     "rate": 0.35,
+     "df": 1,
+     "score": 1.497,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.71,
+     "df": 40,
+     "score": 0.419,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.46,
+     "df": 46,
+     "score": 0.207,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "瘀斑",
+     "紫暗"
+    ],
+    "coat": [
+     "白",
+     "白腻"
+    ],
+    "pulse": [
+     "弦",
+     "涩"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.59,
+     "df": 4,
+     "score": 1.698,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "胖大",
+     "rate": 0.4,
+     "df": 2,
+     "score": 1.433,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.47,
+     "df": 15,
+     "score": 0.745,
+     "specific": true
+    }
+   ],
+   "combo": "舌胖大，脉涩",
+   "n_dim": 2
+  },
+  "心脉痹阻证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.72,
+     "df": 4,
+     "score": 2.096,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.82,
+     "df": 15,
+     "score": 1.294,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.79,
+     "df": 40,
+     "score": 0.463,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡",
+     "瘀斑",
+     "紫暗"
+    ],
+    "coat": [
+     "白",
+     "白腻"
+    ],
+    "pulse": [
+     "弦",
+     "沉",
+     "细",
+     "迟"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.72,
+     "df": 4,
+     "score": 2.096,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.82,
+     "df": 15,
+     "score": 1.294,
+     "specific": true
+    }
+   ],
+   "combo": "舌紫暗，脉涩",
+   "n_dim": 2
+  },
+  "肝胃不和证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.69,
+     "df": 4,
+     "score": 1.987,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.74,
+     "df": 20,
+     "score": 0.945,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.82,
+     "df": 40,
+     "score": 0.485,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.33,
+     "df": 44,
+     "score": 0.16,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [
+     "薄白",
+     "薄黄"
+    ],
+    "pulse": [
+     "弦"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.69,
+     "df": 4,
+     "score": 1.987,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.74,
+     "df": 20,
+     "score": 0.945,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔薄黄",
+   "n_dim": 2
+  },
+  "风痰上扰证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.44,
+     "df": 15,
+     "score": 0.686,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "白腻",
+     "rate": 0.36,
+     "df": 2,
+     "score": 1.299,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.36,
+     "df": 11,
+     "score": 0.681,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.86,
+     "df": 40,
+     "score": 0.507,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.65,
+     "df": 46,
+     "score": 0.291,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.33,
+     "df": 44,
+     "score": 0.16,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "弦",
+     "滑"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "风寒外袭证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.62,
+     "df": 5,
+     "score": 1.667,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.34,
+     "df": 6,
+     "score": 0.839,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.84,
+     "df": 44,
+     "score": 0.412,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.72,
+     "df": 46,
+     "score": 0.325,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.38,
+     "df": 40,
+     "score": 0.22,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "薄白"
+    ],
+    "pulse": [
+     "浮"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "湿热蕴结证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.49,
+     "df": 12,
+     "score": 0.873,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.6,
+     "df": 20,
+     "score": 0.769,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.36,
+     "df": 5,
+     "score": 0.967,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.79,
+     "df": 40,
+     "score": 0.463,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "数",
+     "滑"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.49,
+     "df": 12,
+     "score": 0.873,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.6,
+     "df": 20,
+     "score": 0.769,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔黄",
+   "n_dim": 2
+  },
+  "阴虚阳亢证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "少苔",
+     "rate": 0.89,
+     "df": 2,
+     "score": 3.18,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.95,
+     "df": 40,
+     "score": 0.558,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "少津",
+     "红"
+    ],
+    "coat": [],
+    "pulse": [
+     "数",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "痰瘀互结证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.44,
+     "df": 15,
+     "score": 0.686,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.79,
+     "df": 46,
+     "score": 0.353,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.69,
+     "df": 44,
+     "score": 0.339,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.33,
+     "df": 40,
+     "score": 0.191,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "紫暗"
+    ],
+    "coat": [
+     "黄腻"
+    ],
+    "pulse": []
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "瘀血阻络证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.7,
+     "df": 15,
+     "score": 1.098,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.57,
+     "df": 40,
+     "score": 0.338,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.62,
+     "df": 46,
+     "score": 0.28,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "涩",
+     "结代"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "痰浊蒙窍证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.61,
+     "df": 11,
+     "score": 1.151,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.72,
+     "df": 15,
+     "score": 1.137,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.7,
+     "df": 40,
+     "score": 0.411,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.7,
+     "df": 46,
+     "score": 0.314,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.34,
+     "df": 44,
+     "score": 0.166,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白",
+     "白腻"
+    ],
+    "pulse": [
+     "滑"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.61,
+     "df": 11,
+     "score": 1.151,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.72,
+     "df": 15,
+     "score": 1.137,
+     "specific": true
+    }
+   ],
+   "combo": "舌紫暗，脉滑",
+   "n_dim": 2
+  },
+  "气血亏虚证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.72,
+     "df": 24,
+     "score": 0.796,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.3,
+     "df": 6,
+     "score": 0.745,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.71,
+     "df": 44,
+     "score": 0.351,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.45,
+     "df": 46,
+     "score": 0.202,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [
+     "薄白"
+    ],
+    "pulse": [
+     "弱",
+     "细"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肝肾阴虚证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.42,
+     "df": 20,
+     "score": 0.544,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.78,
+     "df": 40,
+     "score": 0.456,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.59,
+     "df": 46,
+     "score": 0.263,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "红"
+    ],
+    "coat": [
+     "少苔"
+    ],
+    "pulse": [
+     "数",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "风痰入络证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "白腻",
+     "rate": 0.41,
+     "df": 2,
+     "score": 1.478,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.62,
+     "df": 11,
+     "score": 1.174,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.57,
+     "df": 15,
+     "score": 0.902,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.86,
+     "df": 40,
+     "score": 0.507,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.9,
+     "df": 46,
+     "score": 0.403,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.46,
+     "df": 44,
+     "score": 0.228,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": []
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "白腻",
+     "rate": 0.41,
+     "df": 2,
+     "score": 1.478,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.62,
+     "df": 11,
+     "score": 1.174,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.57,
+     "df": 15,
+     "score": 0.902,
+     "specific": true
+    }
+   ],
+   "combo": "舌紫暗，苔白腻，脉滑",
+   "n_dim": 3
+  },
+  "脾胃虚弱证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.44,
+     "df": 6,
+     "score": 1.087,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.45,
+     "df": 24,
+     "score": 0.494,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.8,
+     "df": 44,
+     "score": 0.394,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.5,
+     "df": 40,
+     "score": 0.294,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.45,
+     "df": 46,
+     "score": 0.202,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白"
+    ],
+    "pulse": []
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "阴虚火旺证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "少苔",
+     "rate": 0.5,
+     "df": 2,
+     "score": 1.792,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.45,
+     "df": 6,
+     "score": 1.118,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.7,
+     "df": 20,
+     "score": 0.897,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.64,
+     "df": 24,
+     "score": 0.7,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": [
+     "数",
+     "细"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "少苔",
+     "rate": 0.5,
+     "df": 2,
+     "score": 1.792,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.45,
+     "df": 6,
+     "score": 1.118,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.7,
+     "df": 20,
+     "score": 0.897,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，少苔，脉数",
+   "n_dim": 3
+  },
+  "痰湿中阻证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.4,
+     "df": 12,
+     "score": 0.717,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "胖大",
+     "rate": 0.35,
+     "df": 2,
+     "score": 1.254,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.61,
+     "df": 40,
+     "score": 0.36,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.47,
+     "df": 46,
+     "score": 0.213,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.38,
+     "df": 44,
+     "score": 0.185,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [
+     "白",
+     "白腻"
+    ],
+    "pulse": [
+     "濡"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "血热证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.41,
+     "df": 5,
+     "score": 1.1,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.79,
+     "df": 20,
+     "score": 1.009,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.53,
+     "df": 11,
+     "score": 0.986,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.46,
+     "df": 12,
+     "score": 0.829,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.88,
+     "df": 40,
+     "score": 0.514,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "绛"
+    ],
+    "coat": [],
+    "pulse": [
+     "数"
+    ]
+   },
+   "n_specific": 4,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.41,
+     "df": 5,
+     "score": 1.1,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.79,
+     "df": 20,
+     "score": 1.009,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.53,
+     "df": 11,
+     "score": 0.986,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.46,
+     "df": 12,
+     "score": 0.829,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔黄腻，脉滑",
+   "n_dim": 3
+  },
+  "阴虚血瘀证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.45,
+     "df": 20,
+     "score": 0.576,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.35,
+     "df": 4,
+     "score": 1.012,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.55,
+     "df": 24,
+     "score": 0.604,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.35,
+     "df": 44,
+     "score": 0.172,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "涩",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "脾胃不和证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.46,
+     "df": 4,
+     "score": 1.337,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.31,
+     "df": 6,
+     "score": 0.777,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.36,
+     "df": 20,
+     "score": 0.464,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.78,
+     "df": 40,
+     "score": 0.456,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.65,
+     "df": 44,
+     "score": 0.32,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": [
+     "弦"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "湿热阻络证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.69,
+     "df": 12,
+     "score": 1.232,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.6,
+     "df": 20,
+     "score": 0.769,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.4,
+     "df": 11,
+     "score": 0.752,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.76,
+     "df": 40,
+     "score": 0.448,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.4,
+     "df": 44,
+     "score": 0.197,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "数",
+     "滑"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.69,
+     "df": 12,
+     "score": 1.232,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.6,
+     "df": 20,
+     "score": 0.769,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.4,
+     "df": 11,
+     "score": 0.752,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔黄，脉滑",
+   "n_dim": 3
+  },
+  "心血虚证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "弱",
+     "rate": 0.81,
+     "df": 3,
+     "score": 2.582,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.86,
+     "df": 24,
+     "score": 0.948,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.35,
+     "df": 6,
+     "score": 0.87,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.9,
+     "df": 44,
+     "score": 0.443,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": [
+     "无力",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "湿热下注证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.6,
+     "df": 11,
+     "score": 1.127,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.42,
+     "df": 6,
+     "score": 1.056,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.57,
+     "df": 12,
+     "score": 1.03,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.54,
+     "df": 20,
+     "score": 0.689,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.71,
+     "df": 44,
+     "score": 0.351,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.66,
+     "df": 46,
+     "score": 0.297,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.49,
+     "df": 40,
+     "score": 0.287,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "滑",
+     "濡"
+    ]
+   },
+   "n_specific": 4,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.6,
+     "df": 11,
+     "score": 1.127,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.42,
+     "df": 6,
+     "score": 1.056,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.57,
+     "df": 12,
+     "score": 1.03,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.54,
+     "df": 20,
+     "score": 0.689,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔黄，脉滑",
+   "n_dim": 3
+  },
+  "阳虚血瘀证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "白腻",
+     "rate": 0.54,
+     "df": 2,
+     "score": 1.926,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "胖大",
+     "rate": 0.4,
+     "df": 2,
+     "score": 1.433,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.66,
+     "df": 9,
+     "score": 1.378,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.71,
+     "df": 24,
+     "score": 0.783,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.34,
+     "df": 15,
+     "score": 0.529,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.64,
+     "df": 44,
+     "score": 0.314,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.69,
+     "df": 46,
+     "score": 0.308,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "涩",
+     "细"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "白腻",
+     "rate": 0.54,
+     "df": 2,
+     "score": 1.926,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "胖大",
+     "rate": 0.4,
+     "df": 2,
+     "score": 1.433,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.66,
+     "df": 9,
+     "score": 1.378,
+     "specific": true
+    }
+   ],
+   "combo": "舌胖大，苔白腻，脉沉",
+   "n_dim": 3
+  },
+  "湿热内蕴证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.6,
+     "df": 11,
+     "score": 1.127,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.55,
+     "df": 12,
+     "score": 0.985,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.31,
+     "df": 6,
+     "score": 0.777,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.36,
+     "df": 20,
+     "score": 0.464,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.3,
+     "df": 24,
+     "score": 0.33,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.55,
+     "df": 44,
+     "score": 0.271,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.35,
+     "df": 40,
+     "score": 0.206,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "数",
+     "滑",
+     "濡"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.6,
+     "df": 11,
+     "score": 1.127,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.55,
+     "df": 12,
+     "score": 0.985,
+     "specific": true
+    }
+   ],
+   "combo": "苔黄，脉滑",
+   "n_dim": 2
+  },
+  "痰热壅肺证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.55,
+     "df": 11,
+     "score": 1.033,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.66,
+     "df": 44,
+     "score": 0.326,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.68,
+     "df": 46,
+     "score": 0.302,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄"
+    ],
+    "pulse": [
+     "数",
+     "滑"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "瘀阻心脉证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.82,
+     "df": 4,
+     "score": 2.385,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "瘀斑",
+     "rate": 0.66,
+     "df": 2,
+     "score": 2.374,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.89,
+     "df": 15,
+     "score": 1.392,
+     "specific": true
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "瘀斑",
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "涩"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "涩",
+     "rate": 0.82,
+     "df": 4,
+     "score": 2.385,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "瘀斑",
+     "rate": 0.66,
+     "df": 2,
+     "score": 2.374,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.89,
+     "df": 15,
+     "score": 1.392,
+     "specific": true
+    }
+   ],
+   "combo": "舌瘀斑，脉涩",
+   "n_dim": 2
+  },
+  "痰瘀滞络证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.45,
+     "df": 5,
+     "score": 1.2,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.65,
+     "df": 15,
+     "score": 1.02,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.39,
+     "df": 11,
+     "score": 0.728,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.69,
+     "df": 40,
+     "score": 0.404,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.62,
+     "df": 46,
+     "score": 0.28,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [
+     "白"
+    ],
+    "pulse": [
+     "弦",
+     "涩"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.45,
+     "df": 5,
+     "score": 1.2,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.65,
+     "df": 15,
+     "score": 1.02,
+     "specific": true
+    }
+   ],
+   "combo": "舌紫暗，苔黄腻",
+   "n_dim": 2
+  },
+  "气虚不摄证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.62,
+     "df": 24,
+     "score": 0.687,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.79,
+     "df": 44,
+     "score": 0.388,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.56,
+     "df": 46,
+     "score": 0.252,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [],
+    "pulse": [
+     "弱"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "脾肾阳虚证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.6,
+     "df": 9,
+     "score": 1.248,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.38,
+     "df": 6,
+     "score": 0.932,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.82,
+     "df": 24,
+     "score": 0.906,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.74,
+     "df": 44,
+     "score": 0.363,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.4,
+     "df": 46,
+     "score": 0.179,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [
+     "滑",
+     "白"
+    ],
+    "pulse": [
+     "无力",
+     "沉",
+     "迟"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肝郁血瘀证": {
+   "n_cases": 80,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "瘀斑",
+     "rate": 0.42,
+     "df": 2,
+     "score": 1.523,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.8,
+     "df": 15,
+     "score": 1.255,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.54,
+     "df": 24,
+     "score": 0.591,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.41,
+     "df": 40,
+     "score": 0.242,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "瘀斑",
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "弦",
+     "涩"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "tongue",
+     "w": "瘀斑",
+     "rate": 0.42,
+     "df": 2,
+     "score": 1.523,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.8,
+     "df": 15,
+     "score": 1.255,
+     "specific": true
+    }
+   ],
+   "combo": "舌瘀斑",
+   "n_dim": 1
+  },
+  "肝阴不足证": {
+   "n_cases": 79,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.56,
+     "df": 6,
+     "score": 1.384,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.86,
+     "df": 40,
+     "score": 0.506,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.82,
+     "df": 44,
+     "score": 0.405,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.73,
+     "df": 46,
+     "score": 0.329,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "少津",
+     "红"
+    ],
+    "coat": [],
+    "pulse": [
+     "弦",
+     "数",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "心肾不交证": {
+   "n_cases": 78,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.82,
+     "df": 40,
+     "score": 0.482,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.76,
+     "df": 44,
+     "score": 0.373,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.78,
+     "df": 46,
+     "score": 0.35,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "少苔"
+    ],
+    "pulse": [
+     "数",
+     "细"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "寒凝血瘀证": {
+   "n_cases": 72,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.92,
+     "df": 46,
+     "score": 0.411,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.65,
+     "df": 40,
+     "score": 0.384,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.71,
+     "df": 44,
+     "score": 0.349,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白"
+    ],
+    "pulse": [
+     "沉",
+     "迟"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肾虚水泛证": {
+   "n_cases": 71,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.85,
+     "df": 11,
+     "score": 1.588,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.79,
+     "df": 20,
+     "score": 1.01,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.45,
+     "df": 12,
+     "score": 0.808,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.34,
+     "df": 9,
+     "score": 0.703,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.85,
+     "df": 40,
+     "score": 0.497,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.37,
+     "df": 24,
+     "score": 0.402,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.54,
+     "df": 46,
+     "score": 0.24,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.35,
+     "df": 44,
+     "score": 0.173,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [
+     "滑",
+     "白"
+    ],
+    "pulse": [
+     "无力",
+     "沉",
+     "迟"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.85,
+     "df": 11,
+     "score": 1.588,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.79,
+     "df": 20,
+     "score": 1.01,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.45,
+     "df": 12,
+     "score": 0.808,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔黄，脉滑",
+   "n_dim": 3
+  },
+  "心肺气虚证": {
+   "n_cases": 70,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "无力",
+     "rate": 0.53,
+     "df": 1,
+     "score": 2.261,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弱",
+     "rate": 0.53,
+     "df": 3,
+     "score": 1.68,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.8,
+     "df": 24,
+     "score": 0.879,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.73,
+     "df": 44,
+     "score": 0.359,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.71,
+     "df": 46,
+     "score": 0.32,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡",
+     "紫暗"
+    ],
+    "coat": [
+     "白"
+    ],
+    "pulse": [
+     "弱"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "无力",
+     "rate": 0.53,
+     "df": 1,
+     "score": 2.261,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弱",
+     "rate": 0.53,
+     "df": 3,
+     "score": 1.68,
+     "specific": true
+    }
+   ],
+   "combo": "脉无力",
+   "n_dim": 1
+  },
+  "风热犯肺证": {
+   "n_cases": 69,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.65,
+     "df": 6,
+     "score": 1.621,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.42,
+     "df": 5,
+     "score": 1.121,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.64,
+     "df": 44,
+     "score": 0.314,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.62,
+     "df": 46,
+     "score": 0.279,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "薄黄"
+    ],
+    "pulse": [
+     "数",
+     "浮"
+    ]
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.65,
+     "df": 6,
+     "score": 1.621,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.42,
+     "df": 5,
+     "score": 1.121,
+     "specific": true
+    }
+   ],
+   "combo": "脉数",
+   "n_dim": 1
+  },
+  "肺肾气虚证": {
+   "n_cases": 68,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.32,
+     "df": 11,
+     "score": 0.608,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.84,
+     "df": 44,
+     "score": 0.413,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.91,
+     "df": 46,
+     "score": 0.408,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.31,
+     "df": 24,
+     "score": 0.339,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.53,
+     "df": 40,
+     "score": 0.311,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡",
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "弱"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "脾胃积热证": {
+   "n_cases": 67,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.96,
+     "df": 4,
+     "score": 2.761,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.93,
+     "df": 12,
+     "score": 1.658,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.97,
+     "df": 20,
+     "score": 1.243,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 1,
+     "df": 40,
+     "score": 0.588,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄"
+    ],
+    "pulse": [
+     "数"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.96,
+     "df": 4,
+     "score": 2.761,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.93,
+     "df": 12,
+     "score": 1.658,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.97,
+     "df": 20,
+     "score": 1.243,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔薄黄",
+   "n_dim": 2
+  },
+  "风寒湿痹证": {
+   "n_cases": 67,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.51,
+     "df": 15,
+     "score": 0.796,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.75,
+     "df": 40,
+     "score": 0.439,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.72,
+     "df": 46,
+     "score": 0.321,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.6,
+     "df": 44,
+     "score": 0.294,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白"
+    ],
+    "pulse": [
+     "弦",
+     "紧"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "气虚痰结证": {
+   "n_cases": 67,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "白腻",
+     "rate": 0.36,
+     "df": 2,
+     "score": 1.284,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.64,
+     "df": 24,
+     "score": 0.705,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.85,
+     "df": 44,
+     "score": 0.419,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.55,
+     "df": 46,
+     "score": 0.247,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": [
+     "滑"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "风寒阻络证": {
+   "n_cases": 64,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.36,
+     "df": 5,
+     "score": 0.959,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.34,
+     "df": 15,
+     "score": 0.539,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.7,
+     "df": 44,
+     "score": 0.346,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.69,
+     "df": 46,
+     "score": 0.308,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.31,
+     "df": 40,
+     "score": 0.184,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白"
+    ],
+    "pulse": [
+     "弦",
+     "紧"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "气滞证": {
+   "n_cases": 61,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.48,
+     "df": 24,
+     "score": 0.522,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.34,
+     "df": 20,
+     "score": 0.441,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.69,
+     "df": 44,
+     "score": 0.339,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.44,
+     "df": 40,
+     "score": 0.26,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.52,
+     "df": 46,
+     "score": 0.235,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": []
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "痰火扰心证": {
+   "n_cases": 60,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.7,
+     "df": 5,
+     "score": 1.867,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.72,
+     "df": 11,
+     "score": 1.346,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.7,
+     "df": 12,
+     "score": 1.254,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.7,
+     "df": 20,
+     "score": 0.897,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.73,
+     "df": 40,
+     "score": 0.431,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "红"
+    ],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "数",
+     "滑"
+    ]
+   },
+   "n_specific": 4,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "黄腻",
+     "rate": 0.7,
+     "df": 5,
+     "score": 1.867,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.72,
+     "df": 11,
+     "score": 1.346,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.7,
+     "df": 12,
+     "score": 1.254,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.7,
+     "df": 20,
+     "score": 0.897,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔黄腻，脉滑",
+   "n_dim": 3
+  },
+  "瘀血阻滞证": {
+   "n_cases": 59,
+   "all_features": [],
+   "concept": {
+    "tongue": [
+     "瘀斑",
+     "紫暗"
+    ],
+    "coat": [],
+    "pulse": [
+     "弦",
+     "涩"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "气血两虚证": {
+   "n_cases": 55,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.69,
+     "df": 9,
+     "score": 1.437,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.89,
+     "df": 24,
+     "score": 0.979,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.38,
+     "df": 6,
+     "score": 0.949,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.89,
+     "df": 44,
+     "score": 0.439,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.35,
+     "df": 46,
+     "score": 0.155,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [],
+    "pulse": [
+     "弱",
+     "无力",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肝气犯胃证": {
+   "n_cases": 55,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.56,
+     "df": 20,
+     "score": 0.722,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.76,
+     "df": 40,
+     "score": 0.449,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.96,
+     "df": 46,
+     "score": 0.432,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.44,
+     "df": 44,
+     "score": 0.215,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡"
+    ],
+    "coat": [
+     "薄白",
+     "薄黄"
+    ],
+    "pulse": [
+     "弦"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "饮食积滞证": {
+   "n_cases": 52,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.5,
+     "df": 20,
+     "score": 0.64,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.38,
+     "df": 4,
+     "score": 1.112,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.48,
+     "df": 24,
+     "score": 0.528,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.48,
+     "df": 40,
+     "score": 0.283,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.54,
+     "df": 46,
+     "score": 0.241,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.48,
+     "df": 44,
+     "score": 0.237,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄腻"
+    ],
+    "pulse": [
+     "滑"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "风寒袭表证": {
+   "n_cases": 49,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.65,
+     "df": 5,
+     "score": 1.742,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.84,
+     "df": 44,
+     "score": 0.412,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.86,
+     "df": 46,
+     "score": 0.384,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "薄白"
+    ],
+    "pulse": [
+     "浮",
+     "紧"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肺卫不固证": {
+   "n_cases": 49,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.94,
+     "df": 24,
+     "score": 1.031,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.98,
+     "df": 44,
+     "score": 0.482,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.98,
+     "df": 46,
+     "score": 0.439,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "薄白"
+    ],
+    "pulse": [
+     "弱",
+     "细"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "正虚瘀结证": {
+   "n_cases": 48,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.56,
+     "df": 24,
+     "score": 0.618,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.92,
+     "df": 46,
+     "score": 0.411,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.81,
+     "df": 44,
+     "score": 0.4,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "淡",
+     "紫暗"
+    ],
+    "coat": [
+     "少苔"
+    ],
+    "pulse": [
+     "弦",
+     "数",
+     "细"
+    ]
+   },
+   "n_specific": 0,
+   "reason": "鉴别性舌脉特征仅 0 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肝郁脾虚证": {
+   "n_cases": 40,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.45,
+     "df": 20,
+     "score": 0.576,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.62,
+     "df": 40,
+     "score": 0.367,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.33,
+     "df": 24,
+     "score": 0.357,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.4,
+     "df": 44,
+     "score": 0.197,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "白"
+    ],
+    "pulse": [
+     "弦"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肾虚肝亢证": {
+   "n_cases": 37,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.73,
+     "df": 6,
+     "score": 1.813,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.76,
+     "df": 40,
+     "score": 0.445,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.84,
+     "df": 44,
+     "score": 0.413,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "少苔"
+    ],
+    "pulse": [
+     "弦"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "寒湿阻络证": {
+   "n_cases": 37,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.54,
+     "df": 9,
+     "score": 1.124,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.46,
+     "df": 24,
+     "score": 0.505,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.78,
+     "df": 44,
+     "score": 0.386,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.54,
+     "df": 46,
+     "score": 0.242,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "滑",
+     "白"
+    ],
+    "pulse": []
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "肾虚证": {
+   "n_cases": 36,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.58,
+     "df": 9,
+     "score": 1.213,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.36,
+     "df": 6,
+     "score": 0.897,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.47,
+     "df": 24,
+     "score": 0.519,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.92,
+     "df": 44,
+     "score": 0.451,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.44,
+     "df": 46,
+     "score": 0.199,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": []
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "血虚风燥证": {
+   "n_cases": 36,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄白",
+     "rate": 0.53,
+     "df": 6,
+     "score": 1.311,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.58,
+     "df": 40,
+     "score": 0.343,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.58,
+     "df": 44,
+     "score": 0.287,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "燥"
+    ],
+    "pulse": [
+     "数",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "热毒炽盛证": {
+   "n_cases": 35,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.8,
+     "df": 6,
+     "score": 1.988,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.69,
+     "df": 20,
+     "score": 0.878,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.31,
+     "df": 12,
+     "score": 0.563,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": []
+   },
+   "n_specific": 2,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.8,
+     "df": 6,
+     "score": 1.988,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.69,
+     "df": 20,
+     "score": 0.878,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，脉数",
+   "n_dim": 2
+  },
+  "大肠湿热证": {
+   "n_cases": 33,
+   "all_features": [
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.55,
+     "df": 4,
+     "score": 1.577,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.64,
+     "df": 12,
+     "score": 1.14,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.88,
+     "df": 20,
+     "score": 1.126,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "滑",
+     "rate": 0.36,
+     "df": 11,
+     "score": 0.683,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.79,
+     "df": 40,
+     "score": 0.463,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "数",
+     "滑",
+     "濡"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "coat",
+     "w": "薄黄",
+     "rate": 0.55,
+     "df": 4,
+     "score": 1.577,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.64,
+     "df": 12,
+     "score": 1.14,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.88,
+     "df": 20,
+     "score": 1.126,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，苔薄黄",
+   "n_dim": 2
+  },
+  "风热袭表证": {
+   "n_cases": 32,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.56,
+     "df": 6,
+     "score": 1.398,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.5,
+     "df": 5,
+     "score": 1.334,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.5,
+     "df": 20,
+     "score": 0.64,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.41,
+     "df": 46,
+     "score": 0.182,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [
+     "薄黄"
+    ],
+    "pulse": [
+     "数",
+     "浮"
+    ]
+   },
+   "n_specific": 3,
+   "signature": [
+    {
+     "kind": "pulse",
+     "w": "数",
+     "rate": 0.56,
+     "df": 6,
+     "score": 1.398,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "浮",
+     "rate": 0.5,
+     "df": 5,
+     "score": 1.334,
+     "specific": true
+    },
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.5,
+     "df": 20,
+     "score": 0.64,
+     "specific": true
+    }
+   ],
+   "combo": "舌红，脉数",
+   "n_dim": 2
+  },
+  "肝胆湿热证": {
+   "n_cases": 31,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "红",
+     "rate": 0.61,
+     "df": 20,
+     "score": 0.785,
+     "specific": true
+    },
+    {
+     "kind": "coat",
+     "w": "黄",
+     "rate": 0.39,
+     "df": 12,
+     "score": 0.694,
+     "specific": false
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.94,
+     "df": 40,
+     "score": 0.55,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.35,
+     "df": 44,
+     "score": 0.175,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.39,
+     "df": 46,
+     "score": 0.173,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "红"
+    ],
+    "coat": [
+     "黄",
+     "黄腻"
+    ],
+    "pulse": [
+     "弦",
+     "数",
+     "滑"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "气血不足证": {
+   "n_cases": 31,
+   "all_features": [
+    {
+     "kind": "pulse",
+     "w": "沉",
+     "rate": 0.42,
+     "df": 9,
+     "score": 0.872,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "细",
+     "rate": 0.81,
+     "df": 24,
+     "score": 0.886,
+     "specific": false
+    },
+    {
+     "kind": "tongue",
+     "w": "淡",
+     "rate": 0.74,
+     "df": 44,
+     "score": 0.365,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.65,
+     "df": 46,
+     "score": 0.289,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [
+     "嫩",
+     "淡"
+    ],
+    "coat": [],
+    "pulse": [
+     "无力",
+     "细"
+    ]
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  },
+  "风寒湿阻证": {
+   "n_cases": 31,
+   "all_features": [
+    {
+     "kind": "tongue",
+     "w": "紫暗",
+     "rate": 0.74,
+     "df": 15,
+     "score": 1.164,
+     "specific": true
+    },
+    {
+     "kind": "pulse",
+     "w": "弦",
+     "rate": 0.9,
+     "df": 40,
+     "score": 0.531,
+     "specific": false
+    },
+    {
+     "kind": "coat",
+     "w": "白",
+     "rate": 0.81,
+     "df": 46,
+     "score": 0.361,
+     "specific": false
+    }
+   ],
+   "concept": {
+    "tongue": [],
+    "coat": [],
+    "pulse": []
+   },
+   "n_specific": 1,
+   "reason": "鉴别性舌脉特征仅 1 个",
+   "combo": "",
+   "n_dim": 0
+  }
+ },
+ "usable": [
+  "气虚血瘀证",
+  "肝胃郁热证",
+  "湿热瘀阻证",
+  "阳虚水泛证",
+  "痰瘀痹阻证",
+  "心脉痹阻证",
+  "肝胃不和证",
+  "湿热蕴结证",
+  "痰浊蒙窍证",
+  "风痰入络证",
+  "阴虚火旺证",
+  "血热证",
+  "湿热阻络证",
+  "湿热下注证",
+  "阳虚血瘀证",
+  "湿热内蕴证",
+  "瘀阻心脉证",
+  "痰瘀滞络证",
+  "肾虚水泛证",
+  "脾胃积热证",
+  "痰火扰心证",
+  "热毒炽盛证",
+  "大肠湿热证",
+  "风热袭表证"
+ ],
+ "unavailable": [
+  {
+   "syndrome": "风痰瘀阻证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "痰湿蕴肺证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "脾肾两虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "肝肾亏虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "气阴两虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "脾胃虚寒证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "风寒袭肺证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "风痰上扰证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "风寒外袭证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "阴虚阳亢证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "痰瘀互结证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "瘀血阻络证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "气血亏虚证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "肝肾阴虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "脾胃虚弱证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "痰湿中阻证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "阴虚血瘀证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "脾胃不和证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "心血虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "痰热壅肺证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "气虚不摄证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "脾肾阳虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "肝阴不足证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "心肾不交证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "寒凝血瘀证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "肺肾气虚证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "风寒湿痹证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "气虚痰结证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "风寒阻络证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "气滞证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "瘀血阻滞证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "气血两虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "肝气犯胃证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "饮食积滞证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "风寒袭表证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "肺卫不固证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "正虚瘀结证",
+   "reason": "鉴别性舌脉特征仅 0 个"
+  },
+  {
+   "syndrome": "肝郁脾虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "肾虚肝亢证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "寒湿阻络证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "肾虚证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "血虚风燥证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "肝胆湿热证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "气血不足证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  },
+  {
+   "syndrome": "风寒湿阻证",
+   "reason": "鉴别性舌脉特征仅 1 个"
+  }
+ ]
+}

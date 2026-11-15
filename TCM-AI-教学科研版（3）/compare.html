@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>相似证型鉴别 · 中医内科学</title>
+<style>
+:root{color-scheme:dark;--ink:#101311;--panel:#171b18;--panel-raised:#1d231e;--paper:#f0f0e8;--muted:#9ba49a;--line:rgba(237,242,228,.14);--acid:#c8f169;--orange:#ff744d;--violet:#b9a5ff;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;}
+a{color:var(--acid);text-decoration:none;}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px 80px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+h1{font-size:26px;margin:0 0 6px;}.sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;}
+select{background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:11px 12px;font-size:13px;min-width:260px;}
+button{background:var(--acid);color:#10160f;border:0;border-radius:8px;padding:11px 20px;font-size:13px;font-weight:700;cursor:pointer;}
+button:disabled{opacity:.5;cursor:default;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+.vs{color:var(--orange);font-weight:700;font-size:15px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+.card{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel);}
+.card h3{margin:0 0 4px;font-size:17px;}
+.card .meta{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.card p{margin:6px 0;font-size:13.5px;color:#d8ddd4;}
+.sig{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.chip{font-size:12px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);}
+.chip.hot{border-color:var(--acid);color:var(--acid);}
+.panel{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--panel);margin-top:16px;}
+.panel h4{margin:0 0 10px;font-size:13px;color:var(--muted);letter-spacing:.5px;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:760px){.row{grid-template-columns:1fr;}}
+.feat{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-radius:8px;background:var(--panel-raised);margin-bottom:6px;font-size:13.5px;}
+.feat .rate{font-size:12px;color:var(--acid);font-weight:700;}
+.feat.b .rate{color:var(--violet);}
+.syn{background:rgba(255,116,77,.12);border:1px solid var(--orange);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;}
+.syn b{color:var(--orange);}
+.loading{color:var(--muted);font-size:13px;padding:16px 0;}
+.err{color:var(--orange);font-size:13px;}
+.note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>相似证型鉴别</b></div>
+    <div><a href="/">← 知识检索</a> &nbsp; <a href="/quiz.html">辨证训练</a></div>
+  </div>
+  <h1>中医内科学 · 相似证型鉴别</h1>
+  <p class="sub">选择两个易混淆的证型，系统基于<b>真实病历</b>统计各自的高发症状，展示二者的鉴别要点。
+    这一功能针对中医诊断学的核心难点——<b>不是不知道证型，而是分不清相近的证型</b>。</p>
+  <div class="bar">
+    <select id="selA"><option value="">选择证型 A</option></select>
+    <span class="vs">VS</span>
+    <select id="selB"><option value="">选择证型 B</option></select>
+    <button class="ghost" id="swapBtn">⇄ 互换</button>
+    <button id="cmpBtn">开始对比</button>
+  </div>
+  <div id="stage"><div class="panel"><div class="loading">正在加载证型数据…</div></div></div>
+  <div class="note" id="meta"></div>
+</div>
+<script>
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function chips(arr,cls){return (arr||[]).map(function(x){return '<span class="chip '+(cls||'')+'">'+esc(x.w)+' <b>'+Math.round((x.rate||0)*100)+'%</b></span>';}).join("");}
+function featRows(arr,cls){return (arr||[]).map(function(x){return '<div class="feat '+(cls||'')+'"><span>'+esc(x.w)+'</span><span class="rate">'+Math.round((x.rate||0)*100)+'%</span></div>';}).join("");}
+
+function loadList(){
+  fetch("/api/quiz/compare/syndromes").then(function(r){return r.json();}).then(function(j){
+    if(j.code!==200){throw new Error(j.message||"加载失败");}
+    var opts=j.data.map(function(x){return '<option value="'+esc(x.syndrome)+'">'+esc(x.syndrome)+'（病历 '+x.n_cases+' 条）</option>';}).join("");
+    $("selA").innerHTML='<option value="">选择证型 A</option>'+opts;
+    $("selB").innerHTML='<option value="">选择证型 B</option>'+opts;
+    var m=j.meta||{};
+    $("meta").textContent="数据：核心池 "+m.core_count+" 个证型，可对比 "+m.pair_count+" 组配对；症状词表 "+m.vocab_size+" 个，已过滤 "+m.filtered_common+" 个通用词。出现率为该症状在证型病历中的占比。";
+  }).catch(function(e){$("stage").innerHTML='<div class="panel"><div class="err">'+esc(e.message)+'</div></div>';});
+}
+
+function render(d){
+  var synBlock=d.synonym?'<div class="syn"><b>⚠ 同义词对</b>：知识库中这两个证型的定义几乎完全一致（概念相似度 '+d.concept_sim+'）。在国标体系中它们常互为通用，临床上并不严格区分。以下差异来自真实病历的统计分布，供参考。</div>':'';
+  var html=synBlock;
+  html+='<div class="grid2">';
+  html+='<div class="card"><h3>'+esc(d.a)+'</h3><div class="meta">真实病历 '+d.n_a+' 条</div>';
+  html+='<p>'+esc((d.info_a&&d.info_a.definition||"").slice(0,150))+'</p>';
+  html+='<div class="sig">'+chips(d.info_a&&d.info_a.signature,"hot")+'</div></div>';
+  html+='<div class="card"><h3>'+esc(d.b)+'</h3><div class="meta">真实病历 '+d.n_b+' 条</div>';
+  html+='<p>'+esc((d.info_b&&d.info_b.definition||"").slice(0,150))+'</p>';
+  html+='<div class="sig">'+chips(d.info_b&&d.info_b.signature,"hot")+'</div></div>';
+  html+='</div>';
+  html+='<div class="panel"><h4>鉴别要点——各自高发而对方少见的症状</h4><div class="row">';
+  html+='<div><div style="font-size:13px;color:var(--acid);margin-bottom:8px;font-weight:700">'+esc(d.a)+' 的特征</div>'+(featRows(d.only_a,"")||'<div class="feat">无显著特征</div>')+'</div>';
+  html+='<div><div style="font-size:13px;color:var(--violet);margin-bottom:8px;font-weight:700">'+esc(d.b)+' 的特征</div>'+(featRows(d.only_b,"b")||'<div class="feat">无显著特征</div>')+'</div>';
+  html+='</div></div>';
+  if((d.shared||[]).length){
+    html+='<div class="panel"><h4>共有症状——不能作为鉴别依据</h4><div class="sig">'+chips(d.shared,"")+'</div></div>';
+  }
+  html+='<div class="note">说明：以上"特征"指该症状在该证型病历中的出现率显著高于对比证型（≥25%）。'+'数据来自 TCM-SD 真实电子病历，仅供教学参考，不构成诊断依据。</div>';
+  $("stage").innerHTML=html;
+}
+
+function compare(){
+  var a=$("selA").value,b=$("selB").value;
+  if(!a||!b){$("stage").innerHTML='<div class="panel"><div class="err">请先选择两个证型</div></div>';return;}
+  if(a===b){$("stage").innerHTML='<div class="panel"><div class="err">请选择两个不同的证型</div></div>';return;}
+  $("cmpBtn").disabled=true;$("cmpBtn").textContent="对比中…";
+  fetch("/api/quiz/compare?a="+encodeURIComponent(a)+"&b="+encodeURIComponent(b))
+    .then(function(r){return r.json();}).then(function(j){
+      if(j.code!==200){throw new Error(j.message||"对比失败");}
+      render(j.data);
+    }).catch(function(e){$("stage").innerHTML='<div class="panel"><div class="err">'+esc(e.message)+'</div></div>';})
+    .then(function(){$("cmpBtn").disabled=false;$("cmpBtn").textContent="开始对比";});
+}
+
+$("cmpBtn").addEventListener("click",compare);
+$("swapBtn").addEventListener("click",function(){var t=$("selA").value;$("selA").value=$("selB").value;$("selB").value=t;if($("selA").value&&$("selB").value){compare();}});
+loadList();
+</script>
+</body>
+</html>
