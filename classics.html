@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>经典书城 · 中医内科学</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--accent-strong:#1F4D3B;--accent-soft:rgba(47,107,82,.12);--orange:#C98A5E;--violet:#7E9BB8;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.8;}
+a{color:var(--acid);text-decoration:none;}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 22px 60px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}
+.brand b{color:var(--acid);}
+.nav{display:flex;gap:15px;font-size:13px;flex-wrap:wrap;}
+.nav a{color:var(--muted);}
+.nav a:hover{color:var(--acid);}
+.nav a.on{color:var(--acid);font-weight:600;}
+h1{font-size:24px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin-bottom:18px;}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:16px;}
+.crumb a{color:var(--muted);}
+.crumb a:hover{color:var(--acid);}
+.crumb span{color:var(--paper);margin-left:6px;}
+
+/* 书架卡片 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;}
+.book-card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px;display:flex;flex-direction:column;gap:12px;transition:border-color .15s;}
+.book-card:hover{border-color:var(--acid);}
+/* 仿古函套书封 */
+.book-card .cover{width:120px;height:168px;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(31,77,59,.18),inset 0 0 0 1px rgba(31,77,59,.08);align-self:center;overflow:hidden;
+  background-image:linear-gradient(160deg,rgba(255,255,255,.35),rgba(31,77,59,.10)),repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 2px,transparent 2px 12px);}
+.cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(90deg,rgba(31,77,59,.22),rgba(0,0,0,0));}
+.cover::after{content:"";position:absolute;inset:7px;border:1px solid rgba(31,77,59,.18);border-radius:3px;pointer-events:none;}
+.cover .label{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 7px;background:linear-gradient(180deg,rgba(242,237,221,.97),rgba(228,221,199,.95));border:1px solid rgba(74,62,40,.35);border-radius:3px;box-shadow:0 2px 6px rgba(31,77,59,.16);}
+.cv{writing-mode:vertical-rl;font-size:19px;letter-spacing:6px;color:#262019;font-weight:600;}
+.author-tag{writing-mode:vertical-rl;font-size:9px;letter-spacing:2px;color:#6b5f49;max-height:74px;overflow:hidden;}
+.seal{position:absolute;right:12px;bottom:12px;width:26px;height:26px;border-radius:4px;color:#f7efe2;background:#a8322a;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 1px 3px rgba(31,77,59,.16);z-index:1;}
+.book-card .b-name{font-size:18px;font-weight:700;}
+.book-card .b-author{font-size:12px;color:var(--muted);line-height:1.6;}
+.book-card .b-status{font-size:12.5px;color:var(--acid);}
+.core-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.core-tags span{font-size:11.5px;padding:3px 10px;border-radius:6px;background:var(--panel-raised);border:1px solid var(--line);color:var(--paper);}
+.book-card .open-btn{margin-top:auto;background:var(--acid);color:#10160f;border:0;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* 详情 */
+.layout{display:grid;grid-template-columns:230px 1fr;gap:22px;align-items:start;}
+.cover-col .cover{width:180px;height:252px;margin:0 auto;}
+.cover-col .label{padding:18px 11px;gap:12px;}
+.cover-col .cv{font-size:26px;letter-spacing:10px;}
+.cover-col .author-tag{font-size:10.5px;letter-spacing:3px;max-height:120px;}
+.cover-col .seal{right:16px;bottom:16px;width:32px;height:32px;font-size:16px;}
+.detail-main h1{font-size:28px;margin-bottom:6px;}
+.author{color:var(--muted);font-size:13px;margin-bottom:18px;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:16px 0;}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);}
+.card .k{font-size:11px;color:var(--muted);letter-spacing:1px;}
+.card .v{font-size:14.5px;margin-top:6px;line-height:1.85;}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:22px 0 14px;flex-wrap:wrap;}
+.tabs button{background:transparent;border:0;color:var(--muted);padding:10px 14px;font-size:13.5px;cursor:pointer;border-bottom:2px solid transparent;font-weight:600;}
+.tabs button.on{color:var(--acid);border-bottom-color:var(--acid);}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:22px 24px;}
+.note{font-size:14.5px;line-height:1.95;color:#3A463E;}
+.chap-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.chap-tags span{font-size:12px;padding:4px 12px;border-radius:20px;background:var(--panel-raised);border:1px solid var(--line);}
+
+/* 原文研读双栏 */
+.read-layout{display:grid;grid-template-columns:210px 1fr;gap:16px;align-items:start;}
+.read-side{border:1px solid var(--line);border-radius:10px;background:var(--panel-raised);padding:10px;max-height:420px;overflow:auto;}
+.chap{font-size:11.5px;color:var(--muted);letter-spacing:1px;margin:10px 4px 6px;}
+.item{display:block;width:100%;text-align:left;background:transparent;border:0;border-left:2px solid transparent;color:var(--paper);padding:8px 10px;font-size:12.5px;cursor:pointer;border-radius:0 6px 6px 0;line-height:1.6;}
+.item:hover{background:var(--panel);}
+.item.on{background:var(--panel);border-left-color:var(--acid);color:var(--acid);}
+.item .no{color:var(--muted);font-size:11px;margin-right:4px;}
+.origin{font-size:18px;line-height:2.1;letter-spacing:.5px;padding:18px 20px;background:var(--panel-raised);border-radius:10px;border-left:3px solid var(--acid);cursor:text;user-select:text;}
+.origin mark{background:rgba(47,107,82,.16);color:var(--acid);border-radius:3px;padding:0 2px;}
+h3{font-size:13.5px;color:var(--muted);letter-spacing:1px;margin:20px 0 8px;font-weight:600;}
+.kw{display:flex;gap:8px;flex-wrap:wrap;}
+.kw span{font-size:12px;padding:4px 10px;border-radius:6px;background:var(--panel-raised);border:1px solid var(--line);}
+.kw span:hover{border-color:var(--acid);color:var(--acid);cursor:pointer;}
+.syn{display:flex;gap:8px;flex-wrap:wrap;}
+.syn a{font-size:12.5px;padding:5px 12px;border-radius:6px;background:rgba(47,107,82,.10);border:1px solid rgba(47,107,82,.35);}
+.empty{color:var(--muted);font-size:13.5px;padding:20px;border:1px dashed var(--line);border-radius:10px;line-height:1.8;}
+.empty a{color:var(--acid);}
+.hint{font-size:11.5px;color:var(--muted);margin-top:8px;}
+.pop{position:fixed;z-index:99;max-width:320px;background:var(--panel-raised);border:1px solid var(--acid);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.7;box-shadow:0 8px 28px rgba(31,77,59,.22);display:none;}
+.pop b{color:var(--acid);display:block;margin-bottom:4px;}
+.pop .x{position:absolute;top:6px;right:9px;color:var(--muted);cursor:pointer;font-size:14px;}
+.foot{margin-top:22px;font-size:11.5px;color:var(--muted);text-align:center;}
+@media(max-width:820px){.layout,.read-layout{grid-template-columns:1fr;}.read-side{max-height:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>经典书城</b></div>
+    <div class="nav">
+      <a href="/">检索</a>
+      <a href="/classics.html" class="on">经典</a>
+      <a href="/train.html">训练</a>
+      <a href="/progress.html">报告</a>
+    &nbsp; <a href="/static/assistant.html">助手</a> <a href="/static/profile.html">档案</a></div>
+  </div>
+
+  <!-- 书架视图 -->
+  <section id="shelfView">
+    <h1>经典书城</h1>
+    <div class="sub" id="src">原文加载中…</div>
+    <div style="margin:10px 0 16px"><a href="/static/recite.html" style="display:inline-block;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel-raised);color:var(--paper);font-size:12.5px;text-decoration:none">✎ 进入条文背诵模式 →</a></div>
+    <div class="grid" id="shelf"></div>
+  </section>
+
+  <!-- 书籍详情视图 -->
+  <section id="detailView" style="display:none">
+    <div class="crumb"><a href="javascript:backShelf()">← 返回书架</a> / <span id="crumbName"></span></div>
+    <div class="layout">
+      <aside class="cover-col" id="coverCol"></aside>
+      <div class="detail-main">
+        <h1 id="dName"></h1>
+        <div class="author" id="dAuthor"></div>
+        <div class="cards">
+          <div class="card"><div class="k">学术地位</div><div class="v" id="dStatus"></div></div>
+          <div class="card"><div class="k">核心内容</div><div class="v" id="dCore"></div></div>
+        </div>
+        <div class="tabs" id="tabs">
+          <button data-tab="summary" class="on">典籍提要</button>
+          <button data-tab="reading">原文研读</button>
+          <button data-tab="graph">知识图谱</button>
+          <button data-tab="quiz">进阶评测</button>
+        </div>
+        <div id="tabPanel"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">原文与提要仅作教学引用，以纸质通行本与教材为准 · 划选正文中任意文字即可查释义</div>
+</div>
+
+<div class="pop" id="pop">
+  <span class="x" onclick="hidePop()">×</span>
+  <b id="popT"></b>
+  <div id="popD"></div>
+</div>
+
+<script>
+let BOOKS = [], ENTRIES = [], TERMS = {};
+let CUR_BOOK = null, CUR_ENTRY = null, CUR_TAB = 'summary';
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+async function boot(){
+  try{
+    const r = await fetch('/api/classics');
+    const j = await r.json();
+    BOOKS = j.books || [];
+    ENTRIES = j.entries || [];
+    TERMS = j.terms || {};
+    document.getElementById('src').textContent = (j.source || '') + ' · ' + (j.note || '');
+    renderShelf();
+  }catch(e){
+    document.getElementById('src').textContent = '加载失败：' + e.message;
+  }
+}
+
+function shortAuthor(a){
+  if (!a) return '';
+  return String(a).replace(/[（(].*?[)）]/g, '').trim();
+}
+
+function coverHTML(book, big){
+  const c = book.cover || {};
+  const sealChar = (book.name || '经').slice(0, 1);
+  const author = big ? shortAuthor(book.author) : '';
+  return '<div class="cover" style="background-color:' + esc(c.color || '#3A5F4E') + '">'
+    + '<div class="label">'
+    + '<span class="cv">' + esc(book.name) + '</span>'
+    + (author ? '<span class="author-tag">' + esc(author) + '</span>' : '')
+    + '</div>'
+    + '<span class="seal">' + esc(sealChar) + '</span></div>';
+}
+
+function renderShelf(){
+  const shelf = document.getElementById('shelf');
+  if (!BOOKS.length){
+    shelf.innerHTML = '<div class="empty">暂无可展示的书目。</div>';
+    return;
+  }
+  shelf.innerHTML = BOOKS.map(b => {
+    const tags = (b.core || []).map(k => '<span>' + esc(k) + '</span>').join('');
+    return '<div class="book-card">'
+      + coverHTML(b)
+      + '<div><div class="b-name">' + esc(b.name) + '</div>'
+      + '<div class="b-author">' + esc(b.author || '') + '</div></div>'
+      + '<div class="b-status">' + esc(b.status || '') + '</div>'
+      + '<div class="core-tags">' + tags + '</div>'
+      + '<button class="open-btn" onclick="openBook(\'' + b.id + '\')">进入研读</button>'
+      + '</div>';
+  }).join('');
+}
+
+function openBook(id){
+  CUR_BOOK = BOOKS.find(x => x.id === id);
+  if (!CUR_BOOK) return;
+  CUR_TAB = 'summary';
+  document.getElementById('shelfView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  document.getElementById('crumbName').textContent = CUR_BOOK.name;
+  document.getElementById('dName').textContent = CUR_BOOK.name;
+  document.getElementById('dAuthor').textContent = CUR_BOOK.author || '';
+  document.getElementById('dStatus').textContent = CUR_BOOK.status || '—';
+  document.getElementById('dCore').innerHTML = '<div class="core-tags">'
+    + (CUR_BOOK.core || []).map(k => '<span>' + esc(k) + '</span>').join('') + '</div>';
+  document.getElementById('coverCol').innerHTML = coverHTML(CUR_BOOK, true);
+  document.querySelectorAll('#tabs button').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.tab === CUR_TAB);
+  });
+  renderPanel();
+}
+
+function backShelf(){
+  CUR_BOOK = null; CUR_ENTRY = null;
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('shelfView').style.display = 'block';
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  CUR_TAB = btn.dataset.tab;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b === btn));
+  renderPanel();
+});
+
+function bookEntries(bookId){
+  return ENTRIES.filter(x => x.book === bookId);
+}
+
+function renderPanel(){
+  const panel = document.getElementById('tabPanel');
+  if (CUR_TAB === 'summary'){
+    const chapters = (CUR_BOOK.chapters || []).map(c => '<span>' + esc(c) + '</span>').join('');
+    panel.innerHTML = '<div class="panel">'
+      + '<div class="note">' + esc(CUR_BOOK.summary || '暂无提要。') + '</div>'
+      + (chapters ? '<div class="chap-tags">' + chapters + '</div>' : '')
+      + '</div>';
+  } else if (CUR_TAB === 'reading'){
+    renderReading(panel);
+  } else if (CUR_TAB === 'graph'){
+    panel.innerHTML = '<div class="panel"><div class="note">本书相关的脏腑、经络与证型关系，汇入系统知识图谱统一呈现。</div>'
+      + '<div class="chap-tags"><span><a href="/main.html#knowledge-graph" style="color:var(--acid)">前往知识图谱 →</a></span></div></div>';
+  } else if (CUR_TAB === 'quiz'){
+    panel.innerHTML = '<div class="panel"><div class="note">读完提要与原文后，可到辨证训练与相似鉴别中检验掌握程度。</div>'
+      + '<div class="chap-tags">'
+      + '<span><a href="/quiz.html" style="color:var(--acid)">辨证训练 →</a></span>'
+      + '<span><a href="/compare.html" style="color:var(--acid)">相似证型鉴别 →</a></span>'
+      + '</div></div>';
+  }
+}
+
+function renderReading(panel){
+  const list = bookEntries(CUR_BOOK.id);
+  if (!list.length){
+    panel.innerHTML = '<div class="empty">本书条文正在按教材整理中，可先阅读「典籍提要」，后续补入原文研读条目。</div>';
+    return;
+  }
+  const groups = {};
+  list.forEach(e => { (groups[e.chapter || '未分章'] = groups[e.chapter || '未分章'] || []).push(e); });
+  let side = '';
+  for (const [chap, items] of Object.entries(groups)){
+    side += '<div class="chap">' + esc(chap) + '</div>';
+    side += items.map(e => '<button class="item" data-id="' + e.id + '" onclick="selectEntry(\'' + e.id + '\')">'
+      + '<span class="no">第' + e.no + '条</span>' + esc(e.text.slice(0, 20)) + '…</button>').join('');
+  }
+  panel.innerHTML = '<div class="read-layout"><aside class="read-side">' + side + '</aside><div id="entryPane"><div class="empty">从左侧选择一条原文</div></div></div>';
+  selectEntry(list[0].id);
+}
+
+function selectEntry(id){
+  const e = ENTRIES.find(x => x.id === id);
+  if (!e) return;
+  CUR_ENTRY = e;
+  document.querySelectorAll('.item').forEach(b => b.classList.toggle('on', b.dataset.id === id));
+  const kws = e.keywords || [];
+  let hl = esc(e.text);
+  for (const k of kws){
+    hl = hl.split(esc(k)).join('<mark>' + esc(k) + '</mark>');
+  }
+  const pane = document.getElementById('entryPane');
+  pane.innerHTML =
+    '<div class="origin" id="entryOrigin">' + hl + '</div>'
+    + '<div class="hint">选中上方任意文字，可查看释义</div>'
+    + '<h3>释义</h3><div class="note">' + esc(e.comment || '') + '</div>'
+    + '<h3>关键词</h3><div class="kw">'
+      + kws.map(k => '<span onclick="lookup(\'' + k.replace(/'/g, '') + '\')">' + esc(k) + '</span>').join('')
+    + '</div>'
+    + '<h3>关联证型</h3><div class="syn">'
+      + (e.syndromes || []).map(s => '<a href="/main.html?q=' + encodeURIComponent(s) + '">' + esc(s) + ' →</a>').join('')
+    + '</div>';
+}
+
+function lookup(word){
+  if (!word) return;
+  const k = String(word).trim();
+  let hit = TERMS[k];
+  if (!hit){
+    for (const t of Object.keys(TERMS)){
+      if (k.includes(t) || t.includes(k)){ hit = TERMS[t]; break; }
+    }
+  }
+  showPop(k, hit || '词典中暂无该词条。此词属中医术语，建议查阅《中医大辞典》或教材。');
+}
+
+function showPop(title, body){
+  const pop = document.getElementById('pop');
+  document.getElementById('popT').textContent = title;
+  document.getElementById('popD').textContent = body;
+  pop.style.display = 'block';
+  const sel = window.getSelection();
+  let x = 40, y = 120;
+  if (sel && sel.rangeCount){
+    const r = sel.getRangeAt(0).getBoundingClientRect();
+    if (r && r.width){ x = Math.min(r.left, window.innerWidth - 340); y = r.bottom + 8; }
+  }
+  pop.style.left = Math.max(10, x) + 'px';
+  pop.style.top = Math.min(y, window.innerHeight - 180) + 'px';
+}
+
+function hidePop(){ document.getElementById('pop').style.display = 'none'; }
+
+document.addEventListener('mouseup', () => {
+  const sel = window.getSelection();
+  const t = sel ? String(sel).trim() : '';
+  if (t && t.length >= 1 && t.length <= 20){
+    const o = document.getElementById('entryOrigin');
+    if (o && o.contains(sel.anchorNode)) lookup(t);
+  }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hidePop(); });
+document.addEventListener('click', e => {
+  const pop = document.getElementById('pop');
+  if (!pop.contains(e.target) && !e.target.closest('.kw')) hidePop();
+});
+
+boot();
+/* 支持 ?book=shl&tab=reading 直达 */
+setTimeout(function(){
+  try {
+    var _p = new URLSearchParams(location.search);
+    var _b = _p.get("book");
+    if (_b && typeof openBook === "function") {
+      openBook(_b);
+      var _t = _p.get("tab");
+      if (_t) {
+        CUR_TAB = _t;
+        document.querySelectorAll("#tabs button").forEach(function(btn){
+          btn.classList.toggle("on", btn.dataset.tab === _t);
+        });
+        renderPanel();
+      }
+    }
+  } catch(e) {}
+}, 500);
+
+</script>
+<script src="/static/user.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>舌脉辨识 · 中医内科学</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--accent-strong:#1F4D3B;--accent-soft:rgba(47,107,82,.12);--orange:#C98A5E;--violet:#7E9BB8;--blue:#5B8DB8;--gold:#C9A35A;}
+*{box-sizing:border-box;}body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;}
+a{color:var(--acid);text-decoration:none;}
+.topbar a{color:var(--muted);}
+.nav{display:flex;gap:15px;font-size:13px;align-items:center;}
+.wrap{max-width:920px;margin:0 auto;padding:28px 22px 80px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+h1{font-size:26px;margin:0 0 6px;}.sub{color:var(--muted);font-size:13px;margin-bottom:20px;}
+.notice{border:1px solid rgba(201,138,94,.5);background:rgba(201,138,94,.13);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:13px;line-height:1.85;color:#7A4526;}
+.notice b{color:var(--orange);}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);}
+.card .k{font-size:11px;color:var(--muted);}.card .v{font-size:21px;font-weight:700;margin-top:4px;}
+.card .v small{font-size:12px;color:var(--muted);font-weight:400;}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
+select{background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;min-width:230px;}
+button{background:var(--acid);color:#F7FAF6;border:0;border-radius:8px;padding:11px 20px;font-size:13px;font-weight:700;cursor:pointer;}
+button:disabled{opacity:.5;cursor:default;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+.panel{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--panel);margin-bottom:16px;}
+.tag{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);margin-right:6px;}
+.stem{font-size:17px;line-height:1.9;margin:14px 0 18px;}
+.opt{display:block;width:100%;text-align:left;background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:9px;font-size:15px;cursor:pointer;font-weight:500;letter-spacing:.5px;}
+.opt:hover{border-color:var(--acid);}
+.opt.correct{border-color:var(--acid);background:rgba(47,107,82,.12);}
+.opt.wrong{border-color:var(--orange);background:rgba(201,138,94,.14);}
+.opt:disabled{cursor:default;}
+.verdict{font-size:17px;font-weight:700;margin:6px 0 14px;}.ok{color:var(--acid);}.no{color:var(--orange);}
+.sec{border-top:1px solid var(--line);padding-top:14px;margin-top:16px;}
+.sec h4{margin:0 0 8px;font-size:13px;color:var(--muted);}
+.ev{display:flex;justify-content:space-between;padding:7px 12px;background:var(--panel-raised);border-radius:8px;margin-bottom:6px;font-size:13.5px;}
+.ev .r{color:var(--acid);font-weight:700;}
+.loading{color:var(--muted);font-size:13px;padding:16px 0;}.err{color:var(--orange);font-size:13px;}
+.note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>舌脉辨识</b></div>
+    <div class="nav"><a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html" style="color:var(--acid);font-weight:600">训练</a><a href="/progress.html">报告</a><a href="/static/assistant.html">助手</a><a href="/static/profile.html">档案</a></div>
+  </div>
+  <h1>中医内科学 · 舌脉辨识</h1>
+  <p class="sub">练习证型与舌脉表现的对应关系。舌脉特征取自 <b>TCM-SD 真实病历统计</b>（每证型最多 80 条），选项中的舌脉组合均来自真实数据。</p>
+  <div class="notice" id="scope"><b>数据范围：</b>加载中…</div>
+  <div class="cards" id="stats"></div>
+  <div class="bar">
+    <select id="syndrome"><option value="">全部证型（随机）</option></select>
+    <button id="genBtn">出题</button>
+    <button class="ghost" id="nextBtn" style="display:none">下一题 →</button>
+  </div>
+  <div id="stage"><div class="panel"><div class="loading">点击「出题」开始练习</div></div></div>
+</div>
+<script>
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+var current=null;
+var KIND={tongue:"舌质",coat:"舌苔",pulse:"脉象"};
+
+function loadMeta(){
+  fetch("/api/quiz/tp/meta").then(function(r){return r.json();}).then(function(j){
+    if(j.code!==200) throw new Error(j.message||"加载失败");
+    var m=j.data;
+    $("scope").innerHTML="<b>数据范围：</b>"+esc(m.coverage_note||"");
+    $("stats").innerHTML=[['可用证型',m.available,"个"],['核心池',m.core_count,"个"],['判定标准',">=2 维度",""],['数据来源',"真实病历",""]]
+      .map(function(x){return '<div class="card"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+' <small>'+x[2]+'</small></div></div>';}).join("");
+    var opts=(j.syndromes||[]).map(function(s){return '<option value="'+esc(s.syndrome)+'">'+esc(s.syndrome)+'（病历 '+s.n_cases+'）</option>';}).join("");
+    $("syndrome").innerHTML='<option value="">全部证型（随机）</option>'+opts;
+  }).catch(function(e){$("scope").innerHTML='<b>错误：</b>'+esc(e.message);});
+}
+
+function render(q){
+  current=q;
+  var opts=(q.options||[]).map(function(o,i){return '<button class="opt" data-i="'+i+'">'+"ABCD"[i]+'. '+esc(o)+'</button>';}).join("");
+  $("stage").innerHTML='<div class="panel"><div><span class="tag">舌脉辨识</span><span class="tag">病历 '+q.n_cases+' 条</span></div><div class="stem">'+esc(q.stem)+'</div><div id="opts">'+opts+'</div><div id="result"></div></div>';
+  Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){
+    b.addEventListener("click",function(){submit(parseInt(b.dataset.i,10));});
+  });
+  $("nextBtn").style.display="none";
+}
+
+function submit(idx){
+  if(!current) return;
+  var chosen=current.options[idx], correct=(chosen===current.answer);
+  Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){
+    b.disabled=true;
+    var t=current.options[parseInt(b.dataset.i,10)];
+    if(t===current.answer) b.classList.add("correct");
+    else if(parseInt(b.dataset.i,10)===idx) b.classList.add("wrong");
+  });
+  var ev=(current.evidence||[]).map(function(e){
+    return '<div class="ev"><span>'+esc(KIND[e.kind]||"")+' '+esc(e.w)+'</span><span class="r">出现率 '+Math.round((e.rate||0)*100)+'%</span></div>';
+  }).join("");
+  $("result").innerHTML='<div class="verdict '+(correct?"ok":"no")+'">'+(correct?"✅ 回答正确":"❌ 回答错误")+'　标准答案：'+esc(current.answer)+'</div>'
+  if(ev) $("result").innerHTML+='<div class="sec"><h4>该证型舌脉在真实病历中的出现率</h4>'+ev+'</div>';
+  $("result").innerHTML+='<div class="note">'+esc(current.note||"")+'</div>';
+  $("nextBtn").style.display="inline-block";
+  try{
+    fetch("/api/quiz/record",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({syndrome:current.syndrome,chosen:chosen,kind:'tp',correct:correct})}).catch(function(){});
+  }catch(e){}
+}
+
+function generate(){
+  $("genBtn").disabled=true;$("genBtn").textContent="出题中…";
+  fetch("/api/quiz/tp",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({syndrome:$("syndrome").value})})
+   .then(function(r){return r.json();}).then(function(j){
+     if(j.code!==200) throw new Error(j.message||"出题失败");
+     render(j.data);
+   }).catch(function(e){$("stage").innerHTML='<div class="panel"><div class="err">'+esc(e.message)+'</div></div>';})
+   .then(function(){$("genBtn").disabled=false;$("genBtn").textContent="出题";});
+}
+$("genBtn").addEventListener("click",generate);
+$("nextBtn").addEventListener("click",generate);
+loadMeta();
+</script>
+
+<script>
+/* 嵌入训练中心时隐藏自身导航，避免套娃 */
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '20px';
+}
+</script>
+<script src="/static/user.js"></script>
+</body>
+</html>

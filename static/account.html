@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人信息 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--orange:#C98A5E;--violet:#7E9BB8;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.8;}
+a{color:var(--muted);text-decoration:none;}a:hover{color:var(--acid);}
+.wrap{max-width:840px;margin:0 auto;padding:22px 22px 70px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:24px;flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+.nav{display:flex;gap:14px;font-size:13px;}
+.hero{display:flex;align-items:center;gap:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:24px 26px;margin-bottom:16px;}
+.avbig{width:76px;height:76px;border-radius:50%;background:var(--panel-raised);border:2px solid var(--acid);display:flex;align-items:center;justify-content:center;font-size:38px;flex:none;}
+.hero .info{flex:1;min-width:0;}
+.hero .disp{font-size:21px;font-weight:600;}
+.hero .un{font-size:12.5px;color:var(--muted);margin-top:2px;}
+.hero .meta{font-size:11.5px;color:var(--muted);margin-top:6px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-bottom:16px;}
+.st{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:15px 18px;}
+.st .n{font-size:25px;font-weight:700;color:var(--acid);line-height:1.2;}
+.st .l{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.panel{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:20px 24px;margin-bottom:16px;}
+h2{font-size:14px;margin:0 0 14px;letter-spacing:1px;}
+label{display:block;font-size:12px;color:var(--muted);margin:11px 0 4px;}
+input[type=text],input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--panel-raised);color:var(--paper);font-size:13.5px;font-family:inherit;}
+input:focus{outline:none;border-color:rgba(47,107,82,.5);background:var(--panel);}
+.avs{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;}
+.av{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;border:1.5px solid var(--line);border-radius:9px;cursor:pointer;background:var(--panel-raised);}
+.av.on{border-color:var(--acid);background:rgba(47,107,82,.1);}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+button{background:var(--acid);color:#F9FBF7;border:0;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+button.danger{background:transparent;color:#B4552F;border:1px solid rgba(180,85,47,.4);}
+button:disabled{opacity:.5;cursor:default;}
+.msg{font-size:12.5px;margin-top:10px;min-height:18px;}
+.msg.ok{color:var(--acid);}.msg.err{color:#B4552F;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;}
+th{color:var(--muted);font-weight:500;font-size:11px;}
+tr:last-child td{border-bottom:0;}
+.sc{font-weight:700;}
+.sc.g{color:var(--acid);}.sc.m{color:var(--orange);}.sc.b{color:#B4552F;}
+.empty{color:var(--muted);font-size:12.5px;padding:14px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">本草辨证 · <b>个人信息</b></div>
+    <div class="nav">
+      <a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html">训练</a>
+      <a href="/static/exam.html">考试</a><a href="/progress.html">报告</a>
+      <a href="/static/account.html" style="color:var(--acid);font-weight:600">我的</a>
+    </div>
+  </div>
+
+  <div class="hero" id="hero">
+    <div class="avbig" id="avBig">👤</div>
+    <div class="info">
+      <div class="disp" id="disp">加载中…</div>
+      <div class="un" id="un"></div>
+      <div class="meta" id="meta"></div>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="panel">
+    <h2>修改昵称与头像</h2>
+    <label>昵称</label>
+    <input type="text" id="dInput" maxlength="20" placeholder="显示在右上角">
+    <label>头像</label>
+    <div class="avs" id="avs"></div>
+    <div class="row"><button id="saveProfile">保存</button></div>
+    <div class="msg" id="m1"></div>
+  </div>
+
+  <div class="panel">
+    <h2>修改密码</h2>
+    <label>原密码</label>
+    <input type="password" id="op" placeholder="当前密码">
+    <label>新密码（至少 4 位）</label>
+    <input type="password" id="np" placeholder="新密码">
+    <label>再输一次</label>
+    <input type="password" id="np2" placeholder="确认新密码">
+    <div class="row"><button id="savePwd">更新密码</button></div>
+    <div class="msg" id="m2"></div>
+  </div>
+
+  <div class="panel">
+    <h2>考试记录</h2>
+    <div id="exams"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="row">
+    <button class="ghost" onclick="location.href='/static/exam.html'">去考试</button>
+    <button class="danger" id="btnOut">退出登录</button>
+  </div>
+</div>
+
+<script src="/static/user.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function msg(id, t, ok){ $(id).textContent = t || ""; $(id).className = "msg " + (t ? (ok ? "ok" : "err") : ""); }
+
+if (!TCM.requireLogin()) throw new Error("need login");
+
+var AVA = [], PICK = "", ME = null;
+
+function fmtDate(ts){
+  if (!ts) return "—";
+  var d = new Date(ts * 1000);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+/* 载入 */
+fetch("/api/auth/avatars").then(function(r){ return r.json(); }).then(function(j){ AVA = j.data || []; }).catch(function(){});
+
+fetch("/api/auth/me").then(function(r){
+  if (r.status === 401) { TCM.setAuth(null, null); location.href = "/static/login.html"; throw new Error("401"); }
+  return r.json();
+}).then(function(j){
+  ME = j.data || {};
+  $("avBig").textContent = ME.avatar || "👤";
+  $("disp").textContent = ME.display || ME.username || "";
+  $("un").textContent = "@" + (ME.username || "");
+  $("meta").textContent = "注册于 " + fmtDate(ME.created)
+    + (ME.last_login ? " · 最近登录 " + fmtDate(ME.last_login) : "");
+  $("dInput").value = ME.display || "";
+  PICK = ME.avatar || "";
+
+  var s = ME.stats || {};
+  $("stats").innerHTML =
+      '<div class="st"><div class="n">' + (s.total||0) + '</div><div class="l">累计答题</div></div>'
+    + '<div class="st"><div class="n">' + (s.accuracy != null ? Math.round(s.accuracy*100) + "%" : "—") + '</div><div class="l">正确率</div></div>'
+    + '<div class="st"><div class="n">' + (s.days||0) + '</div><div class="l">学习天数</div></div>';
+
+  renderAvs();
+  loadExams();
+});
+
+function renderAvs(){
+  if (!AVA.length) return;
+  $("avs").innerHTML = AVA.map(function(a){
+    return '<div class="av' + (a === PICK ? " on" : "") + '" data-a="' + a + '">' + a + '</div>';
+  }).join("");
+}
+$("avs").addEventListener("click", function(e){
+  var d = e.target.closest(".av");
+  if (!d) return;
+  PICK = d.dataset.a;
+  $("avs").querySelectorAll(".av").forEach(function(x){ x.classList.toggle("on", x === d); });
+});
+
+/* 保存资料 */
+$("saveProfile").onclick = function(){
+  var d = $("dInput").value.trim();
+  if (!d) { msg("m1", "昵称不能为空"); return; }
+  this.disabled = true;
+  fetch("/api/auth/profile", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ display: d, avatar: PICK })
+  }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+  .then(function(o){
+    if (o.s !== 200) { msg("m1", o.j.message || "保存失败"); return; }
+    TCM.setAuth(TCM.token(), o.j.data);
+    $("avBig").textContent = o.j.data.avatar;
+    $("disp").textContent = o.j.data.display;
+    msg("m1", "已保存，刷新后右上角会更新", true);
+  }).catch(function(e){ msg("m1", "网络错误：" + e.message); })
+  .finally(function(){ $("saveProfile").disabled = false; });
+};
+
+/* 改密码 */
+$("savePwd").onclick = function(){
+  var o = $("op").value, n = $("np").value, n2 = $("np2").value;
+  if (!o || !n) { msg("m2", "请填写原密码和新密码"); return; }
+  if (n !== n2) { msg("m2", "两次新密码不一致"); return; }
+  if (n.length < 4) { msg("m2", "新密码至少 4 位"); return; }
+  this.disabled = true;
+  fetch("/api/auth/password", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ old: o, "new": n })
+  }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+  .then(function(o2){
+    if (o2.s !== 200) { msg("m2", o2.j.message || "修改失败"); return; }
+    msg("m2", "密码已更新，即将重新登录…", true);
+    TCM.setAuth(null, null);
+    setTimeout(function(){ location.href = "/static/login.html"; }, 1200);
+  }).catch(function(e){ msg("m2", "网络错误：" + e.message); })
+  .finally(function(){ $("savePwd").disabled = false; });
+};
+
+/* 考试记录 */
+function loadExams(){
+  fetch("/api/exam/history").then(function(r){ return r.json(); }).then(function(j){
+    var arr = j.data || [];
+    if (!arr.length) { $("exams").innerHTML = '<div class="empty">还没有考试记录。去「考试」做一套吧。</div>'; return; }
+    var h = '<table><tr><th>时间</th><th>题量</th><th>得分</th><th>用时</th></tr>';
+    arr.forEach(function(x){
+      var cls = x.score >= 80 ? "g" : (x.score >= 60 ? "m" : "b");
+      h += '<tr><td>' + fmtDate(x.ts) + '</td><td>' + (x.n||0) + '</td>'
+         + '<td class="sc ' + cls + '">' + (x.score||0) + '</td>'
+         + '<td>' + (x.elapsed ? Math.floor(x.elapsed/60) + "分" + (x.elapsed%60) + "秒" : "—") + '</td></tr>';
+    });
+    h += '</table>';
+    $("exams").innerHTML = h;
+  }).catch(function(){ $("exams").innerHTML = '<div class="empty">读取失败</div>'; });
+}
+
+$("btnOut").onclick = function(){ if (confirm("确定退出登录？")) TCM.logout(); };
+</script>
+</body>
+</html>

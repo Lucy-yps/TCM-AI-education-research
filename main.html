@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F1F5EE">
+    <title>面向中医教学与科研的知识检索辅助工具</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js" defer></script>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #EDF2EC; --ink: #26312A;
+            --panel: #F9FBF7; --panel-raised: #F1F5EE;
+            --paper: #26312A; --muted: #6E7A70; --line: #D9E3D6;
+            --acid: #2F6B52; --orange: #C98A5E;
+            --gutter: clamp(22px, 6vw, 96px);
+            --ease: cubic-bezier(.2, .75, .2, 1);
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--paper);
+            font-family: Inter, "Microsoft YaHei", "PingFang SC", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            opacity: .11;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.17'/%3E%3C/svg%3E");
+        }
+        a { color: inherit; }
+        button, textarea { font: inherit; }
+        button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; }
+        .header {
+            position: relative;
+            isolation: isolate;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0 var(--gutter) 40px;
+            background:
+                radial-gradient(ellipse at 72% 49%, rgba(47,107,82,.16), transparent 39%),
+                radial-gradient(ellipse at 20% 110%, rgba(31,77,59,.12), transparent 47%),
+                #EDF2EC;
+        }
+        .header::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            width: min(76vw, 1120px);
+            aspect-ratio: 1;
+            right: -19%;
+            top: 8%;
+            border-radius: 50%;
+            border: 1px solid rgba(200, 241, 105, .16);
+            box-shadow: 0 0 0 50px rgba(200, 241, 105, .018), 0 0 0 110px rgba(200, 241, 105, .014), inset 0 0 130px rgba(200, 241, 105, .04);
+            transform: translate3d(0, calc(var(--scroll-y, 0) * .06px), 0);
+            pointer-events: none;
+        }
+        #ambientCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; opacity: .8; pointer-events: none; }
+        .site-nav {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 84px;
+            border-bottom: 1px solid var(--line);
+        }
+        .wordmark { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+        .wordmark-mark { width: 28px; height: 28px; border: 1px solid var(--acid); border-radius: 50%; position: relative; }
+        .wordmark-mark::before, .wordmark-mark::after { content: ""; position: absolute; background: var(--acid); }
+        .wordmark-mark::before { width: 1px; height: 18px; left: 13px; top: 4px; }
+        .wordmark-mark::after { height: 1px; width: 18px; left: 4px; top: 13px; }
+        .nav-links { display: flex; gap: clamp(18px, 3vw, 42px); align-items: center; }
+        .nav-links a { text-decoration: none; color: #3A463E; font-size: 12px; letter-spacing: .08em; transition: color .25s ease; }
+        .nav-links a:hover { color: var(--acid); }
+        .hero-main { position: relative; z-index: 1; display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 8vh 0 7vh; }
+        .eyebrow, .section-kicker, .hero-foot, .graph-index { color: var(--acid); font-size: 10px; letter-spacing: .2em; line-height: 1.6; text-transform: uppercase; }
+        .eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 30px; }
+        .eyebrow::before { content: ""; width: 38px; height: 1px; background: var(--acid); }
+        .header h1 {
+            max-width: 1200px;
+            margin: 0;
+            font-size: clamp(54px, 9.1vw, 142px);
+            line-height: .98;
+            letter-spacing: -.085em;
+            font-weight: 600;
+            text-wrap: balance;
+        }
+        .header h1 span { color: var(--acid); }
+        .header p { max-width: 560px; margin: 28px 0 0; color: #4A564C; font-size: clamp(14px, 1.4vw, 18px); line-height: 1.8; }
+        .hero-actions { display: flex; align-items: center; gap: 26px; margin-top: 38px; }
+        .hero-cta { display: inline-flex; align-items: center; gap: 26px; min-height: 56px; padding: 0 21px; color:#F7FAF6; background: var(--acid); font-size: 13px; font-weight: 700; text-decoration: none; transition: transform .3s var(--ease), background .3s ease; }
+        .hero-cta:hover { transform: translateY(-3px); background: #265944; }
+        .hero-cta span { font-size: 20px; font-weight: 400; transition: transform .3s var(--ease); }
+        .hero-cta:hover span { transform: translate(3px, -3px); }
+        .hero-note { color: #6E7A70; font-size: 11px; letter-spacing: .04em; }
+        .hero-foot { display: flex; justify-content: space-between; align-items: end; color: #6E7A70; }
+        .scroll-cue { display: flex; align-items: center; gap: 12px; color: var(--paper); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+        .scroll-cue::before { content: ""; width: 1px; height: 42px; background: linear-gradient(var(--acid), transparent); }
+        .hero-coord { text-align: right; }
+
+        main { position: relative; }
+        .container { width: min(100% - var(--gutter) * 2, 1440px); margin-inline: auto; }
+        #experience { padding-top: clamp(76px, 11vw, 160px); padding-bottom: clamp(90px, 13vw, 180px); }
+        .experience-head { display: grid; grid-template-columns: 1fr minmax(220px, 360px); align-items: end; gap: 40px; margin-bottom: 50px; }
+        .section-kicker { margin: 0 0 18px; color: var(--orange); }
+        .experience-head h2, .graph-heading h2 { margin: 0; font-size: clamp(34px, 5.4vw, 76px); line-height: 1; letter-spacing: -.065em; font-weight: 500; }
+        .experience-sidecopy { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.9; }
+        .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(26px, 5vw, 74px); align-items: start; justify-items: center; }
+        .panel { min-width: 0; width: 100%; max-width: 900px; }
+        .left-panel { padding: clamp(28px, 4vw, 56px); background: var(--panel); border: 1px solid var(--line); }
+        .panel-title { display: flex; align-items: center; gap: 12px; margin: 0 0 28px; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--paper); font-size: clamp(18px, 2vw, 23px); font-weight: 500; letter-spacing: -.025em; }
+        .panel-title::before { content: ""; width: 8px; height: 8px; background: var(--acid); border-radius: 50%; box-shadow: 0 0 20px rgba(47,107,82,.55); }
+        .input-group { margin: 0 0 22px; }
+        .input-group label { display: block; margin-bottom: 11px; color: #3A463E; font-size: 14px; }
+        .input-group textarea { width: 100%; min-height: 220px; resize: vertical; padding: 22px; border: 1px solid rgba(47,107,82,.14); border-radius: 0; background: #F1F5EE; color: var(--paper); font-size: 16px; line-height: 2; transition: border-color .25s ease, box-shadow .25s ease; }
+        .input-group textarea::placeholder { color: #6E7A70; }
+        .input-group textarea:focus { outline: none; border-color: var(--acid); box-shadow: 0 0 0 3px rgba(47,107,82,.08); }
+        .quick-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .quick-tag { padding: 8px 11px; border: 1px solid rgba(47,107,82,.12); border-radius: 99px; background: transparent; color: #6E7A70; font-size: 11px; cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s var(--ease); }
+        .quick-tag:hover { transform: translateY(-2px); border-color: var(--acid); color: var(--acid); background: rgba(47,107,82,.06); }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; }
+        .btn { min-height: 48px; padding: 0 18px; border: 1px solid var(--acid); background: var(--acid); color: var(--ink); font-size: 12px; font-weight: 700; cursor: pointer; transition: transform .25s var(--ease), box-shadow .25s ease, background .25s ease; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(47,107,82,.12); background: #265944; }
+        .btn:disabled { opacity: .58; cursor: wait; transform: none; }
+        .btn-secondary { border-color: var(--line); background: transparent; color: #3A463E; }
+        .btn-secondary:hover { border-color: rgba(47,107,82,.30); background: #F1F5EE; box-shadow: none; }
+        .status-bar { margin-top: 20px; padding: 12px 14px; border-left: 2px solid var(--acid); background: rgba(47,107,82,.06); color: #3A463E; font-size: 11px; line-height: 1.7; display: none; }
+        .status-bar.show { display: block; }
+        .disclaimer { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--line); color: #6E7A70; font-size: 11px; line-height: 1.8; }
+        .disclaimer strong { color: var(--orange); font-weight: 600; }
+        .result-area { display: none; margin-top: 28px; }
+        .result-area.show { display: block; animation: result-in .7s var(--ease) both; }
+        @keyframes result-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        .result-section { margin-top: 16px; padding: 18px; background: #F1F5EE; border: 1px solid var(--line); }
+        .result-section h4 { margin: 0 0 13px; color: var(--acid); font-size: 12px; font-weight: 600; letter-spacing: .05em; }
+        .match-card { padding: 15px 0; border-top: 1px solid var(--line); }
+        .match-card .title { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 10px; }
+        .match-card .name { color: var(--paper); font-size: 14px; font-weight: 600; }
+        .match-card .score { padding: 5px 8px; background: rgba(47,107,82,.12); color: var(--acid); font-size: 10px; white-space: nowrap; }
+        .match-card p { margin: 5px 0; color: #6E7A70; font-size: 11px; line-height: 1.8; }
+        .match-card strong { color: #26312A; font-weight: 500; }
+        .ai-comparison { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        .ai-model-card { min-width: 0; padding: 18px 20px; border: 1px solid var(--line); background: #F1F5EE; }
+        .ai-model-heading { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 12px; color: var(--paper); font-size: 13px; font-weight: 600; }
+        .ai-model-status { color: #6E7A70; font-size: 11px; font-weight: 400; text-align: right; }
+        .ai-model-analysis { color: #3A463E; font-size: 13px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+        #graphChart { width: 100%; height: min(68vh, 680px); min-height: 460px; }
+        .graph-panel { border: 1px solid var(--line); background: #F1F5EE; }
+        #knowledge-graph { padding: 60px 0 clamp(100px, 16vw, 220px); }
+        .graph-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 36px; }
+        .graph-heading .panel-title { margin-bottom: 18px; padding: 0; border: 0; font-size: 12px; color: #3A463E; letter-spacing: .06em; }
+        .graph-heading .panel-title::before { width: 6px; height: 6px; }
+        .graph-heading h2 { max-width: 700px; }
+        .graph-index { color: #6E7A70; text-align: right; white-space: nowrap; font-size: 9px; line-height: 1.9; letter-spacing: .12em; }
+        .graph-panel { overflow: hidden; }
+        .graph-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 14px 19px; border-bottom: 1px solid var(--line); color: #6E7A70; font-size: 9px; letter-spacing: .12em; }
+        .graph-toolbar-actions { display: flex; align-items: center; gap: 17px; }
+        .graph-data-count { color: #3A463E; letter-spacing: .04em; }
+        .graph-data-count span { color: #6E7A70; }
+        .graph-reset { border: 0; padding: 6px 0; background: transparent; color: #4A564C; font: inherit; font-size: 10px; cursor: pointer; text-decoration: underline; text-decoration-color: #2F6B52; text-underline-offset: 4px; }
+        .graph-reset:hover, .graph-reset:focus-visible { color: var(--acid); }
+        .graph-atlas-grid { display: grid; grid-template-columns: minmax(0, 1fr) 270px; min-height: 500px; }
+        .graph-map { position: relative; min-width: 0; background-color: #F1F5EE; background-image: linear-gradient(rgba(47,107,82,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(47,107,82,.07) 1px, transparent 1px); background-size: 34px 34px; }
+        .graph-map::before { content: "FIELD MAP  /  01"; position: absolute; z-index: 1; top: 16px; left: 18px; color: rgba(47,107,82,.4); font-size: 8px; letter-spacing: .18em; pointer-events: none; }
+        .graph-map::after { content: "N"; position: absolute; z-index: 1; top: 14px; right: 18px; width: 19px; height: 27px; border-top: 1px solid rgba(47,107,82,.4); color: rgba(47,107,82,.5); font-size: 8px; line-height: 17px; text-align: center; pointer-events: none; }
+        .graph-inspector { display: flex; min-width: 0; flex-direction: column; border-left: 1px solid var(--line); background: #F1F5EE; }
+        .graph-inspector-top { padding: 20px 18px 15px; border-bottom: 1px solid var(--line); }
+        .graph-inspector-kicker { color: #6E7A70; font-size: 8px; letter-spacing: .17em; }
+        .graph-inspector h3 { margin: 10px 0 5px; color: var(--paper); font-size: 19px; font-weight: 500; letter-spacing: -.04em; overflow-wrap: anywhere; }
+        .graph-inspector-category { color: #4A564C; font-size: 10px; }
+        .graph-inspector-copy { margin: 12px 0 0; color: #6E7A70; font-size: 10px; line-height: 1.8; }
+        .graph-related { padding: 16px 18px 19px; }
+        .graph-related-heading { display: flex; justify-content: space-between; gap: 10px; color: #6E7A70; font-size: 9px; letter-spacing: .06em; }
+        .graph-related-count { color: #6E7A70; }
+        .graph-related-list { display: flex; max-height: 330px; flex-direction: column; gap: 2px; overflow: auto; margin-top: 10px; padding-right: 3px; }
+        .graph-related-button { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%; border: 0; border-bottom: 1px solid rgba(47,107,82,.08); padding: 8px 2px; background: transparent; color: #3A463E; font: inherit; font-size: 10px; text-align: left; cursor: pointer; }
+        .graph-related-button:hover, .graph-related-button:focus-visible { color: var(--acid); }
+        .graph-related-type { flex: none; color: #6E7A70; font-size: 8px; }
+        .graph-inspector-empty { margin: 14px 0 0; color: #6E7A70; font-size: 10px; line-height: 1.9; }
+        .graph-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 11px 22px; padding: 15px 19px; border-top: 1px solid var(--line); color: #adb5aa; font-size: 9px; letter-spacing: .03em; }
+        .legend-item { display: inline-flex; align-items: center; gap: 8px; }
+        .legend-symbol { display: inline-block; width: 10px; height: 10px; flex: none; border: 1px solid currentColor; }
+        .legend-syndrome { color: #4E8A6E; transform: rotate(45deg) scale(.78); }
+        .legend-symptom { color: #C98A5E; border-radius: 50%; }
+        .legend-formula { color: #7E9BB8; border-radius: 2px; }
+        .legend-line { display: inline-block; width: 22px; border-top: 1px solid #8FAE9A; opacity: .75; }
+        .legend-line.formula { border-top-style: dashed; border-color: #7E9BB8; }
+        .graph-legend-note { margin-left: auto; color: #6E7A70; font-size: 8px; }
+        .graph-tooltip { min-width: 120px; padding: 2px 1px; }
+        .graph-tooltip-type { margin-bottom: 5px; color: #4A564C; font-size: 9px; letter-spacing: .12em; }
+        .graph-tooltip-name { color: #26312A; font-size: 13px; font-weight: 600; }
+        .graph-tooltip-note { margin-top: 5px; color: #6E7A70; font-size: 9px; line-height: 1.6; }
+        .loading { display: grid; place-content: center; min-height: 260px; gap: 13px; color: #6E7A70; text-align: center; font-size: 12px; }
+        .loading-spinner { width: 25px; height: 25px; margin: auto; border: 1px solid rgba(47,107,82,.2); border-top-color: var(--acid); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .herb-image-credit a { color: var(--acid); text-underline-offset: 3px; }
+        .herb-library { padding-top: clamp(76px, 11vw, 160px); padding-bottom: clamp(90px, 13vw, 180px); }
+        .herb-library-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 28px; }
+        .herb-library-head h2 { margin: 0; font-size: clamp(30px, 4vw, 48px); line-height: 1.1; letter-spacing: -.05em; font-weight: 500; }
+        .herb-library-head p { max-width: 450px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.9; }
+        .herb-group { margin-top: 32px; }
+        .herb-group h4 { margin: 0 0 13px; color: var(--acid); font-size: 11px; font-weight: 500; letter-spacing: .1em; }
+        .herb-group-description { max-width: 800px; margin: -3px 0 14px; color: #6E7A70; font-size: 10px; line-height: 1.8; }
+        .herb-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+        .herb-card { min-width: 0; padding: 9px; border: 1px solid var(--line); background: #F1F5EE; transition: border-color .25s ease, transform .25s var(--ease); }
+        .herb-card:hover { transform: translateY(-3px); border-color: rgba(47,107,82,.5); }
+        .herb-card img { display: block; width: 100%; height: 148px; object-fit: cover; background: #F1F5EE; }
+        .herb-card-title { display: block; margin-top: 10px; color: var(--paper); font-size: 13px; font-weight: 600; }
+        .herb-card-part { display: block; margin-top: 4px; color: #6E7A70; font-size: 9px; line-height: 1.7; }
+        .herb-card-note { display: block; margin-top: 7px; color: #3A463E; font-size: 9px; line-height: 1.75; }
+        .herb-image-credit { margin: 8px 2px 1px; color: #6E7A70; font-size: 8px; line-height: 1.65; overflow-wrap: anywhere; }
+        .herb-library-note { margin-top: 25px; padding: 14px 16px; border-left: 2px solid var(--orange); background: rgba(201,138,94,.08); color: #6E7A70; font-size: 10px; line-height: 1.85; }
+        .site-footer { display: flex; justify-content: space-between; gap: 20px; padding: 22px var(--gutter); border-top: 1px solid var(--line); color: #6E7A70; font-size: 10px; letter-spacing: .08em; }
+        [data-reveal] { opacity: 1; transform: none; }
+        body.js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .85s var(--ease), transform .85s var(--ease); }
+        body.js [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+        .cursor-dot { position: fixed; z-index: 30; top: 0; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--acid); pointer-events: none; opacity: 0; transform: translate(-50%, -50%); mix-blend-mode: difference; transition: width .2s ease, height .2s ease, opacity .2s ease; }
+        .cursor-dot.is-visible { opacity: 1; }
+        .cursor-dot.is-hover { width: 30px; height: 30px; }
+
+        @media (max-width: 900px) {
+            .workspace { grid-template-columns: 1fr; }
+            .experience-head { grid-template-columns: 1fr; gap: 18px; }
+            .experience-sidecopy { max-width: 520px; }
+            #graphChart { height: 58vh; min-height: 440px; }
+        }
+        @media (max-width: 600px) {
+            :root { --gutter: 21px; }
+            .header { min-height: 94svh; padding-bottom: 24px; }
+            .site-nav { min-height: 0; align-items: flex-start; flex-direction: column; justify-content: center; gap: 13px; padding: 14px 0; }
+            .wordmark { font-size: 9px; gap: 9px; }
+            .wordmark-mark { width: 24px; height: 24px; }
+            .wordmark-mark::before { left: 11px; top: 3px; height: 16px; }
+            .wordmark-mark::after { top: 11px; left: 3px; width: 16px; }
+            .nav-links { flex-wrap: wrap; gap: 10px 17px; }
+            .nav-links a { font-size: 10px; }
+            .hero-main { padding: 10vh 0; }
+            .eyebrow { margin-bottom: 22px; font-size: 9px; }
+            .header h1 { max-width: 520px; font-size: clamp(53px, 15vw, 86px); line-height: 1.04; }
+            .header p { max-width: 360px; margin-top: 22px; font-size: 13px; }
+            .hero-actions { align-items: start; flex-direction: column; gap: 13px; margin-top: 27px; }
+            .hero-cta { min-height: 50px; }
+            .hero-foot { font-size: 9px; }
+            .hero-coord { max-width: 150px; }
+            .experience-head { margin-bottom: 30px; }
+            #experience { padding-top: 82px; padding-bottom: 90px; }
+            .left-panel { padding: 21px 17px; }
+            .input-group textarea { min-height: 145px; padding: 14px; }
+            .herb-library-head { align-items: start; flex-direction: column; gap: 12px; }
+            .herb-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+            .herb-card { padding: 7px; }
+            .herb-card img { height: 122px; }
+            .btn { flex: 1; padding-inline: 12px; }
+            .graph-heading { align-items: start; flex-direction: column; gap: 14px; }
+            .graph-index { text-align: left; }
+            #knowledge-graph { padding-top: 30px; }
+            .graph-toolbar { align-items: flex-start; padding: 12px 13px; }
+            .graph-toolbar > span:first-child { max-width: 55%; line-height: 1.7; }
+            .graph-toolbar-actions { align-items: flex-end; flex-direction: column; gap: 5px; }
+            .graph-data-count { text-align: right; line-height: 1.7; }
+            .graph-atlas-grid { grid-template-columns: 1fr; }
+            .graph-map { border-bottom: 1px solid var(--line); }
+            #graphChart { height: 450px; min-height: 390px; }
+            .graph-inspector { border-left: 0; }
+            .graph-inspector-top { padding: 15px 16px 13px; }
+            .graph-inspector h3 { font-size: 17px; }
+            .graph-related { padding: 13px 16px 16px; }
+            .graph-related-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 210px; column-gap: 10px; }
+            .graph-legend { gap: 12px 16px; padding: 13px; }
+            .graph-legend-note { width: 100%; margin-left: 0; line-height: 1.6; }
+            .site-footer { flex-direction: column; }
+            .cursor-dot { display: none; }
+        }
+        @media (pointer: fine) and (min-width: 601px) {
+            body.has-custom-cursor, body.has-custom-cursor a, body.has-custom-cursor button { cursor: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+            body.js [data-reveal] { opacity: 1; transform: none; }
+            .cursor-dot { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header" id="top">
+        <canvas id="ambientCanvas" aria-hidden="true"></canvas>
+        <nav class="site-nav" aria-label="主导航">
+            <a class="wordmark" href="#top" aria-label="中医药AI知识检索辅助系统首页"><span class="wordmark-mark" aria-hidden="true"></span><span>FIELD NOTES&nbsp; / &nbsp;TCM AI</span></a>
+            <div class="nav-links"><a href="#experience">探索</a><a href="#herb-library">本草</a><a href="#knowledge-graph">图谱</a><a href="classics.html">经典</a><a href="train.html" style="color:#2F6B52;font-weight:600">训练</a><a href="progress.html">报告</a>&nbsp; <a href="/static/assistant.html" style="color:#2F6B52;font-weight:600">助手</a><a href="/static/profile.html" style="color:#7E9BB8;font-weight:600">档案</a></div>
+        </nav>
+        <div class="hero-main">
+            <p class="eyebrow">AN EXPLORATION OF PATTERNS · 01</p>
+            <h1>中医药AI<span>知识检索</span>辅助系统</h1>
+            <p>面向中医专业教学与科研的证型知识检索工具：从知识图谱中追溯证据，用可选大模型生成教学性证据摘要</p>
+            <div class="hero-actions">
+                <a class="hero-cta" href="#experience">进入体验 <span aria-hidden="true">↗</span></a>
+                <span class="hero-note">知识 · 证据 · 关系</span>
+            </div>
+        </div>
+        <div class="hero-foot"><span class="scroll-cue">SCROLL TO EXPLORE</span><span class="hero-coord">中医药知识检索原型<br>一个可探索的数字空间</span></div>
+    </header>
+
+    <main>
+        <section class="container" id="experience" aria-labelledby="experience-title">
+            <div class="experience-head" data-reveal>
+                <div><p class="section-kicker">01 / OBSERVE</p><h2 id="experience-title">从症状开始，<br>查阅证型知识。</h2></div>
+                <p class="experience-sidecopy">输入症状，查看系统如何从知识库中寻找相关条目。每个候选都呈现可追溯的文本证据。</p>
+            </div>
+            <div class="workspace">
+                <div class="panel left-panel" data-reveal>
+                    <div class="panel-title">📝 症状录入与证型知识检索</div>
+                    <div class="input-group">
+                        <label for="symptomsInput">请描述您的症状（多种症状用逗号分隔）</label>
+                        <textarea id="symptomsInput" placeholder="例如：恶寒发热，头痛，鼻塞流清涕，咳嗽痰稀，舌淡苔薄白，脉浮紧..."></textarea>
+                        <div class="quick-tags" aria-label="常见症状快捷输入">
+                            <button type="button" class="quick-tag" onclick="addSymptom('恶寒发热')">恶寒发热</button>
+                            <button type="button" class="quick-tag" onclick="addSymptom('头痛')">头痛</button>
+                            <button type="button" class="quick-tag" onclick="addSymptom('咳嗽')">咳嗽</button>
+                            <button type="button" class="quick-tag" onclick="addSymptom('腹胀')">腹胀</button>
+                            <button type="button" class="quick-tag" onclick="addSymptom('失眠多梦')">失眠多梦</button>
+                            <button type="button" class="quick-tag" onclick="addSymptom('腰膝酸软')">腰膝酸软</button>
+                            <button type="button" class="quick-tag" onclick="addSymptom('口苦')">口苦</button>
+                            <button type="button" class="quick-tag" onclick="addSymptom('舌苔黄腻')">舌苔黄腻</button>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn" onclick="analyze()" id="analyzeBtn">🔍 知识检索与证型辨析</button>
+                        <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+                    </div>
+                    <div class="status-bar" id="statusBar" role="status" aria-live="polite"></div>
+                    <div class="disclaimer"><strong>教学科研辅助工具</strong>｜面向中医专业教学与科研场景的知识检索与证型辨析辅助，结果仅表示与本项目 37 条知识库条目的文本相似度，<strong>不构成医学诊断或用药建议</strong>，不作为临床决策依据。身体不适请咨询专业医疗人员。</div>
+                    <div class="result-area" id="resultArea" aria-live="polite">
+                        <div class="result-section" id="routePanel" style="margin-bottom:14px;"></div>
+                        <details class="result-section" style="cursor:pointer;">
+                            <summary style="cursor:pointer;color:#6E7A70;font-size:12px;outline:none;list-style:none;padding:8px 0;">
+                                📊 基线方法对比（点击展开查看实验数据）
+                            </summary>
+                            <div id="matchResults" style="margin-top:12px;"></div>
+                            <div id="methodCompare" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:14px;"></div>
+                            <p style="color:#6E7A70;font-size:11px;margin-top:8px;line-height:1.6;">
+                                同一批方法在两种输入风格下结论完全相反，这也是本系统按输入风格路由的依据：<br>· <strong>口语体</strong>（教材 37 例）：TF-IDF 检索 91.9%、BM25 86.5%、RRF 81.1%、词项F1 67.6%，而分类器仅 5.4%；三家大模型零样本也只有 37.8%~40.5%。<br>· <strong>病历体</strong>（TCM-SD 去泄漏 683 例）：分类器 93.0%（多数类基线 77.3%，即仅高出 15.7 个百分点；macro-F1 71.4%），检索 3.9%~13.6%，<strong>DeepSeek 零样本 75.8%</strong>——分类器领先大模型 17.2 个百分点。<br>· 三家大模型同批对照（分层抽样 42 条）：DeepSeek 50.0%、ModelScope 54.8%、智谱 35.7%，轻量分类器 85.7%。<br>· 分类器高置信档（概率≥0.87，覆盖 62.2%）实测 99.1%。<br>所有数字可在 测试案例/、calibration_data.json 与 external_data/llm_baseline/ 中追溯。</p>
+                        </details>
+                        <div class="result-section">
+                            <h4 id="primaryTitle">🏆 主结果</h4>
+                            <div id="clfResult" style="margin-top:10px;"></div>
+                        </div>
+                        <div class="result-section">
+                            <h4>🤖 三模型AI证据摘要对照（教学科研用途）</h4>
+                            <div id="aiResult" class="ai-comparison"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="experience-sidecopy" data-reveal style="align-self:end;padding:0 0 8px;max-width:430px">一段症状描述会变成一组线索。系统按词项重合展示候选，知识图谱继续展开证型、症状与方剂条目的连接。</p>
+            </div>
+        </section>
+
+        <section class="container herb-library" id="herb-library" aria-labelledby="herb-library-title">
+            <div class="herb-library-head" data-reveal>
+                <div><p class="section-kicker">02 / FIELD GUIDE · 25 SPECIMENS</p><h2 id="herb-library-title">本草科普样例库</h2></div>
+            </div>
+            <div id="herbGroups"></div>
+            <p class="herb-library-note">图像用于中草药外观与材料类别的科普观察，不等同于药典标准图谱，也不能据此鉴定真伪、物种、产地或质量。植物照片、饮片照片和其他加工形态并非同一对象；具体基原、药用部位、炮制与性状应以可追溯的现行标准为准。</p>
+        </section>
+
+        <section class="container" id="knowledge-graph" aria-labelledby="graph-title">
+            <div class="graph-heading" data-reveal>
+                <div><p class="section-kicker">03 / HERBARIUM × KNOWLEDGE MAP</p><div class="panel-title">中医药知识图谱</div><h2 id="graph-title">循线索入图，<br>看关系如何生长。</h2></div>
+                <div class="graph-index">DIGITAL MATERIA MEDICA<br>拖拽节点 · 滚轮缩放 · 点选聚焦</div>
+            </div>
+            <div class="panel graph-panel" data-reveal>
+                <div class="graph-toolbar">
+                    <span>本草关系图 · 知识库实时映射</span>
+                    <div class="graph-toolbar-actions"><span class="graph-data-count" id="graphDataCount" aria-live="polite">正在读取图谱数据…</span><button class="graph-reset" id="graphResetFocus" type="button" hidden aria-label="清除节点聚焦">清除聚焦 ↗</button></div>
+                </div>
+                <div class="graph-atlas-grid">
+                    <div class="graph-map" aria-label="可交互的中医药知识关系地图">
+                        <div id="graphChart" role="img" aria-label="中医药知识图谱，支持拖拽、缩放和节点聚焦">
+                            <div class="loading" id="graphLoading"><div class="loading-spinner"></div><p>正在加载知识图谱...</p></div>
+                        </div>
+                    </div>
+                    <aside class="graph-inspector" aria-live="polite" aria-label="节点关系说明">
+                        <div class="graph-inspector-top">
+                            <div class="graph-inspector-kicker">SPECIMEN NOTE / <span id="graphInspectorIndex">00</span></div>
+                            <h3 id="graphInspectorName">选择一个节点</h3>
+                            <div class="graph-inspector-category" id="graphInspectorCategory">节点类别与直接关系</div>
+                            <p class="graph-inspector-copy" id="graphInspectorCopy">点击地图中的节点，查看它在当前知识库中的直接关联。关系仅呈现知识条目之间的连接，不代表诊断或疗效判断。</p>
+                        </div>
+                        <div class="graph-related">
+                            <div class="graph-related-heading"><span id="graphRelatedHeading">关系索引</span><span class="graph-related-count" id="graphRelatedCount">—</span></div>
+                            <p class="graph-inspector-empty" id="graphInspectorEmpty">悬停可读节点说明；选中后，此处列出直接关联条目。</p>
+                            <div class="graph-related-list" id="graphRelatedList"></div>
+                        </div>
+                    </aside>
+                </div>
+                <div class="graph-legend">
+                    <div class="legend-item"><i class="legend-symbol legend-syndrome"></i>证型 · 菱形</div>
+                    <div class="legend-item"><i class="legend-symbol legend-symptom"></i>症状 · 圆形</div>
+                    <div class="legend-item"><i class="legend-symbol legend-formula"></i>方剂 · 方形</div>
+                    <div class="legend-item"><i class="legend-line"></i>证型—症状</div>
+                    <div class="legend-item"><i class="legend-line formula"></i>证型—方剂</div>
+                    <span class="graph-legend-note">线条透明度表示关系连接 · 选中节点聚焦一阶关联</span>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer"><span>中医药AI知识检索辅助系统</span><span>中医教学科研辅助工具 · 非医疗器械</span></footer>
+    <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000';
+        let graphChart = null;
+        let graphResizeObserver = null;
+        let graphNodesById = new Map();
+        let graphLinks = [];
+        let graphSelectedId = null;
+        let graphSourceNodes = [];
+        let graphSourceLinks = [];
+        let graphIsMobile = false;
+        let graphResizeListenerAdded = false;
+
+        const herbGroups = [
+            {
+                title: '根、根茎与地下部参考 · 8',
+                description: '科普观察：切片可呈现断面结构，但外观会受基原、采收、加工和储存影响。根与根茎是不同植物器官，具体药用部位应按可追溯标准核对。',
+                items: [
+                    { name: '黄芪', file: 'Dried_astragalus_slices.jpg', page: 'https://commons.wikimedia.org/wiki/File:Dried_astragalus_slices.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示黄芪切片；图片不是标准鉴别图。', note: '观察点：比较切片外形与断面；图片名称和外观都不能单独确认基原或质量。' },
+                    { name: '甘草', file: 'Licorice_slices_(20240123).jpg', page: 'https://commons.wikimedia.org/wiki/File:Licorice_slices_(20240123).jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示甘草切片；药材规格和标准性状待核实。', note: '观察点：对照切片的形态与颜色层次；不要把图片名称当作药材鉴定结论。' },
+                    { name: '当归', file: 'Dried_angelica_slices_(2).jpg', page: 'https://commons.wikimedia.org/wiki/File:Dried_angelica_slices_(2).jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示标注为当归的干燥切片；药材规格和标准性状待核实。', note: '观察点：中药材名称对应规范对象；切片图像不能单独确认物种、产地或质量。' },
+                    { name: '白芷', file: 'Dried_angelica_slices.jpg', page: 'https://commons.wikimedia.org/wiki/File:Dried_angelica_slices.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示标注为白芷的干燥切片；药材规格和标准性状待核实。', note: '观察点：相似名称或外观的药材需要结合来源和标准辨别，不能只靠单张照片判断。' },
+                    { name: '人参', file: 'Jilin_Mt._Changbai_panax_ginseng_slices.jpg', page: 'https://commons.wikimedia.org/wiki/File:Jilin_Mt._Changbai_panax_ginseng_slices.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示标注为人参的切片；具体商品规格和标准性状待核实。', note: '观察点：先识别图片呈现的是切片形态；加工方式与商品名称须以资料来源为准。' },
+                    { name: '丹参', file: 'HK_sliced_herbal_丹参_Salvia_miltiorrhiza_root_October_2025_N13P_01.jpg', page: 'https://commons.wikimedia.org/wiki/File:HK_sliced_herbal_丹参_Salvia_miltiorrhiza_root_October_2025_N13P_01.jpg', credit: 'Wikimedia Commons 文件页', license: 'CC0 1.0', appearance: '开放许可参考图展示标注为丹参的切片；药材规格和标准性状待核实。', note: '观察点：将图像观察与来源核验分开；照片不能替代规范鉴别。' },
+                    { name: '天麻', file: 'Gastrodia_elata_slices.jpg', page: 'https://commons.wikimedia.org/wiki/File:Gastrodia_elata_slices.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示标注为天麻片的切片；图像不等同于标准鉴别图。', note: '观察点：对照不同地下部药材的切片形态；具体规格与质量需查验标准资料。' },
+                    { name: '姜黄属切片（物种待核实）', file: 'Sliced_Turmeric.jpg', page: 'https://commons.wikimedia.org/wiki/File:Sliced_Turmeric.jpg', credit: 'Bames24', license: 'CC BY-SA 3.0', appearance: '来源页将图像描述为煮制后切片的 turmeric，并列于未鉴定 Curcuma；具体物种和中药材对应关系待核实。', note: '观察点：英文俗名不一定对应唯一物种；记录图片来源和分类状态，避免直接作基原判断。' },
+                ],
+            },
+            {
+                title: '花、叶与全草/植株参考 · 7',
+                description: '科普观察：比较花、叶等植物器官，以及鲜态植株照片和干燥材料照片的差异。照片形态不等于药用部位或饮片规格。',
+                items: [
+                    { name: '菊花', file: 'Dried_chrysanthemum_flowers.jpg', page: 'https://commons.wikimedia.org/wiki/File:Dried_chrysanthemum_flowers.jpg', credit: 'ChildofMidnight', license: 'CC BY-SA 3.0', appearance: '开放许可参考图展示干燥菊花；本图仅供外观观察，标准性状待核实。', note: '观察点：花类材料可关注花部整体形态；品种、来源和规格仍须查阅对应标准。' },
+                    { name: '金银花', file: 'Lonicera_japonica_flowers.jpg', page: 'https://commons.wikimedia.org/wiki/File:Lonicera_japonica_flowers.jpg', credit: 'SB_Johnny', license: '公有领域（PD）', category: '其他（属性以来源资料为准）', appearance: '参考图呈现标注为 Lonicera japonica 的开花植株，不是干燥饮片图；药用部位和饮片性状待核实。', note: '观察点：区分植物开花状态照片与干燥药材图；二者用途不同，不能互相替代。' },
+                    { name: '薄荷', file: 'Dried_mint_leaves_tea.jpg', page: 'https://commons.wikimedia.org/wiki/File:Dried_mint_leaves_tea.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示标注为薄荷叶的干燥叶片；具体药材规格和标准性状待核实。', note: '观察点：叶片类图像可讨论叶形和干燥后外观；图中材料不作为物种确认依据。' },
+                    { name: '桑叶', file: 'Morus_alba-leaves.jpg', page: 'https://commons.wikimedia.org/wiki/File:Morus_alba-leaves.jpg', credit: 'Jaknouse', license: 'CC BY 3.0', category: '其他（属性以来源资料为准）', appearance: '参考图为标注桑树的叶片扫描图，不是干燥饮片图；药材来源和标准性状待核实。', note: '观察点：比较鲜叶与干燥叶的外观差异；图片分类不代表药材等级或质量。' },
+                    { name: '艾草（植株）', file: 'Artemis_argyi_plant.jpg', page: 'https://commons.wikimedia.org/wiki/File:Artemis_argyi_plant.jpg', credit: 'V.Thamaraiselvi', license: 'CC BY-SA 4.0', category: '其他（属性以来源资料为准）', appearance: '参考图为来源页标注的 Artemisia argyi 植株，不是干燥叶或饮片图；具体药用部位和规格待核实。', note: '观察点：植物全株图与药用部位图呈现的信息不同；需要区分叶、茎等器官。' },
+                    { name: '蒲公英（干燥植株图）', file: 'Pestle_dandelion_dried.jpg', page: 'https://commons.wikimedia.org/wiki/File:Pestle_dandelion_dried.jpg', credit: '见 Commons 文件页', license: '公有领域（PD）', category: '其他（属性以来源资料为准）', appearance: '来源页标题标注 dried dandelion；图像分类和具体药材标准性状待核实。', note: '观察点：干燥全草照片可供形态科普；图片未确认来源物种或药材批次。' },
+                    { name: '红花（干燥花参考）', file: 'Yamagata_safflower_(dry_flower).jpg', page: 'https://commons.wikimedia.org/wiki/File:Yamagata_safflower_(dry_flower).jpg', credit: 'Indiana jo', license: 'CC0 1.0', category: '其他（属性以来源资料为准）', appearance: '开放许可参考图展示来源页标注的干燥红花；药材基原、规格及标准性状待核实。', note: '观察点：花部材料的照片可用于描述颜色和整体形态，不作药材鉴别结论。' },
+                ],
+            },
+            {
+                title: '茎、皮与特殊材料参考 · 3',
+                description: '科普观察：树皮、茎部材料及其他特殊药用部位在来源和加工上各不相同；卡片图像只辅助观察，不替代规范分类。',
+                items: [
+                    { name: '杜仲（树皮切片参考）', file: 'Eucommia_bark_slices.jpg', page: 'https://commons.wikimedia.org/wiki/File:Eucommia_bark_slices.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示来源页标注的杜仲树皮切片；图像不等同于标准鉴别图。', note: '观察点：树皮材料与根、叶、花等药用部位类型不同；需按标准确认具体性状。' },
+                    { name: '桂皮类树皮（参考）', file: 'Cassia_bark_(2).jpg', page: 'https://commons.wikimedia.org/wiki/File:Cassia_bark_(2).jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', category: '其他（属性以来源资料为准）', appearance: '开放许可参考图展示来源页标注的肉桂属树皮/桂皮；具体药材名称对应关系和标准性状待核实。', note: '观察点：俗名和相近商品名可能涵盖不同来源，教学中应回到规范名称和基原资料。' },
+                    { name: '锁阳', file: 'Dried_suoyang_slices.jpg', page: 'https://commons.wikimedia.org/wiki/File:Dried_suoyang_slices.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示来源页标注的锁阳切片；图像不作为药材质量鉴定依据。', note: '观察点：同属植物药材的材料部位并不都来自根；具体部位应以来源标准核对。' },
+                ],
+            },
+            {
+                title: '果实、种子与果皮参考 · 6',
+                description: '科普观察：果实、种子和果皮是不同观察对象；脱壳、切分、干燥等处理会改变呈现形态，不能由外观反推完整加工信息。',
+                items: [
+                    { name: '枸杞子', file: 'Goji_dried_berries.jpg', page: 'https://commons.wikimedia.org/wiki/File:Goji_dried_berries.jpg', credit: 'Myrabella', license: 'CC BY-SA 3.0', appearance: '开放许可参考图展示干燥枸杞果实；具体药材规格和标准性状待核实。', note: '观察点：果实类材料的大小和干燥状态可作课堂观察；来源与质量不能凭照片确认。' },
+                    { name: '山楂', file: 'Hawthorn_berries.jpg', page: 'https://commons.wikimedia.org/wiki/File:Hawthorn_berries.jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示鲜山楂果实，不是饮片图；加工品性状待核实。', note: '观察点：区分鲜果照片与干燥、切制后的饮片外观。' },
+                    { name: '莲子', file: 'DriedLotusSeeds.jpg', page: 'https://commons.wikimedia.org/wiki/File:DriedLotusSeeds.jpg', credit: 'Sjschen', license: '公有领域（Public domain）', appearance: '开放许可参考图展示干燥莲子；去皮、去芯等规格及标准性状待核实。', note: '观察点：种子、种皮及加工规格是不同观察层次；以具体来源资料为准。' },
+                    { name: '陈皮', file: 'Chenpidrying.jpg', page: 'https://commons.wikimedia.org/wiki/File:Chenpidrying.jpg', credit: 'sfllaw', license: 'CC BY-SA 2.0', appearance: '开放许可参考图展示柑橘皮晾晒场景；具体来源、年份和标准性状待核实。', note: '观察点：果皮类材料需区分原料来源、加工与储存信息；单张照片不能确认这些属性。' },
+                    { name: '薏苡仁', file: 'Coix_lacryma-jobi_MHNT.BOT.2016.12.1.jpg', page: 'https://commons.wikimedia.org/wiki/File:Coix_lacryma-jobi_MHNT.BOT.2016.12.1.jpg', credit: 'Roger Culos', license: 'CC BY-SA 4.0', appearance: '开放许可参考图为薏苡属植物标本图像；商品饮片规格和标准性状待核实。', note: '观察点：标本图与商品药材图的用途不同；不要由植物标本直接推断饮片质量。' },
+                    { name: '罗汉果', file: 'Dried_monk_fruit_(20240123).jpg', page: 'https://commons.wikimedia.org/wiki/File:Dried_monk_fruit_(20240123).jpg', credit: 'Fumikas Sagisavas', license: 'CC0 1.0', appearance: '开放许可参考图展示干燥罗汉果；图像仅供外观观察，具体规格和标准性状待核实。', note: '观察点：果实内部与外部形态可分别观察；切开图不代表所有商品状态。' },
+                ],
+            },
+            {
+                title: '菌类参考 · 1',
+                description: '科普观察：真菌与植物属于不同生物类群；观察菌盖等外部结构时，仍需通过可靠标准核对具体物种与药材属性。',
+                items: [
+                    { name: '灵芝', file: 'Ganoderma_lucidum_102921711.jpg', page: 'https://commons.wikimedia.org/wiki/File:Ganoderma_lucidum_102921711.jpg', credit: 'iNaturalist contributor', license: 'CC0 1.0', category: '其他（属性以来源资料为准）', appearance: '开放许可参考图展示标注为 Ganoderma lucidum 的真菌；药材规格和标准性状待核实。', note: '观察点：菌类不是植物；图像仅供外部形态科普观察，不用于物种或质量鉴定。' },
+                ],
+            },
+        ];
+
+        function herbImageUrl(file) {
+            return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=900`;
+        }
+
+        function licenseUrl(license) {
+            if (license.startsWith('CC0')) return 'https://creativecommons.org/publicdomain/zero/1.0/';
+            if (license.startsWith('CC BY-SA 2.0')) return 'https://creativecommons.org/licenses/by-sa/2.0/';
+            if (license.startsWith('CC BY-SA 3.0')) return 'https://creativecommons.org/licenses/by-sa/3.0/';
+            if (license.startsWith('CC BY-SA 4.0')) return 'https://creativecommons.org/licenses/by-sa/4.0/';
+            if (license.startsWith('CC BY 3.0')) return 'https://creativecommons.org/licenses/by/3.0/';
+            if (license.startsWith('CC BY 2.0')) return 'https://creativecommons.org/licenses/by/2.0/';
+            return '';
+        }
+
+        function renderHerbLibrary() {
+            const root = document.getElementById('herbGroups');
+            herbGroups.forEach(group => {
+                const section = document.createElement('section');
+                section.className = 'herb-group';
+                const heading = document.createElement('h4');
+                heading.textContent = group.title;
+                const description = document.createElement('p');
+                description.className = 'herb-group-description';
+                description.textContent = group.description;
+                const cards = document.createElement('div');
+                cards.className = 'herb-cards';
+
+                group.items.forEach(item => {
+                    const card = document.createElement('article');
+                    card.className = 'herb-card';
+                    const image = document.createElement('img');
+                    image.src = herbImageUrl(item.file);
+                    image.alt = `${item.name}参考图片；仅用于科普观察，不作药材鉴定`;
+                    image.loading = 'lazy';
+                    const title = document.createElement('span');
+                    title.className = 'herb-card-title';
+                    title.textContent = item.name;
+                    const part = document.createElement('span');
+                    part.className = 'herb-card-part';
+                    part.textContent = item.appearance;
+                    const note = document.createElement('span');
+                    note.className = 'herb-card-note';
+                    note.textContent = item.note;
+
+                    const credit = document.createElement('p');
+                    credit.className = 'herb-image-credit';
+                    const author = document.createElement('span');
+                    author.textContent = `图片：${item.credit} · `;
+                    const sourceLink = document.createElement('a');
+                    sourceLink.href = item.page;
+                    sourceLink.target = '_blank';
+                    sourceLink.rel = 'noopener noreferrer';
+                    sourceLink.textContent = '来源页';
+                    credit.append(author, sourceLink, document.createTextNode(` · ${item.license}`));
+                    const licenseHref = licenseUrl(item.license);
+                    if (licenseHref) {
+                        const licenseLink = document.createElement('a');
+                        licenseLink.href = licenseHref;
+                        licenseLink.target = '_blank';
+                        licenseLink.rel = 'noopener noreferrer';
+                        licenseLink.textContent = '许可';
+                        credit.append(document.createTextNode(' · '), licenseLink);
+                    }
+                    card.append(image, title, part, note, credit);
+                    cards.appendChild(card);
+                });
+
+                section.append(heading, description, cards);
+                root.appendChild(section);
+            });
+        }
+
+        window.onload = function() {
+            renderHerbLibrary();
+            loadGraph();
+            checkHealth();
+        };
+
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${API_BASE}/api/health`);
+                const data = await res.json();
+                const statusBar = document.getElementById('statusBar');
+                statusBar.classList.add('show');
+                const configured = Object.values(data.models_configured || {}).filter(Boolean).length;
+                statusBar.textContent = `✅ 后端连接正常 | 知识库：${data.knowledge_count} 条证型 | 模型：${configured}/3 已配置`;
+            } catch (e) {
+                const statusBar = document.getElementById('statusBar');
+                statusBar.classList.add('show');
+                statusBar.textContent = '❌ 无法连接后端服务，请确认 server.py 已启动';
+                statusBar.style.background = 'rgba(201,138,94,.12)';
+                statusBar.style.color = '#C96A4E';
+            }
+        }
+
+        function addSymptom(text) {
+            const input = document.getElementById('symptomsInput');
+            input.value = input.value ? input.value + '，' + text : text;
+            input.focus();
+        }
+
+        function clearAll() {
+            document.getElementById('symptomsInput').value = '';
+            document.getElementById('resultArea').classList.remove('show');
+        }
+
+        async function loadGraph() {
+            try {
+                const res = await fetch(`${API_BASE}/api/graph`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                document.getElementById('graphLoading').style.display = 'none';
+                if (data.nodes && data.nodes.length > 0) {
+                    document.getElementById('graphDataCount').innerHTML = `${data.total_nodes ?? data.nodes.length} 个节点 <span>·</span> ${data.total_links ?? (data.links || []).length} 条关联`;
+                    renderGraph(data.nodes, data.links);
+                } else {
+                    document.getElementById('graphDataCount').textContent = '暂无图谱数据';
+                    document.getElementById('graphChart').innerHTML = '<div class="loading"><p>⚠️ 知识库为空，请检查 knowledge_base.json 文件</p></div>';
+                }
+            } catch (error) {
+                document.getElementById('graphDataCount').textContent = '图谱数据暂不可用';
+                document.getElementById('graphChart').innerHTML = '<div class="loading"><p>❌ 无法加载图谱，请确认后端服务已启动</p></div>';
+                console.error('图谱加载失败:', error);
+            }
+        }
+
+        function renderGraph(nodes, links) {
+            const chartDom = document.getElementById('graphChart');
+            if (graphChart) graphChart.dispose();
+            chartDom.innerHTML = '';
+            graphSourceNodes = nodes;
+            graphSourceLinks = links || [];
+            graphNodesById = new Map(nodes.map(node => [String(node.id), node]));
+            graphLinks = graphSourceLinks;
+            graphSelectedId = null;
+            graphChart = echarts.init(chartDom, null, { renderer: 'canvas' });
+            const categoryMeta = {
+                0: { name: '证型', color: '#4E8A6E', symbol: 'diamond', size: 22 },
+                1: { name: '症状', color: '#C98A5E', symbol: 'circle', size: 12 },
+                2: { name: '方剂', color: '#7E9BB8', symbol: 'roundRect', size: 17 }
+            };
+            const isMobile = window.matchMedia('(max-width: 600px)').matches;
+            graphIsMobile = isMobile;
+            const escapeGraphText = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+            const categoryOf = node => categoryMeta[node && node.category] || { name: '其他', color: '#aab3a5', symbol: 'circle', size: 14 };
+            const relationName = (source, target) => {
+                const categories = [Number(source && source.category), Number(target && target.category)];
+                if (categories.includes(1)) return '证型—症状';
+                if (categories.includes(2)) return '证型—方剂';
+                return '知识关联';
+            };
+            const renderedNodes = nodes.map(node => {
+                const meta = categoryOf(node);
+                return {
+                    ...node,
+                    symbol: meta.symbol,
+                    symbolSize: meta.size,
+                    itemStyle: { color: meta.color, borderColor: '#F9FBF7', borderWidth: 1.2, opacity: .96 },
+                    label: {
+                        show: !isMobile && Number(node.category) === 0,
+                        position: 'right', distance: 7, color: '#26312A', fontSize: 10, fontWeight: 500,
+                        formatter: params => params.data.name
+                    },
+                    emphasis: { label: { show: true, color: '#1F4D3B', fontSize: 12, fontWeight: 600 }, itemStyle: { borderColor: '#2F6B52', borderWidth: 1.5 } },
+                    select: { label: { show: true, color: '#1F4D3B', fontSize: 12, fontWeight: 600 }, itemStyle: { borderColor: '#2F6B52', borderWidth: 2 } }
+                };
+            });
+            const renderedLinks = graphLinks.map(link => {
+                const source = graphNodesById.get(String(link.source));
+                const target = graphNodesById.get(String(link.target));
+                const isFormula = Number(source && source.category) === 2 || Number(target && target.category) === 2;
+                return {
+                    ...link,
+                    lineStyle: isFormula
+                        ? { color: 'rgba(126,155,184,.25)', width: 1, type: 'dashed', curveness: .22 }
+                        : { color: 'rgba(47,107,82,.18)', width: .8, type: 'solid', curveness: .06 }
+                };
+            });
+            const option = {
+                backgroundColor: 'transparent',
+                animationDuration: 450,
+                tooltip: {
+                    trigger: 'item', confine: true, backgroundColor: 'rgba(249,251,247,.97)', borderColor: 'rgba(47,107,82,.25)', borderWidth: 1,
+                    padding: [10, 12], textStyle: { color: '#26312A', fontSize: 11 },
+                    formatter: params => {
+                        if (params.dataType === 'edge') {
+                            const source = graphNodesById.get(String(params.data.source));
+                            const target = graphNodesById.get(String(params.data.target));
+                            return `<div class="graph-tooltip"><div class="graph-tooltip-type">关系 · ${relationName(source, target)}</div><div class="graph-tooltip-name">${escapeGraphText(source && source.name)} ↔ ${escapeGraphText(target && target.name)}</div><div class="graph-tooltip-note">知识库条目中的直接连接</div></div>`;
+                        }
+                        const node = params.data;
+                        const meta = categoryOf(node);
+                        const degree = graphLinks.filter(link => String(link.source) === String(node.id) || String(link.target) === String(node.id)).length;
+                        return `<div class="graph-tooltip"><div class="graph-tooltip-type">节点 · ${meta.name}</div><div class="graph-tooltip-name">${escapeGraphText(node.name)}</div><div class="graph-tooltip-note">当前图谱中有 ${degree} 条直接关联；点击查看关系索引</div></div>`;
+                    }
+                },
+                series: [{
+                    type: 'graph', layout: 'force', categories: [{ name: '证型' }, { name: '症状' }, { name: '方剂' }],
+                    data: renderedNodes,
+                    links: renderedLinks,
+                    force: { repulsion: isMobile ? [105, 260] : [180, 390], edgeLength: isMobile ? [48, 96] : [62, 118], gravity: .045, friction: .72, layoutAnimation: true },
+                    roam: true, draggable: true,
+                    selectedMode: 'single',
+                    edgeSymbol: ['none', 'none'],
+                    edgeLabel: { show: false },
+                    lineStyle: { opacity: .72 },
+                    emphasis: { focus: 'adjacency', lineStyle: { width: 1.8, opacity: .9 }, itemStyle: { opacity: 1 }, label: { show: true } },
+                    select: { focus: 'adjacency', lineStyle: { width: 1.7, opacity: .92 }, itemStyle: { opacity: 1 }, label: { show: true } },
+                    blur: { itemStyle: { opacity: .13 }, lineStyle: { opacity: .035 }, label: { show: false } },
+                    labelLayout: { hideOverlap: true }
+                }]
+            };
+            graphChart.setOption(option);
+            graphChart.on('click', params => {
+                if (params.dataType !== 'node') return;
+                const id = String(params.data.id);
+                setGraphSelection(graphSelectedId === id ? null : params.data);
+            });
+            document.getElementById('graphResetFocus').onclick = () => setGraphSelection(null);
+            document.getElementById('graphRelatedList').onclick = event => {
+                const button = event.target.closest('[data-graph-node-id]');
+                if (!button) return;
+                const node = graphNodesById.get(button.dataset.graphNodeId);
+                if (!node) return;
+                setGraphSelection(node);
+            };
+            if (graphResizeObserver) graphResizeObserver.disconnect();
+            if ('ResizeObserver' in window) {
+                graphResizeObserver = new ResizeObserver(() => graphChart && graphChart.resize());
+                graphResizeObserver.observe(chartDom);
+            }
+            if (!graphResizeListenerAdded) {
+                window.addEventListener('resize', () => graphChart && graphChart.resize(), { passive: true });
+                window.addEventListener('resize', () => {
+                    const isNowMobile = window.matchMedia('(max-width: 600px)').matches;
+                    if (graphChart && isNowMobile !== graphIsMobile) renderGraph(graphSourceNodes, graphSourceLinks);
+                }, { passive: true });
+                graphResizeListenerAdded = true;
+            }
+            document.getElementById('graphInspectorIndex').textContent = '00';
+            setGraphSelection(null);
+        }
+
+        function setGraphSelection(node) {
+            const relatedList = document.getElementById('graphRelatedList');
+            const emptyState = document.getElementById('graphInspectorEmpty');
+            const resetButton = document.getElementById('graphResetFocus');
+            if (!node) {
+                if (graphSelectedId !== null && graphChart) {
+                    const selected = graphNodesById.get(graphSelectedId);
+                    const selectedIndex = selected ? Array.from(graphNodesById.keys()).indexOf(graphSelectedId) : -1;
+                    if (selectedIndex >= 0) graphChart.dispatchAction({ type: 'unselect', seriesIndex: 0, dataIndex: selectedIndex });
+                    graphChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                }
+                graphSelectedId = null;
+                document.getElementById('graphInspectorIndex').textContent = '00';
+                document.getElementById('graphInspectorName').textContent = '选择一个节点';
+                document.getElementById('graphInspectorCategory').textContent = '节点类别与直接关系';
+                document.getElementById('graphInspectorCopy').textContent = '点击地图中的节点，查看它在当前知识库中的直接关联。关系仅呈现知识条目之间的连接，不代表诊断或疗效判断。';
+                document.getElementById('graphRelatedHeading').textContent = '关系索引';
+                document.getElementById('graphRelatedCount').textContent = '—';
+                relatedList.innerHTML = '';
+                emptyState.style.display = 'block';
+                emptyState.textContent = '悬停可读节点说明；选中后，此处列出直接关联条目。';
+                resetButton.hidden = true;
+                return;
+            }
+
+            if (graphSelectedId !== null && graphChart) {
+                const previousIndex = Array.from(graphNodesById.keys()).indexOf(graphSelectedId);
+                if (previousIndex >= 0) graphChart.dispatchAction({ type: 'unselect', seriesIndex: 0, dataIndex: previousIndex });
+            }
+            graphSelectedId = String(node.id);
+            const meta = ({ 0: '证型', 1: '症状', 2: '方剂' })[node.category] || '其他';
+            const neighbors = new Map();
+            graphLinks.forEach(link => {
+                const sourceId = String(link.source), targetId = String(link.target);
+                if (sourceId !== graphSelectedId && targetId !== graphSelectedId) return;
+                const otherId = sourceId === graphSelectedId ? targetId : sourceId;
+                const other = graphNodesById.get(otherId);
+                if (other) neighbors.set(otherId, { node: other, relation: meta === '证型' ? ((other.category === 1) ? '症状' : '方剂') : '证型' });
+            });
+            const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+            const copy = meta === '证型'
+                ? '证型节点；以下仅列出知识库与此条目直接相连的症状或方剂。'
+                : meta === '症状'
+                    ? '症状节点；以下列出当前图谱直接连接的证型条目。'
+                    : '方剂节点；以下列出知识库中直接连接的证型条目。';
+            document.getElementById('graphInspectorIndex').textContent = String(node.id).padStart(2, '0');
+            document.getElementById('graphInspectorName').textContent = node.name;
+            document.getElementById('graphInspectorCategory').textContent = `${meta} · ${neighbors.size} 条直接关联`;
+            document.getElementById('graphInspectorCopy').textContent = copy;
+            document.getElementById('graphRelatedHeading').textContent = `与「${node.name}」直接相连`;
+            document.getElementById('graphRelatedCount').textContent = `${neighbors.size} 项`;
+            emptyState.style.display = neighbors.size ? 'none' : 'block';
+            emptyState.textContent = neighbors.size ? '' : '此节点在当前数据中没有直接关联。';
+            relatedList.innerHTML = Array.from(neighbors.values()).map(({ node: related, relation }) =>
+                `<button type="button" class="graph-related-button" data-graph-node-id="${escape(related.id)}"><span>${escape(related.name)}</span><span class="graph-related-type">${relation}</span></button>`
+            ).join('');
+            resetButton.hidden = false;
+            if (graphChart) {
+                const selectedIndex = Array.from(graphNodesById.keys()).indexOf(graphSelectedId);
+                graphChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                if (selectedIndex >= 0) {
+                    graphChart.dispatchAction({ type: 'select', seriesIndex: 0, dataIndex: selectedIndex });
+                    graphChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: selectedIndex });
+                }
+            }
+        }
+
+        async function analyze() {
+            const symptoms = document.getElementById('symptomsInput').value.trim();
+            const btn = document.getElementById('analyzeBtn');
+            const resultArea = document.getElementById('resultArea');
+            if (!symptoms) { document.getElementById('symptomsInput').focus(); return; }
+            btn.disabled = true;
+            btn.textContent = '分析中...';
+            resultArea.classList.remove('show');
+            try {
+                const res = await fetch(`${API_BASE}/api/analyze`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ symptoms: symptoms })
+                });
+                const result = await res.json();
+                if (result.code === 200) {
+                    displayResults(result.data);
+                    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        requestAnimationFrame(() => resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
+                    }
+                } else {
+                    const statusBar = document.getElementById('statusBar');
+                    statusBar.textContent = '分析失败：' + result.message;
+                    statusBar.classList.add('show');
+                }
+            } catch (error) {
+                const statusBar = document.getElementById('statusBar');
+                statusBar.textContent = '无法连接后端服务，请确认 server.py 已启动';
+                statusBar.classList.add('show');
+                console.error('分析失败:', error);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔍 知识检索与证型辨析';
+            }
+        }
+
+        // 方法口径：分数名必须与实际算法一致（旧版把 TF-IDF 余弦相似度标成了"词项 F1"）
+        const METHOD_META = {
+            keyword: { label: '词项 F1 检索', score: '词项 F1', color: '#6E7A70' },
+            bm25:    { label: 'BM25 检索',   score: 'BM25 分', color: '#5B8DB8' },
+            tfidf:   { label: 'TF-IDF 检索', score: '余弦相似度', color: '#2F6B52' },
+            hybrid:  { label: 'RRF 融合检索', score: 'RRF 分', color: '#7E9BB8' },
+            clf:     { label: 'TF-IDF+LR 分类器', score: '预测概率', color: '#C9A35A' },
+        };
+        const LEVEL_COLOR = {
+            reliable: '#2F6B52', hint: '#C9A35A', low: '#C96A4E',
+            insufficient: '#6E7A70', no_match: '#6E7A70', abstain: '#ff744d',
+        };
+
+        function renderRoutePanel(data) {
+            const box = document.getElementById('routePanel');
+            if (!box) return;
+            const st = data.style || {};
+            const route = data.route || {};
+            const conf = data.answer_confidence || {};
+            const key = conf.level || 'insufficient';
+            const color = LEVEL_COLOR[key] || '#6E7A70';
+            const styleName = st.style === 'record' ? '电子病历体' : '口语描述';
+            const items = [
+                ['输入风格', styleName + '（倾向分 ' + (st.score ?? '-') + '）'],
+                ['判定依据', '知识库词覆盖 ' + ((st.kb_coverage ?? 0) * 100).toFixed(1) + '%｜数字密度 '
+                    + ((st.digit_density ?? 0) * 100).toFixed(2) + '%｜病例结构词 '
+                    + (st.record_markers && st.record_markers.length ? st.record_markers.slice(0, 4).join('、') : '无')],
+                ['采用方法', (METHOD_META[data.answer_method] || {}).label || data.answer_method || '-'],
+                ['置信等级', (conf.label || '未知') + '｜' + (conf.reason || '')],
+            ];
+            box.innerHTML = ''
+                + '<div style="border:1px solid rgba(31,77,59,.08);border-radius:12px;padding:16px 18px;background:rgba(31,77,59,.04)">'
+                +   '<div style="font-size:11px;letter-spacing:1px;color:#6E7A70;margin-bottom:10px">系统判定 · 路由与置信度</div>'
+                +   items.map(([k, v]) =>
+                        '<div style="display:flex;gap:10px;margin:5px 0;font-size:12px;line-height:1.7">'
+                      +   '<span style="flex:0 0 62px;color:#6E7A70">' + k + '</span>'
+                      +   '<span style="color:#26312A">' + v + '</span>'
+                      + '</div>').join('')
+                +   '<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(31,77,59,.06);font-size:12px;line-height:1.8;color:' + color + '">'
+                +     (data.status_note || '') + '</div>'
+                + '</div>';
+        }
+
+        function renderAnswerMethods(data) {
+            const box = document.getElementById('methodCompare');
+            if (!box) return;
+            box.innerHTML = '';
+            ['keyword', 'bm25', 'tfidf', 'hybrid', 'clf'].forEach(mkey => {
+                const info = (data.method_results || {})[mkey];
+                if (!info) return;
+                const meta = METHOD_META[mkey] || { label: mkey, color: '#6E7A70' };
+                const rows = info.matches || [];
+                const conf = info.confidence_detail || {};
+                const isAnswer = (data.answer_method === mkey);
+                const key = conf.level || 'insufficient';
+                const color = LEVEL_COLOR[key] || '#6E7A70';
+                const card = document.createElement('div');
+                card.style.cssText = 'border:1px solid ' + (isAnswer ? color : 'rgba(31,77,59,.06)')
+                    + ';border-radius:8px;padding:10px 12px;background:rgba(31,77,59,.03)';
+                let html = '<div style="font-size:10px;color:' + meta.color + ';letter-spacing:.3px;margin-bottom:5px">'
+                    + meta.label + (isAnswer ? ' · 本次采用' : '') + '</div>';
+                if (rows.length === 0) {
+                    html += '<div style="color:#6E7A70;font-size:11px;">无结果</div>';
+                } else {
+                    html += '<div style="font-size:13px;font-weight:600;color:#26312A;margin:3px 0;">'
+                        + rows[0].syndrome
+                        + ' <span style="font-size:10px;color:#6E7A70;font-weight:400;">' + meta.score + ' ' + rows[0].score + '</span></div>';
+                    if (rows[1]) {
+                        html += '<div style="font-size:10px;color:#6E7A70;margin:2px 0;">2. ' + rows[1].syndrome + '</div>';
+                    }
+                }
+                html += '<div style="font-size:10px;margin-top:6px;color:' + color + '">'
+                    + '置信：' + (conf.label || '未知')
+                    + (conf.calibrated_accuracy != null ? '｜实测准确率 ' + (conf.calibrated_accuracy * 100).toFixed(0) + '%' : '')
+                    + '</div>';
+                card.innerHTML = html;
+                box.appendChild(card);
+            });
+        }
+
+        function renderEvidence(data, observed, unmatched) {
+            const matchResults = document.getElementById('matchResults');
+            const conf = data.answer_confidence || {};
+            const scoreNote = '分数为「' + (((METHOD_META[data.answer_method] || {}).score) || '匹配度')
+                + '」，不是诊断概率。';
+            const p = document.createElement('p');
+            p.style.cssText = 'color:#6E7A70;margin:10px 0;line-height:1.8;font-size:11px';
+            p.textContent = '已抽取症状：' + (observed.length ? observed.join('、') : '未识别到知识库词条')
+                + '。未识别文本：' + (unmatched.length ? unmatched.join('；') : '无')
+                + '。置信等级：' + (conf.label || data.confidence || '未知') + '。' + scoreNote;
+            matchResults.innerHTML = '';
+            matchResults.appendChild(p);
+        }
+
+        function displayResults(data) {
+            const resultArea = document.getElementById('resultArea');
+            const aiResult = document.getElementById('aiResult');
+            const observed = Array.isArray(data.observed_symptoms)
+                ? data.observed_symptoms
+                : [...new Set((data.answer_matches || []).flatMap(i => i.matched_symptoms || []))];
+            const unmatched = Array.isArray(data.unmatched_text) ? data.unmatched_text : [];
+
+            renderRoutePanel(data);
+            renderEvidence(data, observed, unmatched);
+            renderAnswerMethods(data);
+
+            // ---- 主结果：口径与 data.answer_method 一致，不再固定显示分类器 ----
+            const clfBox = document.getElementById('clfResult');
+            const title = document.getElementById('primaryTitle');
+            const answerMethod = data.answer_method || 'tfidf';
+            const meta = METHOD_META[answerMethod] || { label: answerMethod, score: '分数' };
+            const conf = data.answer_confidence || {};
+            const key = conf.level || 'insufficient';
+            const color = LEVEL_COLOR[key] || '#6E7A70';
+            const rows = data.answer_matches || [];
+
+            if (title) {
+                title.textContent = '🏆 主结果 · ' + meta.label
+                    + (data.answer_is_fallback ? '（降级候选）' : '');
+            }
+            clfBox.innerHTML = '';
+            const big = document.createElement('div');
+            big.style.cssText = 'border:2px solid ' + color + ';border-radius:12px;padding:22px 24px;'
+                + 'background:linear-gradient(135deg,rgba(31,77,59,.05),rgba(31,77,59,.02))';
+            let html = '<div style="font-size:12px;color:' + color + ';letter-spacing:1px;margin-bottom:12px;font-weight:600">'
+                + '置信等级：' + (conf.label || '未知')
+                + (conf.calibrated_accuracy != null ? ' · 该分数档实测准确率 ' + (conf.calibrated_accuracy * 100).toFixed(0) + '%' : '')
+                + '</div>';
+            if (data.answer_is_fallback) {
+                html += '<div style="font-size:12px;color:#C9A35A;line-height:1.7;margin-bottom:10px">'
+                    + '首选方法置信度不足，以下为回落的候选线索，不作为结论。</div>';
+            }
+            if (rows.length === 0) {
+                html += '<div style="color:#6E7A70;font-size:14px;">无结果</div>';
+            } else {
+                rows.slice(0, 3).forEach((r, i) => {
+                    if (i === 0) {
+                        html += '<div style="font-size:28px;font-weight:700;color:#26312A;margin:8px 0;">' + r.syndrome
+                            + ' <span style="font-size:14px;color:' + color + ';font-weight:400;">'
+                            + meta.score + ' ' + r.score + '</span></div>';
+                    } else {
+                        html += '<div style="font-size:13px;color:#b0b8af;margin:4px 0;">' + (i + 1) + '. '
+                            + r.syndrome + ' <span style="color:#6E7A70;">' + r.score + '</span></div>';
+                    }
+                });
+                const top = rows[0] || {};
+                if ((top.matched_symptoms || []).length) {
+                    html += '<div style="font-size:11px;color:#6E7A70;margin-top:10px;line-height:1.7">证据命中：'
+                        + top.matched_symptoms.join('、') + '</div>';
+                }
+            }
+            html += '<div style="font-size:11px;color:#6E7A70;margin-top:12px;line-height:1.7">'
+                + (conf.reason || '') + '</div>';
+            big.innerHTML = html;
+            clfBox.appendChild(big);
+
+            if ((data.limitations || []).length) {
+                const lim = document.createElement('div');
+                lim.style.cssText = 'font-size:11px;color:#6E7A70;margin-top:10px;line-height:1.8';
+                lim.innerHTML = data.limitations.map(x => '· ' + x).join('<br>');
+                clfBox.appendChild(lim);
+            }
+
+            // ---- 模型摘要 ----
+            aiResult.replaceChildren();
+            const comparisons = Array.isArray(data.ai_comparison) ? data.ai_comparison : [];
+            if (comparisons.length) {
+                comparisons.forEach(model => {
+                    const card = document.createElement('article');
+                    card.className = 'ai-model-card';
+                    const heading = document.createElement('div');
+                    heading.className = 'ai-model-heading';
+                    const name = document.createElement('span');
+                    name.textContent = (model.name || model.provider) + ' · ' + (model.model || '');
+                    const status = document.createElement('span');
+                    status.className = 'ai-model-status';
+                    status.textContent = model.status || '无状态信息';
+                    heading.append(name, status);
+                    const analysis = document.createElement('div');
+                    analysis.className = 'ai-model-analysis';
+                    analysis.textContent = model.analysis || '该模型未返回摘要。';
+                    card.append(heading, analysis);
+                    aiResult.appendChild(card);
+                });
+            } else {
+                const fallback = document.createElement('div');
+                fallback.className = 'ai-model-analysis';
+                fallback.textContent = data.ai_analysis || data.ai_status || '模型摘要不可用；以上为本地知识库匹配结果';
+                aiResult.appendChild(fallback);
+            }
+            resultArea.classList.add('show');
+        }
+
+        // Progressive reveal and gentle depth movement.
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.body.classList.add('js');
+        if ('IntersectionObserver' in window && !reducedMotion) {
+            const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+                if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); }
+            }), { threshold: .14, rootMargin: '0px 0px -35px 0px' });
+            document.querySelectorAll('[data-reveal]').forEach(node => revealObserver.observe(node));
+        } else {
+            document.querySelectorAll('[data-reveal]').forEach(node => node.classList.add('is-visible'));
+        }
+
+        let scrollTicking = false;
+        window.addEventListener('scroll', () => {
+            if (scrollTicking) return;
+            scrollTicking = true;
+            requestAnimationFrame(() => {
+                document.documentElement.style.setProperty('--scroll-y', String(window.scrollY));
+                scrollTicking = false;
+            });
+        }, { passive: true });
+
+        // Small 2D light field; static or disabled on reduced-motion and low-power devices.
+        (() => {
+            const canvas = document.getElementById('ambientCanvas');
+            const ctx = canvas && canvas.getContext('2d', { alpha: true });
+            if (!ctx) return;
+            const lowPower = navigator.connection?.saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+            const staticMode = reducedMotion || lowPower;
+            let width = 0, height = 0, frame = 0, visible = true;
+            const lights = Array.from({ length: lowPower ? 7 : 13 }, (_, i) => ({ x: Math.random(), y: Math.random(), r: 38 + Math.random() * 100, phase: i * .8, speed: .00012 + Math.random() * .0002 }));
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+                width = rect.width; height = rect.height;
+                canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                draw(performance.now());
+            }
+            function draw(time) {
+                ctx.clearRect(0, 0, width, height);
+                for (const light of lights) {
+                    const drift = staticMode ? 0 : Math.sin(time * light.speed + light.phase) * .035;
+                    const x = (light.x + drift) * width, y = (light.y + Math.cos(time * light.speed + light.phase) * (staticMode ? 0 : .035)) * height;
+                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, light.r);
+                    gradient.addColorStop(0, 'rgba(47,107,82,.12)');
+                    gradient.addColorStop(1, 'rgba(200,241,105,0)');
+                    ctx.fillStyle = gradient; ctx.fillRect(x - light.r, y - light.r, light.r * 2, light.r * 2);
+                }
+                if (!staticMode && visible && !document.hidden) frame = requestAnimationFrame(draw);
+            }
+            if ('IntersectionObserver' in window) {
+                const heroObserver = new IntersectionObserver(entries => {
+                    visible = entries[0].isIntersecting;
+                    if (visible && !staticMode && !document.hidden && !frame) frame = requestAnimationFrame(draw);
+                    if (!visible && frame) { cancelAnimationFrame(frame); frame = 0; }
+                });
+                heroObserver.observe(document.querySelector('.header'));
+            }
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && frame) { cancelAnimationFrame(frame); frame = 0; }
+                else if (!document.hidden && visible && !staticMode && !frame) frame = requestAnimationFrame(draw);
+            });
+            window.addEventListener('resize', resize, { passive: true });
+            resize();
+            if (!staticMode) frame = requestAnimationFrame(draw);
+        })();
+
+        // Desktop-only cursor accent; native pointer remains on touch devices.
+        (() => {
+            if (!window.matchMedia('(pointer: fine) and (min-width: 601px)').matches || reducedMotion) return;
+            const cursor = document.getElementById('cursorDot');
+            document.body.classList.add('has-custom-cursor');
+            window.addEventListener('mousemove', event => {
+                cursor.style.left = `${event.clientX}px`; cursor.style.top = `${event.clientY}px`;
+                cursor.classList.add('is-visible');
+            }, { passive: true });
+            document.addEventListener('mouseover', event => {
+                if (event.target.closest('a, button')) cursor.classList.add('is-hover');
+                else cursor.classList.remove('is-hover');
+            });
+            document.addEventListener('mouseleave', () => cursor.classList.remove('is-visible'));
+        })();
+
+        document.getElementById('symptomsInput').addEventListener('keydown', event => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') analyze();
+        });
+    </script>
+<script src="/static/user.js"></script>
+</body>
+</html>

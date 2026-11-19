@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 学习助手 · 本草辨证</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--accent-strong:#1F4D3B;--accent-soft:rgba(47,107,82,.12);--orange:#C98A5E;--violet:#7E9BB8;--blue:#5B8DB8;--gold:#C9A35A;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;display:flex;flex-direction:column;}
+a{color:var(--muted);text-decoration:none;}a:hover{color:var(--acid);}
+.topbar{flex:none;display:flex;justify-content:space-between;align-items:center;padding:15px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+.nav{display:flex;gap:15px;font-size:13px;}
+.layout{flex:1;display:grid;grid-template-columns:1fr 290px;min-height:0;}
+.chat{display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--line);}
+.chead{flex:none;padding:16px 24px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;}
+.avatar{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2F6B52,#5d8a2a 70%);position:relative;flex:none;box-shadow:0 0 0 0 rgba(47,107,82,.45);animation:pulse 2.6s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,107,82,.45);}70%{box-shadow:0 0 0 14px rgba(200,241,105,0);}100%{box-shadow:0 0 0 0 rgba(200,241,105,0);}}
+.avatar::after{content:"";position:absolute;inset:11px;border-radius:50%;border:2px solid rgba(31,77,59,.4);border-top-color:transparent;animation:spin 3.4s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.chead h1{font-size:16px;margin:0;font-weight:600;}
+.chead .desc{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.msgs{flex:1;overflow-y:auto;padding:20px 24px 8px;display:flex;flex-direction:column;gap:14px;}
+.msg{max-width:min(720px,92%);font-size:13.5px;}
+.msg.u{align-self:flex-end;}
+.msg.u .bub{background:rgba(47,107,82,.13);border:1px solid rgba(47,107,82,.32);border-radius:14px 14px 4px 14px;padding:11px 15px;white-space:pre-wrap;}
+.msg.a .bub{background:var(--panel);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:13px 16px;}
+.msg.a .bub > *:first-child{margin-top:0;}
+.msg.a .bub > *:last-child{margin-bottom:0;}
+.msg .who{font-size:10.5px;color:#6e7a6c;letter-spacing:1px;margin-bottom:5px;}
+.msg.u .who{text-align:right;}
+.syn{border-left:2px solid var(--acid);padding-left:11px;margin:10px 0;}
+.syn b{color:var(--acid);font-size:14px;}
+.syn .sc{color:var(--muted);font-size:11.5px;margin-left:6px;}
+.sym{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:20px;border:1px solid rgba(47,107,82,.35);color:var(--acid);margin:3px 5px 0 0;}
+.sym.miss{border-color:rgba(201,138,94,.35);color:var(--orange);}
+.conf{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
+.conf b{color:var(--paper);}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;}
+.acts a{font-size:12px;padding:6px 13px;border-radius:7px;border:1px solid var(--line);background:var(--panel-raised);color:var(--paper);}
+.acts a:hover{border-color:var(--acid);color:var(--acid);}
+.quick{flex:none;display:flex;gap:8px;padding:10px 24px 0;flex-wrap:wrap;}
+.quick button{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:20px;padding:7px 15px;font-size:12px;cursor:pointer;font-family:inherit;}
+.quick button:hover{color:var(--acid);border-color:rgba(47,107,82,.4);}
+.inp{flex:none;display:flex;gap:10px;padding:12px 24px 18px;align-items:flex-end;}
+textarea{flex:1;min-height:46px;max-height:130px;resize:none;background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:11px;padding:12px 14px;font-size:13.5px;font-family:inherit;line-height:1.6;}
+textarea:focus{outline:none;border-color:rgba(47,107,82,.4);}
+.send{background:var(--acid);color:#F7FAF6;border:0;border-radius:11px;padding:13px 24px;font-size:13.5px;font-weight:700;cursor:pointer;flex:none;}
+.send:disabled{opacity:.45;cursor:default;}
+.side{overflow-y:auto;padding:18px 18px 30px;background:#F1F5EE;}
+.side h3{font-size:11.5px;color:var(--muted);letter-spacing:2px;margin:0 0 10px;font-weight:600;}
+.side .box{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:13px 15px;margin-bottom:12px;font-size:12.5px;}
+.side .kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(47,107,82,.07);}
+.side .kv:last-child{border-bottom:0;}
+.side .kv span:last-child{color:var(--acid);font-variant-numeric:tabular-nums;}
+.side .tip{font-size:11px;color:#6e7a6c;line-height:1.7;margin-top:6px;}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acid);margin-right:6px;vertical-align:middle;}
+.dot.off{background:var(--orange);}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}.side{display:none;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">本草辨证 · <b>AI 学习助手</b></div>
+  <div class="nav">
+    <a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html">训练</a>
+    <a href="/progress.html">报告</a>
+    <a href="/static/assistant.html" style="color:var(--acid);font-weight:600">助手</a>
+    <a href="/static/profile.html">档案</a>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="chat">
+    <div class="chead">
+      <div class="avatar"></div>
+      <div>
+        <h1>AI 学习助手</h1>
+        <div class="desc">基于本地知识库的检索式问答 · 可选接入大模型增强 · 不做诊断</div>
+      </div>
+    </div>
+    <div class="msgs" id="msgs"></div>
+    <div class="quick" id="quick">
+      <button data-q="最近总是没胃口，吃一点就胀，大便稀，人也没力气">试试：脾虚症状</button>
+      <button data-q="头痛发热，汗出恶风">试试：太阳中风</button>
+      <button data-q="考我一道">考我一道</button>
+      <button data-q="我学得怎么样">我学得怎么样</button>
+      <button data-q="推荐我练什么">推荐练什么</button>
+    </div>
+    <div class="inp">
+      <textarea id="inp" placeholder="描述症状，或问「它和XX有什么区别」「考我一道」「用什么方」「我学得怎么样」…（Ctrl+Enter 发送）"></textarea>
+      <button class="send" id="send">发送</button>
+    </div>
+  </div>
+
+  <aside class="side">
+    <h3>学习概览</h3>
+    <div class="box" id="sideBox"><div class="tip">加载中…</div></div>
+    <h3>使用提示</h3>
+    <div class="box">
+      <div style="font-size:12px;color:#6E7A70;line-height:1.8">
+        ① 输入症状 → 我给出候选证型、命中证据与把握程度<br><br>
+        ② 问「我学得怎么样」→ 我读你的答题记录<br><br>
+        ③ 问「推荐练什么」→ 我按薄弱点给路径
+      </div>
+      <div class="tip">本助手只做教学参考，不构成诊断或用药建议。</div>
+    </div>
+    <h3>数据看板</h3>
+    <div class="box"><a href="/static/stats.html" style="color:var(--acid);text-decoration:none">查看答题统计与知识库概览 →</a></div>
+    <h3>口语验证</h3>
+    <div class="box"><a href="/static/dialogue.html" style="color:var(--acid);text-decoration:none">用真实问诊对话试试 →</a></div>
+  </aside>
+</div>
+
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var busy = false;
+var SYNS = [];            // 证型名列表（用于识别“和XX对比”）
+var CTX = { matches: [], query: "" };   // 对话上下文
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function pct(x){ return x==null ? "—" : Math.round(x*100) + "%"; }
+
+function push(role, html){
+  var d = document.createElement("div");
+  d.className = "msg " + role;
+  d.innerHTML = '<div class="who">' + (role === "u" ? "我" : "AI 学习助手") + '</div><div class="bub">' + html + '</div>';
+  $("msgs").appendChild(d);
+  $("msgs").scrollTop = $("msgs").scrollHeight;
+}
+
+async function getJSON(u, opt){
+  var r = await fetch(u, opt);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+
+/* ---------- 1. 症状分析 ---------- */
+async function doAnalyze(text){
+  var j = await getJSON("/api/analyze", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ symptoms: text })
+  });
+  if (j.code !== 200) throw new Error(j.message || "分析失败");
+  var d = j.data;
+  var obs = d.observed_symptoms || [];
+  var ms = (d.answer_matches || []).slice(0, 3);
+  var conf = d.answer_confidence || {};
+
+  CTX.matches = ms; CTX.query = text;
+
+  var h = "";
+  if (d.status === "abstained" || d.status === "low_confidence"){
+    h += '<div style="color:#C98A5E"><b>证据不足，暂不下结论。</b></div>';
+  }
+  if (obs.length){
+    h += '<div style="font-size:12px;color:#6E7A70;margin-bottom:4px">识别到的规范症状</div>';
+    h += obs.map(function(s){ return '<span class="sym">' + esc(s) + '</span>'; }).join("");
+  } else {
+    h += '<div style="color:#C98A5E">没识别到知识库中的症状词。换个说法，或补充舌象、脉象。</div>';
+  }
+  if (ms.length){
+    h += '<div style="font-size:12px;color:#6E7A70;margin:12px 0 2px">候选证型（按匹配度，非诊断）</div>';
+    ms.forEach(function(m, i){
+      h += '<div class="syn"><b>' + esc(m.syndrome) + '</b><span class="sc">匹配 ' + (m.score||0).toFixed(1) + '</span>';
+      if ((m.matched_symptoms||[]).length)
+        h += '<div style="font-size:11.5px;color:#6E7A70;margin-top:3px">命中：' + m.matched_symptoms.map(function(x){ return '<span class="sym">' + esc(x) + '</span>'; }).join("") + '</div>';
+      if ((m.missing_profile_symptoms||[]).length)
+        h += '<div style="font-size:11.5px;color:#6e7a6c;margin-top:2px">还缺：' + m.missing_profile_symptoms.slice(0,4).map(function(x){ return '<span class="sym miss">' + esc(x) + '</span>'; }).join("") + '</div>';
+      if (m.formula_name)
+        h += '<div style="font-size:11.5px;color:#6e7a6c;margin-top:3px">代表方：' + esc(m.formula_name) + (m.formula_effect ? '（' + esc(m.formula_effect) + '）' : '') + '</div>';
+      h += '</div>';
+    });
+    h += '<div style="font-size:11.5px;color:#6e7a6c;margin-top:8px">可以接着问：'
+      + '<span style="color:#2F6B52">「它和肝郁脾虚有什么区别」</span> · '
+      + '<span style="color:#2F6B52">「考我一道」</span> · '
+      + '<span style="color:#2F6B52">「用什么方」</span></div>';
+  }
+  if (conf && conf.label){
+    h += '<div class="conf">把握程度：<b>' + esc(conf.label) + '</b>'
+      + (conf.calibrated_accuracy != null ? '（该档历史实测 ' + pct(conf.calibrated_accuracy) + '）' : '') + '</div>';
+  }
+  h += '<div class="acts">'
+    + (ms.length ? '<a href="/train.html?m=quiz">练同类题 →</a>' : '')
+    + (ms.length > 1 ? '<a href="/train.html?m=compare">看鉴别 →</a>' : '')
+    + '<a href="/train.html?m=formula">查方剂 →</a></div>';
+  h += '<div style="font-size:11px;color:#5f6a5d;margin-top:9px">教学参考，不构成诊断或用药建议。</div>';
+  push("a", h);
+}
+
+function findSyndromeIn(text){
+  var hit = null;
+  SYNS.forEach(function(s){ if (s && text.indexOf(s) >= 0) hit = s; });
+  return hit;
+}
+
+/* ---------- 2. 候选证型之间的对比（用已有分析数据，不跨库） ---------- */
+function doCompare(text){
+  if (!CTX.matches.length){
+    push("a", '<div>我还没分析过症状，不知道拿哪个证型来比。先描述一下症状吧。</div>');
+    return;
+  }
+  // 在候选里找用户提到的证型（支持去掉「证」字）
+  var said = findSyndromeIn(text);
+  var target = null;
+  if (said){
+    CTX.matches.forEach(function(m){
+      if (m.syndrome === said || m.syndrome.indexOf(said) >= 0 || said.indexOf(m.syndrome) >= 0) target = m;
+    });
+  }
+  var base = CTX.matches[0];
+  if (!target || target === base){
+    var names = CTX.matches.map(function(m){ return m.syndrome; });
+    push("a", '<div>当前候选里没有「' + esc(said || text.slice(0,10)) + '」。</div>'
+      + '<div style="font-size:12.5px;color:#6E7A70;margin-top:7px">已有的候选是：' + names.map(function(n){ return '<span class="sym">' + esc(n) + '</span>'; }).join("") + '</div>'
+      + '<div style="font-size:12px;color:#6e7a6c;margin-top:8px">可以问：<span style="color:#2F6B52">「它和' + esc(names[1] || names[0]) + '有什么区别」</span></div>');
+    return;
+  }
+
+  function block(m, tone){
+    var h = '<div style="margin-top:12px;padding-left:11px;border-left:2px solid ' + tone + '">';
+    h += '<div style="font-size:14px;font-weight:600;color:' + tone + '">' + esc(m.syndrome) + ' <span style="font-size:11.5px;color:#6E7A70;font-weight:400">匹配 ' + (m.score||0).toFixed(1) + '</span></div>';
+    if ((m.matched_symptoms||[]).length)
+      h += '<div style="font-size:11.5px;color:#6E7A70;margin-top:5px">命中</div><div>' + m.matched_symptoms.map(function(x){ return '<span class="sym">' + esc(x) + '</span>'; }).join("") + '</div>';
+    if ((m.missing_profile_symptoms||[]).length)
+      h += '<div style="font-size:11.5px;color:#6E7A70;margin-top:6px">典型表现中还缺</div><div>' + m.missing_profile_symptoms.slice(0,5).map(function(x){ return '<span class="sym miss">' + esc(x) + '</span>'; }).join("") + '</div>';
+    if (m.formula_name)
+      h += '<div style="font-size:11.5px;color:#6e7a6c;margin-top:6px">代表方：' + esc(m.formula_name) + '</div>';
+    h += '</div>';
+    return h;
+  }
+
+  var h = '<div style="font-size:12.5px;color:#6E7A70">这两个都在当前候选里，差别主要看「命中了什么」和「还缺什么」：</div>';
+  h += block(base, "#2F6B52");
+  h += block(target, "#7E9BB8");
+
+  // 差异小结
+  var sa = (base.matched_symptoms||[]), sb = (target.matched_symptoms||[]);
+  var onlyA = sa.filter(function(x){ return sb.indexOf(x) < 0; });
+  if (onlyA.length){
+    h += '<div style="margin-top:12px;font-size:12.5px;color:#6E7A70">支持「' + esc(base.syndrome) + '」而不支持「' + esc(target.syndrome) + '」的症状：'
+      + onlyA.map(function(x){ return '<span class="sym">' + esc(x) + '</span>'; }).join("") + '</div>';
+  }
+  h += '<div style="font-size:11px;color:#5f6a5d;margin-top:10px">排序依据是症状与知识库条目的匹配度，不是概率，也不构成诊断。</div>';
+  h += '<div class="acts"><a href="/train.html?m=compare">去鉴别页看更多证型 →</a><a href="/train.html?m=quiz">练这个证型的题 →</a></div>';
+  push("a", h);
+}
+
+/* ---------- 3. 出题 ---------- */
+async function doQuiz(text){
+  var target = CTX.matches.length ? CTX.matches[0].syndrome : null;
+  var j = await getJSON("/api/quiz/generate", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(target ? { syndrome: target } : {})
+  });
+  if (j.code !== 200) throw new Error(j.message || "生成失败");
+  var q = j.data;
+  var h = '<div style="font-size:12px;color:#6E7A70">' + (target ? '围绕「' + esc(target) + '」' : '随机') + '出了一道题：</div>';
+  h += '<div style="margin-top:8px;font-size:13.5px;line-height:1.9">' + esc(q.stem) + '</div>';
+  h += '<div id="opts" style="margin-top:8px">' + (q.options||[]).map(function(o, i){
+    return '<div class="opt-row" data-i="' + i + '" style="padding:7px 12px;margin-top:6px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12.5px">' + String.fromCharCode(65+i) + '. ' + esc(o) + '</div>';
+  }).join("") + '</div>';
+  h += '<div id="ansBox" style="display:none;margin-top:10px;padding:11px 14px;border-radius:9px;background:rgba(47,107,82,.08);border:1px solid rgba(47,107,82,.3)">'
+    + '<div style="color:#2F6B52;font-weight:600">答案：' + esc(q.answer) + '</div>'
+    + '<div style="font-size:12.5px;margin-top:6px;line-height:1.8">' + esc(q.explain || "") + '</div></div>';
+  h += '<div class="acts"><button class="reveal" style="font-size:12px;padding:6px 13px;border-radius:7px;border:1px solid var(--line);background:var(--panel-raised);color:var(--paper);cursor:pointer">显示答案</button>'
+    + '<a href="/train.html?m=quiz">去训练页做更多 →</a></div>';
+  push("a", h);
+}
+
+/* ---------- 4. 方剂 ---------- */
+function doFormula(){
+  if (!CTX.matches.length){ push("a", '<div>还没有分析结果。先描述症状吧。</div>'); return; }
+  var m = CTX.matches[0];
+  var h = '<div style="font-size:12.5px">「<b style="color:#2F6B52">' + esc(m.syndrome) + '</b>」的代表方：</div>';
+  h += '<div style="margin-top:8px;font-size:15px;font-weight:600">' + esc(m.formula_name || "（知识库未收录）") + '</div>';
+  if (m.formula_effect) h += '<div style="font-size:12.5px;color:#6E7A70;margin-top:4px">功效：' + esc(m.formula_effect) + '</div>';
+  if (m.tongue) h += '<div style="font-size:12.5px;color:#6e7a6c;margin-top:6px">舌象：' + esc(m.tongue) + '</div>';
+  if (m.pulse) h += '<div style="font-size:12.5px;color:#6e7a6c">脉象：' + esc(m.pulse) + '</div>';
+  h += '<div class="acts"><a href="/train.html?m=formula">去看组成与治法 →</a></div>';
+  push("a", h);
+}
+
+/* ---------- 5. 还缺什么 ---------- */
+function doMissing(){
+  if (!CTX.matches.length){ push("a", '<div>还没有分析结果。先描述症状吧。</div>'); return; }
+  var m = CTX.matches[0];
+  var miss = m.missing_profile_symptoms || [];
+  if (!miss.length){ push("a", '<div>「' + esc(m.syndrome) + '」的典型表现基本都出现了。</div>'); return; }
+  var h = '<div style="font-size:12.5px">如果倾向「<b style="color:#2F6B52">' + esc(m.syndrome) + '</b>」，典型表现里还差这些：</div>';
+  h += '<div style="margin-top:8px">' + miss.map(function(x){ return '<span class="sym miss">' + esc(x) + '</span>'; }).join("") + '</div>';
+  h += '<div style="font-size:11.5px;color:#6e7a6c;margin-top:9px">不是必须补齐才有这个证型，只是帮助判断倾向。</div>';
+  push("a", h);
+}
+
+/* ---------- 6. 学习概览 ---------- */
+async function doProgress(){
+  var j = await getJSON("/api/quiz/progress");
+  var d = (j.data) || {};
+  var qt = d.quiz_total || 0, qc = d.quiz_correct || 0;
+  var h = '<div>你的答题记录：</div><div style="margin-top:8px;font-size:12.5px;line-height:2">'
+    + '累计 <b>' + (d.total||0) + '</b> 题 · 覆盖 <b>' + (d.distinct_syndromes||0) + '</b> 个证型 · <b>' + (d.days||0) + '</b> 天<br>'
+    + '辨题型 <b>' + qt + '</b> 题，正确 <b>' + qc + '</b>' + (qt ? '（' + pct(qc/qt) + '）' : '') + '</div>';
+  var bk = d.by_kind || [];
+  if (bk.length){
+    var LB = {quiz:"辨证", formula:"方剂", tp:"舌脉", legacy:"历史（未标注）"};
+    h += '<div style="font-size:12px;color:#6E7A70;margin-top:10px">按题型</div>';
+    bk.forEach(function(x){ h += '<div style="font-size:12px;padding:2px 0">' + esc(LB[x.kind]||x.kind) + '：' + x.correct + '/' + x.n + (x.accuracy!=null?'（'+pct(x.accuracy)+'）':'') + '</div>'; });
+  }
+  h += '<div class="acts"><a href="/progress.html">看完整报告 →</a></div>';
+  push("a", h);
+}
+
+/* ---------- 7. 路径推荐 ---------- */
+async function doRecommend(){
+  var j = await getJSON("/api/quiz/progress");
+  var d = (j.data) || {};
+  var weak = (d.weakest || []).slice(0, 2);
+  var h = "";
+  if (!d.total){
+    h = '<div>你还没有答题记录。建议这样开始：</div><div style="margin-top:8px;font-size:12.5px;line-height:2">① 去「经典」读 1-2 条原文<br>② 去「训练·辨证」做 5 题<br>③ 回「报告」看薄弱点</div>';
+  } else if (weak.length){
+    h = '<div>按你的薄弱点，建议这条路径：</div>';
+    weak.forEach(function(w, i){
+      h += '<div style="margin-top:10px"><b style="color:#2F6B52">' + (i+1) + '. ' + esc(w.syndrome) + '</b>'
+        + '<span style="color:#6E7A70;font-size:12px">（' + pct(w.accuracy) + '，' + w.n + ' 题）</span></div>'
+        + '<div style="font-size:12px;color:#6E7A70;margin-left:14px;line-height:1.9">· 先看相似鉴别<br>· 再练该证型 3-5 题<br>· 最后确认治法与方剂</div>';
+    });
+  } else {
+    h = '<div>目前没有明显薄弱点（或每题量不足 3 题）。建议扩大覆盖面：辨证、方剂、舌脉各做 3 题。</div>';
+  }
+  h += '<div class="acts"><a href="/train.html?m=compare">去鉴别 →</a><a href="/train.html?m=quiz">去练习 →</a></div>';
+  push("a", h);
+}
+
+/* ---------- 意图路由 ---------- */
+async function handle(text){
+  var t = (text || "").trim();
+  if (!t || busy) return;
+  push("u", esc(t).replace(/\n/g, "<br>"));
+  $("inp").value = "";
+  busy = true; $("send").disabled = true;
+  try {
+    if (/区别|鉴别|对比|不一样|不同/.test(t)) { await doCompare(t); }
+    else if (/考我|出题|来一道|做一题|练习一下/.test(t)) { await doQuiz(t); }
+    else if (/什么方|用什么方|方剂|治法/.test(t)) { doFormula(); }
+    else if (/还缺|缺什么|补充什么|还要什么/.test(t)) { doMissing(); }
+    else if (/学得怎么样|学习情况|我的进度|学习报告|答题记录/.test(t)) { await doProgress(); }
+    else if (/推荐|练什么|怎么学|学习路径|下一步/.test(t)) { await doRecommend(); }
+    else { await doAnalyze(t); }
+  } catch(e){
+    push("a", '<div style="color:#C98A5E">出错了：' + esc(e.message) + '</div>');
+  } finally {
+    busy = false; $("send").disabled = false; $("inp").focus();
+  }
+}
+
+/* ---------- 事件 ---------- */
+$("send").addEventListener("click", function(){ handle($("inp").value); });
+$("inp").addEventListener("keydown", function(e){
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handle($("inp").value); }
+});
+$("quick").addEventListener("click", function(e){
+  var b = e.target.closest("button");
+  if (b) handle(b.dataset.q);
+});
+// 出题后的“显示答案”/选项点击
+$("msgs").addEventListener("click", function(e){
+  if (e.target.closest(".reveal")){
+    var box = e.target.closest(".bub").querySelector("#ansBox");
+    if (box) box.style.display = box.style.display === "none" ? "block" : "none";
+  }
+  var opt = e.target.closest(".opt-row");
+  if (opt){
+    opt.parentNode.querySelectorAll(".opt-row").forEach(function(x){ x.style.borderColor = "var(--line)"; x.style.background = "transparent"; });
+    opt.style.borderColor = "var(--acid)"; opt.style.background = "rgba(47,107,82,.10)";
+  }
+});
+
+/* ---------- 启动 ---------- */
+(function boot(){
+  push("a",
+    '<div>你好，我是本草辨证的 <b>AI 学习助手</b>。</div>'
+  + '<div style="margin-top:8px;font-size:12.5px;line-height:1.9">'
+  + '① <b>读症状</b>：候选证型 + 命中证据 + 把握程度<br>'
+  + '② <b>能追问</b>：和别的证型有什么区别 / 考我一道 / 用什么方 / 还缺什么<br>'
+  + '③ <b>读记录</b>：学得怎么样、该练什么</div>'
+  + '<div style="margin-top:9px;font-size:11.5px;color:#6e7a6c">基于本地知识库，完全离线；不做诊断。</div>');
+
+  getJSON("/api/quiz/progress").then(function(j){
+    var d = (j.data) || {};
+    var qt = d.quiz_total || 0, qc = d.quiz_correct || 0;
+    $("sideBox").innerHTML =
+      '<div class="kv"><span>累计答题</span><span>' + (d.total||0) + ' 题</span></div>'
+    + '<div class="kv"><span>辨题型正确率</span><span>' + (qt ? pct(qc/qt) : '—') + '</span></div>'
+    + '<div class="kv"><span>覆盖证型</span><span>' + (d.distinct_syndromes||0) + ' 个</span></div>'
+    + '<div class="kv"><span>学习天数</span><span>' + (d.days||0) + ' 天</span></div>'
+    + '<div class="tip"><span class="dot"></span>数据来自本地记录，不上传</div>';
+  }).catch(function(){ $("sideBox").innerHTML = '<div class="tip"><span class="dot off"></span>记录暂不可用</div>'; });
+
+  // 载入证型列表（用于识别“和XX对比”）
+  getJSON("/api/syndromes").then(function(j){
+    var arr = (j && (j.data || j.syndromes)) || [];
+    SYNS = arr.map(function(x){ return typeof x === "string" ? x : (x.syndrome || x.name || ""); }).filter(Boolean);
+  }).catch(function(){});
+
+  // ?q= 自动提问；?demo=compare|quiz 多轮演示
+  try {
+    var _sp = new URLSearchParams(location.search);
+    var _demo = _sp.get("demo");
+    if (_demo === "compare") {
+      setTimeout(function(){
+        handle("最近总是没胃口，吃一点就胀，大便稀，人也没力气").then(function(){
+          setTimeout(function(){ handle("它和肝郁脾虚有什么区别"); }, 1200);
+        });
+      }, 800);
+    } else if (_demo === "quiz") {
+      setTimeout(function(){
+        handle("最近总是没胃口，吃一点就胀，大便稀，人也没力气").then(function(){
+          setTimeout(function(){ handle("考我一道"); }, 1200);
+        });
+      }, 800);
+    } else {
+      var _q = _sp.get("q");
+      if (_q) setTimeout(function(){ handle(_q); }, 700);
+    }
+  } catch(e){}
+})();
+</script>
+<script src="/static/user.js"></script>
+</body>
+</html>

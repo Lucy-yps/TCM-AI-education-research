@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方剂治法联想 · 中医内科学</title>
+<style>
+:root{color-scheme:light;--bg:#EDF2EC;--panel:#F9FBF7;--panel-raised:#F1F5EE;--paper:#26312A;--ink:#26312A;--muted:#6E7A70;--line:#D9E3D6;--acid:#2F6B52;--accent:#2F6B52;--accent-strong:#1F4D3B;--accent-soft:rgba(47,107,82,.12);--orange:#C98A5E;--violet:#7E9BB8;--blue:#5B8DB8;--gold:#C9A35A;}
+*{box-sizing:border-box;}body{margin:0;background:var(--bg);color:var(--paper);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;line-height:1.75;}
+a{color:var(--acid);text-decoration:none;}
+.topbar a{color:var(--muted);}
+.nav{display:flex;gap:15px;font-size:13px;align-items:center;}
+.wrap{max-width:920px;margin:0 auto;padding:28px 22px 80px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px;}
+.brand{font-size:13px;letter-spacing:2px;color:var(--muted);}.brand b{color:var(--acid);}
+h1{font-size:26px;margin:0 0 6px;}.sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);}
+.card .k{font-size:11px;color:var(--muted);}.card .v{font-size:21px;font-weight:700;margin-top:4px;}
+.card .v small{font-size:12px;color:var(--muted);font-weight:400;}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
+select{background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;min-width:220px;}
+button{background:var(--acid);color:#F7FAF6;border:0;border-radius:8px;padding:11px 20px;font-size:13px;font-weight:700;cursor:pointer;}
+button:disabled{opacity:.5;cursor:default;}
+button.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);font-weight:500;}
+.panel{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--panel);margin-bottom:16px;}
+.tag{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);margin-right:6px;}
+.stem{font-size:16px;line-height:1.9;margin:14px 0 18px;}
+.opt{display:block;width:100%;text-align:left;background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:9px;font-size:14px;cursor:pointer;font-weight:500;}
+.opt:hover{border-color:var(--acid);}
+.opt.correct{border-color:var(--acid);background:rgba(47,107,82,.12);}
+.opt.wrong{border-color:var(--orange);background:rgba(201,138,94,.14);}
+.opt:disabled{cursor:default;}
+.verdict{font-size:17px;font-weight:700;margin:6px 0 14px;}.ok{color:var(--acid);}.no{color:var(--orange);}
+.sec{border-top:1px solid var(--line);padding-top:14px;margin-top:16px;}
+.sec h4{margin:0 0 8px;font-size:13px;color:var(--muted);}
+.sec p{margin:5px 0;font-size:13.5px;}
+.loading{color:var(--muted);font-size:13px;padding:16px 0;}.err{color:var(--orange);font-size:13px;}
+.fmtag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:var(--panel-raised);border:1px solid var(--line);margin:2px 4px 2px 0;color:#d8ddd4;}
+.note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">FIELD NOTES&nbsp; / &nbsp;<b>方剂治法联想</b></div>
+    <div class="nav"><a href="/">检索</a><a href="/classics.html">经典</a><a href="/train.html" style="color:var(--acid);font-weight:600">训练</a><a href="/progress.html">报告</a><a href="/static/assistant.html">助手</a><a href="/static/profile.html">档案</a></div>
+  </div>
+  <h1>中医内科学 · 方剂治法联想</h1>
+  <p class="sub">辨证之后要论治。本模块练习<b>证型 ↔ 治法 ↔ 方剂</b>的对应关系。干扰项取自<b>相似证型</b>的治法方剂，需要真正掌握对应关系才能答对。</p>
+  <div class="cards" id="stats"><div class="loading">加载中…</div></div>
+  <div class="bar">
+    <select id="kind">
+      <option value="">随机题型</option>
+      <option value="syndrome2treatment">证型 → 治法</option>
+      <option value="syndrome2formula">证型 → 方剂</option>
+      <option value="formula2syndrome">方剂 → 证型</option>
+    </select>
+    <select id="syndrome"><option value="">全部证型（随机）</option></select>
+    <button id="genBtn">出题</button>
+    <button class="ghost" id="nextBtn" style="display:none">下一题 →</button>
+  </div>
+  <div id="stage"><div class="panel"><div class="loading">点击「出题」开始练习</div></div></div>
+  <div class="note" id="meta"></div>
+
+  <div class="sec" style="margin-top:34px">
+    <h2 style="font-size:18px;margin:0 0 6px">方剂组成速查</h2>
+    <div class="note" style="margin-bottom:12px">收录知识库 <b>37 首代表方</b>（含完整组成数据）。上方的 215 个方剂名中，其余 178 首目前仅有方名、无组成，故不在此列出。点击任一药味可筛选含该药的方剂。</div>
+    <div class="bar">
+      <input id="fq" placeholder="搜索：方剂名 / 药味 / 证型 / 功效" style="flex:1;min-width:220px;background:var(--panel-raised);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px">
+      <span id="fc" class="note" style="margin:0"></span>
+    </div>
+    <div id="flist"><div class="panel"><div class="note">正在加载方剂数据…</div></div></div>
+  </div>
+</div>
+<script>
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+var current=null;
+
+function loadMeta(){
+  fetch("/api/quiz/formula/meta").then(function(r){return r.json();}).then(function(j){
+    if(j.code!==200) throw new Error(j.message||"加载失败");
+    var m=j.data;
+    $("stats").innerHTML=[['覆盖证型',m.with_formula,"个"],['治法条目',m.distinct_treatments,"条"],['方剂',m.distinct_formulas,"个"],['知识来源段',m.segments,"段"]]
+      .map(function(x){return '<div class="card"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+' <small>'+x[2]+'</small></div></div>';}).join("");
+    var opts=(j.concepts||[]).map(function(c){return '<option value="'+esc(c.syndrome)+'">'+esc(c.syndrome)+'（方剂 '+c.formulas.length+'）</option>';}).join("");
+    $("syndrome").innerHTML='<option value="">全部证型（随机）</option>'+opts;
+    $("meta").textContent=(m.source||"")+"　"+(m.qa?("编造检测：方剂 "+(m.qa.fake_formula||0)+" / 治法 "+(m.qa.fake_treatment||0)+" 例异常"):"");
+  }).catch(function(e){$("stage").innerHTML='<div class="panel"><div class="err">'+esc(e.message)+'</div></div>';});
+}
+
+var KIND_NAME={syndrome2treatment:"证型 → 治法",syndrome2formula:"证型 → 方剂",formula2syndrome:"方剂 → 证型"};
+
+function render(q){
+  current=q;
+  var opts=(q.options||[]).map(function(o,i){return '<button class="opt" data-i="'+i+'">'+"ABCD"[i]+'. '+esc(o)+'</button>';}).join("");
+  var h='<div class="panel">';
+  h+='<div><span class="tag">'+esc(KIND_NAME[q.kind]||q.kind)+'</span><span class="tag">'+esc(q.syndrome)+'</span></div>';
+  h+='<div class="stem">'+esc(q.stem)+'</div><div id="opts">'+opts+'</div><div id="result"></div></div>';
+  $("stage").innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){
+    b.addEventListener("click",function(){submit(parseInt(b.dataset.i,10));});
+  });
+  $("nextBtn").style.display="none";
+}
+
+function submit(idx){
+  if(!current) return;
+  var chosen=current.options[idx], correct=(chosen===current.answer);
+  Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){
+    b.disabled=true;
+    var t=current.options[parseInt(b.dataset.i,10)];
+    if(t===current.answer) b.classList.add("correct");
+    else if(parseInt(b.dataset.i,10)===idx) b.classList.add("wrong");
+  });
+  var src=current.source||{};
+  var h='<div class="verdict '+(correct?"ok":"no")+'">'+(correct?"✅ 回答正确":"❌ 回答错误")+'　标准答案：'+esc(current.answer)+'</div>';
+  h+='<div class="sec"><h4>该证型的治法</h4><p>'+(src.treatments||[]).map(function(x){return '<span class="fmtag">'+esc(x)+'</span>';}).join("")+'</p></div>';
+  h+='<div class="sec"><h4>该证型的代表方剂</h4><p>'+(src.formulas||[]).map(function(x){return '<span class="fmtag">'+esc(x)+'</span>';}).join("")+'</p></div>';
+  h+='<div class="sec"><h4>提示</h4><p>'+esc(current.hint||"")+'</p></div>';
+  h+='<div class="note">'+esc(current.note||"")+'</div>';
+  $("result").innerHTML=h;
+  $("nextBtn").style.display="inline-block";
+  try{
+    fetch("/api/quiz/record",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({syndrome:current.syndrome,chosen:chosen,kind:'formula',correct:correct})}).catch(function(){});
+  }catch(e){}
+}
+
+function generate(){
+  $("genBtn").disabled=true;$("genBtn").textContent="出题中…";
+  fetch("/api/quiz/formula",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({kind:$("kind").value,syndrome:$("syndrome").value})})
+   .then(function(r){return r.json();}).then(function(j){
+     if(j.code!==200) throw new Error(j.message||"出题失败");
+     render(j.data);
+   }).catch(function(e){$("stage").innerHTML='<div class="panel"><div class="err">'+esc(e.message)+'</div></div>';})
+   .then(function(){$("genBtn").disabled=false;$("genBtn").textContent="出题";});
+}
+$("genBtn").addEventListener("click",generate);
+$("nextBtn").addEventListener("click",generate);
+loadMeta();
+
+/* ---------- 方剂组成速查 ---------- */
+var FD = [];
+function loadFormulas(){
+  fetch("/api/formulas").then(function(r){return r.json();}).then(function(j){
+    FD = (j && j.data) || [];
+    renderF("");
+  }).catch(function(e){
+    $("flist").innerHTML='<div class="panel"><div class="note">方剂数据加载失败：'+esc(e.message)+'</div></div>';
+  });
+}
+function renderF(q){
+  q = (q||"").trim();
+  var rows = FD;
+  if (q) rows = FD.filter(function(x){
+    return (x.name+x.syndrome+x.composition+x.effect).indexOf(q) >= 0;
+  });
+  $("fc").textContent = "共 " + rows.length + " 首";
+  if (!rows.length){
+    $("flist").innerHTML = '<div class="panel"><div class="note">没有匹配的方剂。</div></div>';
+    return;
+  }
+  var h = "";
+  rows.forEach(function(x){
+    h += '<div class="panel" style="margin-bottom:10px;padding:14px 16px">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">';
+    h += '<div><b style="font-size:15px;color:var(--acid)">' + esc(x.name) + '</b>';
+    if (x.syndrome) h += '<span class="tag" style="margin-left:8px">' + esc(x.syndrome) + '</span>';
+    h += '</div>';
+    if (x.effect) h += '<div class="note" style="font-size:12px;margin:0">' + esc(x.effect) + '</div>';
+    h += '</div>';
+    if ((x.herbs||[]).length){
+      h += '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">';
+      x.herbs.forEach(function(hb){
+        h += '<span class="hw" style="font-size:12px;padding:4px 10px;border-radius:6px;background:var(--panel-raised);border:1px solid var(--line);cursor:pointer">' + esc(hb) + '</span>';
+      });
+      h += '</div>';
+    }
+    if (x.tongue || x.pulse){
+      h += '<div class="note" style="margin-top:8px;font-size:12px">舌：' + esc(x.tongue||"—") + '　脉：' + esc(x.pulse||"—") + '</div>';
+    }
+    h += '</div>';
+  });
+  $("flist").innerHTML = h;
+}
+document.addEventListener("click", function(e){
+  if (e.target && e.target.classList.contains("hw")){
+    var w = e.target.textContent.trim();
+    $("fq").value = w;
+    renderF(w);
+  }
+});
+$("fq").addEventListener("input", function(){ renderF($("fq").value); });
+loadFormulas();
+
+</script>
+
+<script>
+/* 嵌入训练中心时隐藏自身导航，避免套娃 */
+if (window.self !== window.top) {
+  var _tb = document.querySelector('.topbar');
+  if (_tb) _tb.style.display = 'none';
+  var _wr = document.querySelector('.wrap');
+  if (_wr) _wr.style.paddingTop = '20px';
+}
+</script>
+<script src="/static/user.js"></script>
+</body>
+</html>

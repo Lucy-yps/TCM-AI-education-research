@@ -1,0 +1,9 @@
+{
+  "deepseek_record_sample": 0.5,
+  "deepseek_record_full": 0.7580174927113703,
+  "zhipu_record_sample": 0.35714285714285715,
+  "modelscope_record_sample": 0.5476190476190477,
+  "deepseek_textbook": 0.40540540540540543,
+  "zhipu_textbook": 0.3783783783783784,
+  "modelscope_textbook": 0.40540540540540543
+}

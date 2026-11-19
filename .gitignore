@@ -1,8 +1,64 @@
-**/__pycache__/
+# ===== 账户与会话数据（含密码哈希，禁止入库）=====
+external_data/users.json
+external_data/tokens.json
+
+# ===== 答题与考试成绩（个人数据，禁止入库）=====
+external_data/exams*.jsonl
+external_data/quiz_progress_*.jsonl
+
+# ===== 密钥与本地配置（禁止入库）=====
+.env
+.env.*
+!.env.example
+config.local.*
+*.key
+
+# ===== Python 缓存与虚拟环境 =====
+__pycache__/
 *.py[cod]
-**/.venv/
-**/venv/
-**/.env
-**/.env.*
-!**/.env.example
-**/~$*
+*.egg-info/
+.venv/
+venv/
+
+# ===== 编辑器 =====
+.vscode/
+.idea/
+
+# ===== 大数据集与模型（比赛材料放百度网盘，不进 Git）=====
+external_data/**/*.joblib
+external_data/**/*.zip
+external_data/**/*.gz
+external_data/train_dev/
+external_data/quiz_src/
+external_data/tcm_sd_test.json
+external_data/train.json
+external_data/llm_baseline/*_record_full.json
+
+# ===== 成品演示材料 =====
+*.mp4
+*.pptx
+*.zip
+/*.pdf
+docs/*.pdf
+docs/*.docx
+docs/*.ass
+docs/*.srt
+
+# ===== 临时与备份文件 =====
+~$*
+*.bak
+
+# ===== 打包副本与重复目录 =====
+AIC-2026-88568038-AI+学科交叉-本草辨证-代码包/
+AIC-2026-88568038-AI+学科交叉-本草辨证-代码包.zip
+
+# ===== 无关项目与素材 =====
+职业规划大赛/
+展板/
+PPT素材/
+官方文件/
+测试案例/
+
+# ===== 系统垃圾 =====
+.DS_Store
+Thumbs.db
